@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local Agent skill installations
+.agents/skills/
+.claude/skills/
+.cursor/skills/
+
+# Temporary skill outputs
+.clarify-development-request/
+.write-technical-spec/
+.review-code-changes/
+.maintain-task-checkpoints/

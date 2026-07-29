@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Technical Spec"
+  short_description: "Create reviewed design and implementation specs"
+  default_prompt: "Use $write-technical-spec to turn this feature into a reviewed technical specification."

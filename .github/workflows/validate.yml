@@ -1,0 +1,35 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Validate skill structure
+        run: python3 scripts/validate_skills.py
+
+      - name: Compile Python files
+        run: python3 -m compileall -q skills scripts
+
+      - name: Exercise codebase handbook helpers
+        run: |
+          project_root="$(mktemp -d)"
+          python3 skills/codebase-handbook/scripts/initialize_handbook.py \
+            --project-root "$project_root"
+          python3 skills/codebase-handbook/scripts/build_handbook.py \
+            --project-root "$project_root"
+          python3 skills/codebase-handbook/scripts/validate_handbook.py \
+            --project-root "$project_root"

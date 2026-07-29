@@ -1,0 +1,13 @@
+schema_version: 2
+language: auto
+scan:
+  tracked_files_only: true
+  respect_gitignore: true
+  exclude_generated: true
+source_references:
+  durable_line_numbers: false
+repository_rules:
+  enabled: true
+html:
+  title: auto
+  show_source_evidence: true

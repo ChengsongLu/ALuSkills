@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Code Changes"
+  short_description: "Review changes and remediate confirmed findings"
+  default_prompt: "Use $review-code-changes to review the current code changes for concrete risks."
