@@ -1,8 +1,21 @@
 # ALuSkills
 
-一组面向软件开发工作流的 Agent Skills，覆盖需求澄清、技术方案设计、代码审查、长任务检查点和代码库手册维护。
+让 Coding Agent 不只会生成代码，也能更可靠地完成软件开发中的关键工程工作。
 
-这些 skills 遵循 [Agent Skills 规范](https://agentskills.io/specification)，可以通过 [`skills`](https://github.com/vercel-labs/skills) CLI 安装到兼容的 Agent。
+ALuSkills 是一组面向真实代码库的 Agent Skills，覆盖从需求进入开发，到方案落地、代码审查、长任务恢复和知识沉淀的完整工作流：
+
+```text
+模糊需求 → 开发简报 → 技术规格 → 实现与审查 → 任务恢复 → 代码库手册
+```
+
+它们强调：
+
+- **基于仓库事实工作**：先阅读相关代码、测试和文档，再给出结论；
+- **产出可检查的文件**：将需求、设计、审查结果和任务状态持久化，而不是只留在对话中；
+- **覆盖困难路径**：关注失败、恢复、并发、兼容性、安全和外部副作用；
+- **按需触发**：简单任务保持简单，不为低风险修改强行增加流程。
+
+这些 Skills 遵循 [Agent Skills 规范](https://agentskills.io/specification)，可以通过 [`skills`](https://github.com/vercel-labs/skills) CLI 安装到 Codex、Claude Code、Cursor 等兼容的 Agent。
 
 ## 1. 安装
 
@@ -95,26 +108,54 @@ npx skills list --global
 
 ## 2. Skills
 
-| Skill | 用途 |
-| --- | --- |
-| [`clarify-development-request`](skills/clarify-development-request/) | 在非简单开发开始前澄清目标、范围、行为、契约、风险和验收标准 |
-| [`write-technical-spec`](skills/write-technical-spec/) | 基于仓库事实编写并审查流程、设计和实施方案 |
-| [`review-code-changes`](skills/review-code-changes/) | 审查工作区、提交、分支或 PR 的具体正确性与可靠性风险 |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 为长时间、多阶段或高恢复成本的任务保存可恢复状态 |
-| [`codebase-handbook`](skills/codebase-handbook/) | 创建和维护面向人类与 Agent 的代码库技术手册 |
+| Skill | 解决的问题 | 关键产物 |
+| --- | --- | --- |
+| [`clarify-development-request`](skills/clarify-development-request/) | 把会影响实现方向的模糊需求澄清完整 | `brief.md` |
+| [`write-technical-spec`](skills/write-technical-spec/) | 把已确认需求转化为与仓库一致的技术方案 | `flow.md`、`design.md`、`implement.md` |
+| [`review-code-changes`](skills/review-code-changes/) | 从具体变更中发现正确性、可靠性和安全风险 | `review.md`、`coverage.md` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 让复杂任务在中断、压缩或交接后安全继续 | `STATE.md`、`CHECKPOINTS.md` |
+| [`codebase-handbook`](skills/codebase-handbook/) | 将代码库设计与运行行为沉淀成可维护的技术书 | Markdown 章节、`manifest.yaml`、`handbook.html` |
 
 ### 2.1 clarify-development-request
 
-在需求会影响产品行为、技术边界或验收方式时，先调查仓库事实，再逐项澄清真正会改变实现方向的问题，最终形成可确认、可交接的开发简报。
+在非简单开发开始前调查相关代码、测试和文档，只追问真正会改变产品行为或实现方向的问题。它会梳理目标、范围、非目标、接口契约、状态与失败语义、兼容性、安全边界和验收标准，最终形成一份可确认、可交接的开发简报。
 
 适合：
 
-- 将模糊需求整理成实现就绪的 brief；
+- 将“一句话需求”整理成实现就绪的 brief；
 - 明确目标、范围、非目标和验收标准；
 - 澄清状态、失败语义、兼容性、安全和副作用边界；
 - 在进入技术设计前消除会改变方案的未决问题。
 
 不适合普通咨询、纯诊断、纯审查、机械修改，或已经足够明确的低风险任务。
+
+**关键产物**
+
+```text
+.clarify-development-request/
+└── 2026_07_29_export-orders_000/
+    └── brief.md
+```
+
+`brief.md` 示例：
+
+```markdown
+# Export orders
+
+## Goal and success criteria
+- 用户可以导出当前筛选结果，而不是全部订单。
+- 10,000 条以内的导出请求在 30 秒内完成。
+
+## Scope
+- 支持 CSV；本次不支持 XLSX。
+- 沿用现有订单查询权限和筛选条件。
+
+## Failure behavior
+- 导出失败时不生成不完整文件，并向用户返回可重试提示。
+
+## Acceptance
+- 覆盖空结果、权限不足、超量和生成失败场景。
+```
 
 安装：
 
@@ -124,15 +165,40 @@ npx skills add ChengsongLu/ALuSkills --skill clarify-development-request --globa
 
 ### 2.2 write-technical-spec
 
-根据已经确认的需求和当前仓库证据，编写并审查技术规格。根据任务需要生成流程、设计和分阶段实施文档，并保持不同文档的抽象层级清晰。
+根据已经确认的需求和当前仓库证据编写、审查技术规格。它把核心流程、设计决策和具体实施拆到正确的文档层级，覆盖模块边界、接口、数据与状态、迁移、兼容性、失败恢复、安全和测试策略。
 
 适合：
 
 - 编写技术方案或设计文档；
-- 绘制核心处理流程；
+- 用 Mermaid 绘制正常与异常处理流程；
 - 规划模块、接口、数据、状态和兼容性变化；
 - 制定分阶段实施计划和验证策略；
 - 审查已有设计是否完整且与仓库一致。
+
+**关键产物**
+
+```text
+.write-technical-spec/
+└── 2026_07_29_export_orders_000/
+    ├── flow.md       # 可选：流程和关键分支
+    ├── design.md     # 设计边界、契约和决策
+    └── implement.md  # 分阶段改动与验证计划
+```
+
+`design.md` 示例：
+
+```markdown
+## Design
+
+- `OrderExportService` 接收已授权的查询条件，不重新实现权限判断。
+- 查询使用只读分页游标，逐批写入临时文件，成功后再原子发布。
+- 任一批次失败时删除临时文件，不返回部分导出结果。
+
+## Compatibility
+
+- 现有订单查询 API 保持不变。
+- 新增的导出接口沿用当前筛选参数格式。
+```
 
 安装：
 
@@ -142,17 +208,37 @@ npx skills add ChengsongLu/ALuSkills --skill write-technical-spec --global
 
 ### 2.3 review-code-changes
 
-针对工作区 diff、暂存修改、提交、分支比较或 PR 进行证据驱动的代码审查，重点检查正确性、可靠性、安全性、兼容性、测试和文档风险。
+针对工作区 diff、暂存修改、指定 commit、分支比较或 PR 进行证据驱动的代码审查。审查先冻结准确的变更范围，再从契约和对抗性失败两个角度检查正确性、可靠性、安全性、兼容性、测试和文档风险。
 
 适合：
 
 - 审查当前未提交修改；
 - 审查指定 commit 或分支差异；
-- 检查状态、并发、持久化、重试和失败恢复路径；
+- 检查状态、并发、持久化、重试、取消和失败恢复路径；
 - 输出带证据、影响级别和修复方向的审查结果；
 - 在用户明确授权后修复已确认的问题。
 
 默认只审查、不修改实现文件。
+
+**关键产物**
+
+```text
+.review-code-changes/
+└── 2026_07_29_working-tree_000/
+    ├── review.md       # 已确认的 findings 和总体结论
+    └── coverage.md     # 大型或高风险审查的覆盖记录
+```
+
+`review.md` 示例：
+
+```markdown
+## [P1] 发布完成前不能暴露导出文件
+
+`export_orders.py:84` 在最后一批数据写入前就把下载地址保存到数据库。
+并发下载可能读取到不完整 CSV；进程崩溃后该地址也会永久指向半成品。
+
+建议先写入临时路径，关闭并校验文件后再原子移动，并在同一提交点更新下载状态。
+```
 
 安装：
 
@@ -162,7 +248,7 @@ npx skills add ChengsongLu/ALuSkills --skill review-code-changes --global
 
 ### 2.4 maintain-task-checkpoints
 
-为长时间、多阶段或高恢复成本的开发任务维护紧凑的恢复状态，帮助任务在中断、上下文压缩或 Agent 交接后安全继续。
+为长时间、多阶段或高恢复成本的开发任务维护紧凑的恢复状态。它记录已经确认的决策、当前进度、文件变化、验证结果、剩余风险和不可重复的副作用，让任务在会话中断、上下文压缩或 Agent 交接后安全继续。
 
 适合：
 
@@ -174,6 +260,35 @@ npx skills add ChengsongLu/ALuSkills --skill review-code-changes --global
 
 短小、低风险、单次即可完成的任务不应创建检查点。
 
+**关键产物**
+
+```text
+.maintain-task-checkpoints/
+└── 20260729-143000-export-orders/
+    ├── STATE.md        # 当前可恢复状态
+    └── CHECKPOINTS.md  # 追加式阶段历史
+```
+
+`STATE.md` 示例：
+
+```markdown
+## Current state
+
+- Status: in_progress
+- Completed: 导出查询与 CSV 流式写入
+- Current: 实现临时文件的原子发布
+- Next: 补充失败注入测试和 10,000 条性能验证
+
+## Validation
+
+- Passed: 单元测试 18/18
+- Pending: 进程中断后的临时文件清理测试
+
+## Do not repeat
+
+- 测试环境数据库迁移已经执行，不要再次创建同名索引。
+```
+
 安装：
 
 ```bash
@@ -182,7 +297,7 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 
 ### 2.5 codebase-handbook
 
-在仓库中创建和维护 `.codebase-handbook/` 技术手册，用稳定的概念、职责、流程、状态、失败行为和源码证据解释系统，而不是生成逐文件 API 清单。
+在仓库中创建和维护 `.codebase-handbook/` 技术手册。它以“技术书”而不是逐文件 API 清单的方式，解释稳定概念、模块职责、运行流程、状态变化、失败行为、系统关系和对应的源码证据，并在代码变化后按影响范围同步相关章节。
 
 适合：
 
@@ -190,8 +305,44 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 - 导航和理解已有手册；
 - 在代码变更前后同步架构与行为说明；
 - 校验手册结构、引用和覆盖范围；
-- 生成自包含的 HTML 阅读视图；
+- 生成可视化友好、自包含的 HTML 阅读视图；
 - 拆分、合并或演进手册章节。
+
+**关键产物**
+
+```text
+.codebase-handbook/
+├── index.md
+├── manifest.yaml
+├── architecture/
+│   └── system-overview.md
+├── flows/
+│   └── order-export.md
+└── handbook.html
+```
+
+章节示例：
+
+```markdown
+# Order export flow
+
+当修改订单查询、权限校验、文件存储或下载状态时阅读本章。
+
+## Normal runtime path
+1. API 层验证用户权限并规范化筛选条件。
+2. Export Service 分页读取订单并写入临时 CSV。
+3. 文件完整关闭后原子发布，并将任务标记为 ready。
+
+## Failure and recovery
+- 发布前失败：删除临时文件，任务进入 failed。
+- 发布后状态更新失败：恢复任务扫描存储结果并收敛数据库状态。
+
+## Source evidence
+- `src/orders/export_service.py::OrderExportService`
+- `src/jobs/export_orders.py::run_export`
+```
+
+`handbook.html` 由 Markdown 章节和 `manifest.yaml` 生成，是一个无需本地服务器即可直接打开的自包含页面。它提供书籍式目录树、全文搜索、面包屑、章节内目录、前后章与相关主题导航、可折叠源码证据、明暗主题和响应式布局，适合开发者浏览，也保留供 Agent 定位任务所需的结构化信息。
 
 该 skill 不会因为普通编码任务而自动初始化手册；初始化需要用户明确提出。
 
