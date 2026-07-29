@@ -344,6 +344,12 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 
 `handbook.html` 由 Markdown 章节和 `manifest.yaml` 生成，是一个无需本地服务器即可直接打开的自包含页面。它提供书籍式目录树、全文搜索、面包屑、章节内目录、前后章与相关主题导航、可折叠源码证据、明暗主题和响应式布局，适合开发者浏览，也保留供 Agent 定位任务所需的结构化信息。
 
+**`handbook.html` 示例**
+
+![codebase-handbook 生成的 handbook.html 阅读视图，包含目录、搜索、状态标记和按卷组织的章节导航](docs/images/codebase-handbook-html-preview.png)
+
+桌面布局将目录与全文搜索固定在左侧，正文区域展示手册状态、覆盖度、证据状态和按卷组织的章节地图；同一个自包含文件也支持明暗主题与窄屏阅读。
+
 该 skill 不会因为普通编码任务而自动初始化手册；初始化需要用户明确提出。
 
 安装：
