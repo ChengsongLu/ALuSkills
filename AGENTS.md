@@ -51,6 +51,30 @@ Do not merge a draft pull request or a pull request with pending or failed
 required checks. Do not delete a branch before confirming that its pull request
 was merged.
 
+## Close every handoff
+
+At the end of each task, tell the user both what is complete and what should
+happen next. Do not make the user infer the remaining workflow from Git state
+or repository policy.
+
+The final response must include:
+
+- the outcome and the files or behavior affected;
+- the current branch and, when applicable, the commit, pull request, or merge
+  state;
+- the validation that passed, failed, or was not run;
+- the single next recommended action, who must take it, and whether the Agent
+  is waiting for user approval or input.
+
+When the user requests only one step of a larger workflow, such as creating a
+commit, stop after that authorized step and explicitly name the next step. For
+example: "The commit is ready on `docs/example`; next, I can push the branch
+and open a pull request." Never describe repository delivery as complete while
+required push, review, checks, merge, or cleanup steps remain.
+
+If no further action is needed, say so explicitly. If work is blocked, state
+the blocker and the exact decision or external action needed to continue.
+
 ## Validate changes
 
 Run the smallest relevant checks while iterating. Before opening or updating a
