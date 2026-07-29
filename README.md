@@ -6,25 +6,92 @@
 
 ## 1. 安装
 
-查看仓库中可用的 skills：
+安装由 [`skills`](https://github.com/vercel-labs/skills) CLI 完成，需要本机已经安装 Node.js 和 `npx`。
+
+### 1.1 查看可用 Skills
+
+以下命令只查看，不会安装：
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --list
 ```
 
-将全部 skills 全局安装到 `~/.agents/skills/`：
+确认来源为 `ChengsongLu/ALuSkills`，并显示 5 个 skills。
+
+### 1.2 全局安装全部 Skills
+
+推荐首次安装使用交互模式：
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill '*' --global
 ```
 
-添加 `--yes` 可以跳过交互确认：
+安装时只需关注以下步骤：
+
+1. **选择 Agent**
+
+   使用 `↑`、`↓` 移动，`Space` 选择，`Enter` 确认。
+
+   - Codex、Cursor：包含在 `Universal (.agents/skills)` 中，无需额外选择；
+   - Claude Code：在 `Additional agents` 中额外选择 `Claude Code`；
+   - 不要选择自己不用的 Agent，避免创建无关目录或链接。
+
+2. **检查安装摘要**
+
+   应看到 5 个 skills 安装到 `~/.agents/skills/`。摘要中的 `copy → Codex ...` 表示这些 Agent 可以读取通用副本，是正常结果。
+
+   如果需要 Claude Code，还应确认摘要中包含 `Claude Code`；如果没有，选择 `No` 并重新运行安装。
+
+3. **确认安装**
+
+   在 `Proceed with installation?` 处选择 `Yes`，按 `Enter` 完成安装。
+
+安装完成后重新启动 Agent，或新建一个会话。
+
+### 1.3 直接指定 Agent
+
+跳过交互，安装给 Codex：
 
 ```bash
-npx skills add ChengsongLu/ALuSkills --skill '*' --global --yes
+npx skills add ChengsongLu/ALuSkills --skill '*' --global --agent codex --yes
 ```
 
-CLI 会自动检测并关联兼容的 Agent，无需指定 `--agent`。
+安装给 Claude Code：
+
+```bash
+npx skills add ChengsongLu/ALuSkills --skill '*' --global --agent claude-code --yes
+```
+
+安装给 Cursor：
+
+```bash
+npx skills add ChengsongLu/ALuSkills --skill '*' --global --agent cursor --yes
+```
+
+同时安装给三者：
+
+```bash
+npx skills add ChengsongLu/ALuSkills --skill '*' --global \
+  --agent codex --agent claude-code --agent cursor --yes
+```
+
+### 1.4 安装位置
+
+| Agent | 项目级目录 | 全局目录 |
+| --- | --- | --- |
+| Codex | `.agents/skills/` | `~/.codex/skills/` |
+| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
+| Cursor | `.agents/skills/` | `~/.cursor/skills/` |
+
+CLI 可能将公共副本放在 `~/.agents/skills/`，再由 Agent 直接读取或建立链接；以 `Installation Summary` 显示的路径为准。
+
+### 1.5 验证
+
+```bash
+npx skills list --global
+```
+
+输出中应能看到本仓库的 5 个 skills。
 
 ## 2. Skills
 
