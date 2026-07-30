@@ -1,6 +1,6 @@
 ---
 name: review-code-changes
-description: Review a working-tree diff, staged changes, commit, branch comparison, or pull-request change set for concrete correctness, reliability, security, compatibility, testing, and documentation risks. Use for requests such as review changes, code review, inspect this diff, or evaluate a commit. Also use when the user explicitly asks to remediate findings from such a review; review-only requests must not modify code.
+description: Review a working-tree diff, staged changes, commit, branch comparison, or pull-request change set for concrete correctness, reliability, security, compatibility, testing, and documentation risks. Use when the user explicitly requests a code review, asks to inspect a diff or commit for findings, or asks to remediate findings from such a review. Do not invoke merely to self-check an ordinary implementation, validate a small edit, or inspect code without a requested change set. Review-only requests must not modify code.
 ---
 
 # Review Code Changes
@@ -9,14 +9,21 @@ Review changed code against its intended contract and adversarial failure condit
 
 ## Select the mode
 
-- **Review:** Use by default. Inspect and report; do not change implementation files.
+- **Lightweight review:** Use for a focused, low-risk change that can be read
+  reliably in one pass when the user did not request a persistent artifact.
+  Inspect and report in the conversation without creating review files.
+- **Recorded review:** Use when the user requests a formal or persistent review,
+  when assessing PR or branch readiness, or when the change is large, high risk,
+  or needs a durable handoff. Persist the review as described below.
 - **Remediation:** Enter only when the user explicitly asks to fix or optimize identified findings. Read [references/remediation.md](references/remediation.md) completely before modifying code.
 
 This workflow covers changed code. Do not use it as a project-wide or module-wide codebase inspection process.
 
 ## Place the output
 
-Use a user- or repository-specified location when one is explicit. Otherwise create one isolated review directory under the project root:
+Skip this section in lightweight review mode. For a recorded review, use a user-
+or repository-specified location when one is explicit. Otherwise create one
+isolated review directory under the project root:
 
 ```text
 .review-code-changes/
@@ -28,7 +35,9 @@ Use a user- or repository-specified location when one is explicit. Otherwise cre
 
 Use `working-tree`, a short commit or branch slug, or another unambiguous comparison slug for `scope`. Start `NNN` at `000` and select the next unused sequence for the same date and scope. Record the comparison base inside `review.md`; do not rely on the directory name as evidence.
 
-Resolve the prospective output path at this stage, but do not create it yet. First complete the baseline steps below and freeze the exact review input. Create the review directory only after the baseline is frozen.
+Resolve the prospective output path at this stage, but do not create it yet.
+First complete the baseline steps below and freeze the exact review input.
+Create the review directory only after the baseline is frozen.
 
 Do not modify ignore rules or stage review artifacts unless the user explicitly requests it.
 
@@ -41,7 +50,17 @@ Do not modify ignore rules or stage review artifacts unless the user explicitly 
 5. Preserve the user's unrelated working-tree changes.
 6. Determine whether the change is large or high risk.
 
-After freezing the baseline, create the selected review directory. Treat that directory as output-only: exclude it from later repository-change status, diff, code-coverage, and finding calculations, and never treat it as code under review. Continue to use `review.md` and `coverage.md` as workflow evidence during authorized remediation, and continue to report other user changes normally.
+For a recorded review, create the selected review directory after freezing the
+baseline. Treat that directory as output-only: exclude it from later
+repository-change status, diff, code-coverage, and finding calculations, and
+never treat it as code under review. Continue to use `review.md` and
+`coverage.md` as workflow evidence during authorized remediation, and continue
+to report other user changes normally.
+
+For a lightweight review, keep the exact comparison base and reviewed paths in
+memory. Upgrade to a recorded review before producing artifacts only when the
+inspection reveals cross-module or high-risk behavior, cannot be completed
+reliably in one focused pass, or the user asks for a durable report.
 
 Treat a change as large or high risk when it crosses modules or changes persistence, migrations, state transitions, concurrency, background work, security, compatibility, or external side effects, or when it cannot be read reliably in one focused pass.
 
@@ -119,7 +138,13 @@ Do not report theoretical speculation, style preference, or a concern without a 
 
 ## Deliver the review
 
-Write `review.md`. List findings first, grouped by `Must fix`, `Should fix`, and `May ignore`, then ordered by impact. For every finding include:
+For a lightweight review, report findings first in the final response with tight
+file and line references, followed by meaningful validation gaps and residual
+risks. Do not create `review.md` merely to record that no finding was found.
+
+For a recorded review, write `review.md`. List findings first, grouped by `Must
+fix`, `Should fix`, and `May ignore`, then ordered by impact. For every finding
+include:
 
 - identifier and concise title;
 - file and tight line range;
@@ -138,4 +163,5 @@ After findings, summarize:
 
 When no finding meets the evidence bar, say so plainly and still report meaningful gaps and residual risks. Do not imply that no defect can exist.
 
-In the final response, summarize the highest-priority findings and link to `review.md` and `coverage.md` when present.
+In the final response, summarize the highest-priority findings and link to
+`review.md` and `coverage.md` only when those artifacts were created.

@@ -1,7 +1,7 @@
 interface:
   display_name: "Codebase Handbook"
-  short_description: "Create and maintain navigable codebase handbooks"
-  default_prompt: "Use $codebase-handbook to create, navigate, update, or audit this repository handbook."
+  short_description: "Maintain handbooks when durable behavior changes"
+  default_prompt: "Use $codebase-handbook to inspect or update this repository handbook when durable behavior changes."
 
 policy:
   allow_implicit_invocation: true

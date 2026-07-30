@@ -1,6 +1,6 @@
 ---
 name: codebase-handbook
-description: Create, navigate, synchronize, validate, render, and evolve a repository's natural-language technical handbook in .codebase-handbook. Use when a user asks to initialize or consult a codebase handbook, or when a repository already contains .codebase-handbook and a task involves understanding, planning, modifying, refactoring, reviewing, or explaining code that may affect design, responsibilities, runtime behavior, contracts, source references, or the generated handbook.html reading view. Do not initialize a handbook during an ordinary coding task unless the user explicitly asks.
+description: Create, navigate, synchronize, validate, render, and evolve a repository's natural-language technical handbook in .codebase-handbook. Use when the user asks to initialize, consult, update, validate, or render a handbook, or when a repository already contains .codebase-handbook and a task is likely to change documented design, responsibilities, runtime behavior, contracts, state, side effects, relationships, or durable cited symbols. Do not invoke for mechanical edits, formatting, comments, tests-only changes, or localized behavior-preserving changes unless the user asks or repository instructions explicitly require handbook inspection. Never initialize a handbook during an ordinary coding task.
 ---
 
 # Codebase Handbook
@@ -33,6 +33,12 @@ plane.
 
 Never infer that a missing handbook should be created. Initialize only when the
 user explicitly requests it.
+
+When invocation is implicit, classify the task before starting a full handbook
+workflow. If it is a mechanical, tests-only, or localized behavior-preserving
+change and repository instructions do not require handbook inspection, stop
+without reading handbook content, creating an impact checklist, rebuilding
+`handbook.html`, or running handbook validation.
 
 ## Choose a Workflow
 

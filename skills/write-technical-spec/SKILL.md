@@ -13,7 +13,10 @@ Turn confirmed requirements and repository evidence into a staged technical spec
 2. Use a user- or repository-specified output location when one is explicit.
 3. Otherwise place specifications under the project-root `.write-technical-spec/`, using a short lowercase underscore-separated feature name.
 4. Confirm that goals, scope, contracts, behavior, and acceptance criteria are sufficiently resolved. Invoke `$clarify-development-request` if a remaining choice would change the design.
-5. Ask whether a separate flow document is wanted when the user or project convention has not already decided it.
+5. Include a separate flow document when the user requests it, the project
+   convention requires it, or multiple meaningful branches, boundaries, or
+   failure paths make it materially useful. Otherwise omit it without asking;
+   do not block a straightforward specification on an optional artifact.
 
 Use the following default document set:
 
@@ -30,6 +33,8 @@ When the user explicitly asks to continue or update an existing specification, l
 For every independent new specification, start `NNN` at `000` and select the next unused sequence for the same date and feature. Never overwrite or silently merge an existing specification. Do not modify ignore rules or stage specification artifacts unless the user explicitly requests it.
 
 ## Write the flow document
+
+Skip this section when the flow-document gate above omits `flow.md`.
 
 Use `flow.md` to explain the core processing flow, not detailed design.
 
