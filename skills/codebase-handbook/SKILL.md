@@ -1,6 +1,6 @@
 ---
 name: codebase-handbook
-description: Create, navigate, synchronize, validate, render, and evolve a repository's natural-language technical handbook in .codebase-handbook. Use when the user asks to initialize, consult, update, validate, or render a handbook, or when a repository already contains .codebase-handbook and a task is likely to change documented design, responsibilities, runtime behavior, contracts, state, side effects, relationships, or durable cited symbols. Do not invoke for mechanical edits, formatting, comments, tests-only changes, or localized behavior-preserving changes unless the user asks or repository instructions explicitly require handbook inspection. Never initialize a handbook during an ordinary coding task.
+description: Create, navigate, synchronize, validate, render, and evolve a repository's natural-language technical handbook in .codebase-handbook, confirm evidence-based scope or structural changes before material handbook writes, and treat all other repository content as read-only evidence. Use when the user asks to initialize, consult, update, validate, or render a handbook, or when a repository already contains .codebase-handbook and a task is likely to change documented design, responsibilities, runtime behavior, contracts, state, side effects, relationships, or durable cited symbols. Do not invoke for mechanical edits, formatting, comments, tests-only changes, or localized behavior-preserving changes unless the user asks or repository instructions explicitly require handbook inspection. Never initialize a handbook during an ordinary coding task.
 ---
 
 # Codebase Handbook
@@ -45,13 +45,13 @@ without reading handbook content, creating an impact checklist, rebuilding
 - **Initialize**: Read [workflows.md](references/workflows.md), then
   [handbook-spec.md](references/handbook-spec.md),
   [book-model.md](references/book-model.md),
-  [evidence-and-writing.md](references/evidence-and-writing.md), and
-  [repository-rules.md](references/repository-rules.md).
+  and [evidence-and-writing.md](references/evidence-and-writing.md).
 - **Navigate or answer a codebase question**: Read
   [workflows.md](references/workflows.md) and follow the navigation workflow.
-- **Plan or implement a code change in a repository with a handbook**: Read
-  [workflows.md](references/workflows.md) and follow both the pre-change and
-  post-change workflows.
+- **Assess handbook impact around a separately authorized code change**: Read
+  [workflows.md](references/workflows.md) and follow both the pre-change impact
+  analysis and post-change handbook synchronization workflows. Do not make the
+  code change as part of this skill.
 - **Validate or audit**: Read [workflows.md](references/workflows.md) and
   [handbook-spec.md](references/handbook-spec.md), then
   [book-model.md](references/book-model.md).
@@ -59,13 +59,17 @@ without reading handbook content, creating an impact checklist, rebuilding
   [html-view.md](references/html-view.md).
 - **Split, merge, rename, deprecate, or remove a module or chapter**: Read
   [workflows.md](references/workflows.md) and follow the evolution workflow.
-- **Edit repository-level Agent instructions**: Always read
-  [repository-rules.md](references/repository-rules.md) first.
 
 ## Non-Negotiable Rules
 
 ### Preserve the repository
 
+- Keep every write made by this skill under `.codebase-handbook/`. Treat source
+  code, configuration, tests, ordinary documentation, repository instructions,
+  and every other project path as read-only evidence.
+- Never create or modify `AGENTS.md`, `CLAUDE.md`, or any other Agent
+  instruction file. Do not add handbook maintenance hooks outside
+  `.codebase-handbook/`.
 - Treat Git-tracked files as the default analysis boundary.
 - Respect `.gitignore`. Exclude dependencies, build products, caches,
   binaries, and generated files by default.

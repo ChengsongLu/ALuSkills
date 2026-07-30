@@ -6,8 +6,6 @@ scan:
   exclude_generated: true
 source_references:
   durable_line_numbers: false
-repository_rules:
-  enabled: true
 html:
   title: auto
   show_source_evidence: true

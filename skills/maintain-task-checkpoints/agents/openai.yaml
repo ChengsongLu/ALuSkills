@@ -1,4 +1,4 @@
 interface:
   display_name: "Maintain Task Checkpoints"
-  short_description: "Persist and recover state for long coding tasks"
-  default_prompt: "Use $maintain-task-checkpoints to maintain a recoverable checkpoint for this long-running task."
+  short_description: "Confirm and maintain recoverable task state"
+  default_prompt: "Use $maintain-task-checkpoints to assess whether this task needs persistent recovery state, confirm implicit activation, and maintain the checkpoint."

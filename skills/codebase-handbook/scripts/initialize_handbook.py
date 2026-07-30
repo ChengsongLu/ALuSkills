@@ -53,8 +53,10 @@ def main() -> int:
     shutil.copytree(template, target)
     build_handbook(root)
     print(f"created {target}")
-    print("next: read preferences.md, inventory the project, and populate manifest.yaml")
-    print("next: integrate concise maintenance guidance into applicable Agent rules")
+    print(
+        "next: read preferences.md, inventory the project, and confirm the "
+        "handbook plan before deep writing"
+    )
     return 0
 
 

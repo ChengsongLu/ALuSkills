@@ -1,4 +1,4 @@
 interface:
   display_name: "Review Code Changes"
-  short_description: "Review requested changes at proportional depth"
-  default_prompt: "Use $review-code-changes to review this change set for concrete risks at proportional depth."
+  short_description: "Review changes at confirmed artifact depth"
+  default_prompt: "Use $review-code-changes to assess the appropriate review mode, confirm before creating unrequested persistent artifacts, and review this change set."
