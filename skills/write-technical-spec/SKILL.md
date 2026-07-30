@@ -128,15 +128,18 @@ Keep `implement.md` as an index with phase links, the overall validation strateg
 
 ## Review every stage
 
-Before moving from one document or phase to the next:
+After completing each document or implementation phase, perform a self-review before presenting it for confirmation. Before moving from one document or phase to the next, or from the specification to coding:
 
 - review the current document together with other relevant files in the same spec;
 - confirm that important conversation decisions have been persisted;
 - check for conflicts with current source and project rules;
 - check completeness at the document's intended abstraction level;
+- check internal consistency, actionable detail, evidence support, and agreement with previously confirmed documents;
 - correct non-behavioral issues directly;
 - obtain user confirmation for decision-changing corrections;
 - retain a short record of the review dimensions and conclusion.
+
+Report the self-review conclusion and link the completed document when asking the user to confirm the stage. Do not start the next document, phase, or coding until the self-review is complete, blocking issues are resolved, and the user confirms the current stage.
 
 Before coding, ensure the plan is supported by current repository evidence, the documents agree, the user has confirmed the plan, and no design choice has been delegated implicitly to implementation.
 
