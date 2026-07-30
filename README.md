@@ -98,7 +98,28 @@ npx skills add ChengsongLu/ALuSkills --skill '*' --global \
 
 CLI 可能将公共副本放在 `~/.agents/skills/`，再由 Agent 直接读取或建立链接；以 `Installation Summary` 显示的路径为准。
 
-### 1.5 验证
+### 1.5 更新
+
+更新已经全局安装的 ALuSkills：
+
+```bash
+npx skills update --global \
+  clarify-development-request \
+  write-technical-spec \
+  review-code-changes \
+  maintain-task-checkpoints \
+  codebase-handbook
+```
+
+该命令只更新列出的 5 个 skills。若希望更新所有来源的全局 skills，可以使用：
+
+```bash
+npx skills update --global
+```
+
+更新完成后重新启动 Agent，或新建一个会话，使新的 Skill 内容和触发规则生效。
+
+### 1.6 验证
 
 ```bash
 npx skills list --global
