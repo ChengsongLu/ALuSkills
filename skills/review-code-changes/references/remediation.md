@@ -2,11 +2,23 @@
 
 Read this reference only after the user explicitly authorizes fixing findings from a code review.
 
-Use the existing `.review-code-changes/YYYY_MM_DD_scope_NNN/` directory for the review being remediated. Write remediation progress and final evidence to `remediation.md`, link it from `review.md`, and update finding statuses only when their actual implementation and validation state changes. Do not create a separate review directory for the remediation itself.
+For a recorded review, use its existing
+`.review-code-changes/YYYY_MM_DD_scope_NNN/` directory. Write remediation
+progress and final evidence to `remediation.md`, link it from `review.md`, and
+update finding statuses only when their actual implementation and validation
+state changes. Do not create a separate review directory for the remediation
+itself.
+
+For a lightweight review, remediate directly from the findings reported in the
+conversation. Keep progress and evidence in the conversation unless the user
+requests a durable report or the remediation expands into large or high-risk
+work; in that case, create a recorded-review directory with the original
+baseline and findings before continuing.
 
 ## Confirm the remediation scope
 
-1. Read the original review conclusion and the review baseline.
+1. Read the original review conclusion and baseline from the recorded artifacts
+   or conversation.
 2. Identify exactly which findings the user authorized.
 3. Treat the confirmed set as the required closure boundary.
 4. Do not silently include other findings or treat excluded findings as resolved, ignored, or deferred.
@@ -51,7 +63,8 @@ Do not mark a finding resolved while required validation that is executable in t
 
 ## Close and deliver
 
-Write `remediation.md`. For each authorized finding, report:
+For a recorded review, write `remediation.md`. For each authorized finding,
+report:
 
 - actual result and changed area;
 - original-defect evidence;
@@ -61,6 +74,10 @@ Write `remediation.md`. For each authorized finding, report:
 
 List excluded original findings separately and leave their status unchanged. Report new out-of-scope findings separately.
 
+For lightweight remediation, report the same evidence directly in the final
+response without creating review artifacts.
+
 If the findings belong to a persistent inspection report, update only that report using its status vocabulary and include actual code locations and validation evidence. Never mark unimplemented or unvalidated work as resolved.
 
-In the final response, summarize the closure state and link to both `review.md` and `remediation.md`.
+In the final response, summarize the closure state and link to `review.md` and
+`remediation.md` only when they exist.

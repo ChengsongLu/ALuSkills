@@ -1,11 +1,33 @@
 ---
 name: clarify-development-request
-description: Clarify goals, scope, behavior, contracts, state, side effects, risks, compatibility, and acceptance criteria before non-trivial software development. Use when the user explicitly asks to refine or prepare a development request, or when unresolved product or technical choices would materially change an implementation. Do not invoke for ordinary consultation, diagnosis, review-only work, mechanical edits, or a well-specified low-risk change.
+description: Clarify goals, scope, behavior, contracts, state, side effects, risks, compatibility, and acceptance criteria before non-trivial software development. Use when the user explicitly asks to refine or prepare a development request, or when a decision that cannot be resolved from repository evidence would materially change product behavior, contracts, scope, or acceptance criteria. Do not invoke merely because a request is short, lacks implementation detail, or involves local technical choices. Do not invoke for ordinary consultation, diagnosis, review-only work, mechanical edits, or well-specified low-risk changes.
 ---
 
 # Clarify Development Request
 
 Convert an ambiguous development request into a confirmed, implementation-ready brief. Investigate repository facts first, ask only decision-changing questions, and do not implement while material choices remain unresolved.
+
+## Gate the workflow before writing
+
+Treat initial classification as a read-only preflight, not as entry into the
+clarification workflow:
+
+1. Read only enough repository instructions, code, tests, documentation, and
+   analogous implementations to distinguish missing facts from missing product
+   decisions.
+2. Classify the request as consultation, diagnosis, review, mechanical change,
+   well-specified low-risk development, or non-trivial development with a
+   material unresolved decision.
+3. Enter this workflow only when the user explicitly requested clarification or
+   a remaining decision would change product behavior, contracts, scope, or
+   acceptance criteria.
+4. Treat naming inside a private implementation, file placement, refactoring
+   mechanics, test organization, and other reversible local choices as
+   implementation decisions unless they affect an observable contract.
+5. If repository evidence and the request already determine the behavior,
+   scope, and acceptance criteria, stop this workflow immediately. Do not create
+   a directory or `brief.md`, do not ask for confirmation, and continue the
+   user's requested work normally.
 
 ## Place the output
 
@@ -19,15 +41,16 @@ Use a user- or repository-specified location when one is explicit. Otherwise per
 
 Derive `short-name` from confirmed scope, not from an unverified initial guess. Start `NNN` at `000` and select the next unused sequence for the same date and short name. Keep every clarification run isolated.
 
-Create `brief.md` once the request has entered this workflow and enough scope is known to name it safely. Update that file as decisions change; do not create parallel notes that can drift. Do not modify ignore rules or stage the artifact unless the user explicitly requests it.
+Create `brief.md` only after the preflight gate confirms that the request belongs
+in this workflow and enough scope is known to name it safely. Update that file
+as decisions change; do not create parallel notes that can drift. Do not modify
+ignore rules or stage the artifact unless the user explicitly requests it.
 
 ## Establish the boundary
 
-1. Read applicable repository instructions, current documentation, relevant code, tests, existing specs, and analogous implementations.
-2. Classify the request as consultation, diagnosis, review, mechanical change, or non-trivial development.
-3. Skip this workflow when repository evidence and the user request already determine behavior, scope, and acceptance criteria.
-4. Split an oversized request into independently deliverable concerns. Explain the split and obtain agreement on the concern to clarify first.
-5. Treat repository facts as evidence, not as substitutes for product decisions. Surface conflicts between current code and historical design.
+1. Finish reading applicable repository instructions, current documentation, relevant code, tests, existing specs, and analogous implementations.
+2. Split an oversized request into independently deliverable concerns. Explain the split and obtain agreement on the concern to clarify first.
+3. Treat repository facts as evidence, not as substitutes for product decisions. Surface conflicts between current code and historical design.
 
 ## Build the decision inventory
 
@@ -103,4 +126,6 @@ Consider clarification complete only when no material decision remains, the user
 
 If requirements change later, reopen only the affected decisions and update any dependent brief or specification before continuing implementation.
 
-In the final response, summarize the outcome and link to `brief.md`.
+When this workflow produced a brief, summarize the outcome and link to
+`brief.md` in the final response. When the preflight gate exits, continue the
+underlying task without mentioning a nonexistent clarification artifact.

@@ -88,6 +88,23 @@ Use the handbook as a decision index, not as a substitute for source inspection.
 
 ## Plan and implement a change
 
+Use the full workflow below for changes likely to affect documented design,
+responsibilities, flows, state, contracts, side effects, relationships, or
+durable source evidence.
+
+When repository instructions require handbook consultation for a small,
+localized change, use a lightweight impact check:
+
+1. Read `index.md` and only the `manifest.yaml` entries matched by the intended
+   paths or symbols.
+2. Inspect a chapter only when its `sources` or `update_triggers` match, or when
+   the diff reveals a documented behavior change.
+3. Expand to the full workflow only when evidence shows a material handbook
+   impact or an unresolved boundary.
+4. If the final diff changes no durable handbook subject or cited symbol, make
+   no handbook edit and do not rebuild or validate `handbook.html`. Report that
+   the lightweight check found no synchronization need.
+
 ### Before changing code
 
 1. Inspect the task and handbook navigation.
@@ -122,8 +139,10 @@ Use the handbook as a decision index, not as a substitute for source inspection.
 7. Update the coverage inventory when responsibilities, flows, state machines,
    contracts, or operational surfaces appear, move, split, merge, or disappear.
 8. Preserve protected and uncertain content. Add `needs-review` when required.
-9. Regenerate `handbook.html`.
-10. Run deterministic validation.
+9. Regenerate `handbook.html` only when handbook Markdown, YAML, or managed
+   assets changed.
+10. Run deterministic validation after handbook source changes or when the user
+    or repository instructions explicitly require it.
 11. Report updated, inspected-but-unchanged, and unresolved chapters.
 
 ## Incrementally validate
