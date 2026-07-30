@@ -1,6 +1,6 @@
 ---
 name: review-code-changes
-description: Review a working-tree diff, staged changes, commit, branch comparison, or pull-request change set for concrete correctness, reliability, security, compatibility, testing, and documentation risks. Use when the user explicitly requests a code review, asks to inspect a diff or commit for findings, or asks to remediate findings from such a review. Do not invoke merely to self-check an ordinary implementation, validate a small edit, or inspect code without a requested change set. Review-only requests must not modify code.
+description: Review a working-tree diff, staged changes, commit, branch comparison, or pull-request change set for concrete correctness, reliability, security, compatibility, testing, and documentation risks, and confirm before creating persistent review artifacts that the user did not explicitly request. Use when the user explicitly requests a code review, asks to inspect a diff or commit for findings, or asks to remediate findings from such a review. Do not invoke merely to self-check an ordinary implementation, validate a small edit, or inspect code without a requested change set. Review-only requests must not modify code.
 ---
 
 # Review Code Changes
@@ -18,6 +18,20 @@ Review changed code against its intended contract and adversarial failure condit
 - **Remediation:** Enter only when the user explicitly asks to fix or optimize identified findings. Read [references/remediation.md](references/remediation.md) completely before modifying code.
 
 This workflow covers changed code. Do not use it as a project-wide or module-wide codebase inspection process.
+
+Treat initial mode selection as a read-only preflight and finalize it after
+freezing the baseline below. Use actual change risk, not file count alone.
+Explain the recommendation and the proposed artifacts. An explicit request for
+a formal, recorded, or persistent review authorizes recorded mode.
+Otherwise, explicitly ask the user to confirm recorded mode before creating
+`.review-code-changes/`, `review.md`, or `coverage.md`; a general request to
+review code authorizes read-only inspection, not persistent artifacts.
+
+If the user declines recorded mode, continue as a lightweight review with an
+in-memory coverage checklist when that remains reliable. If a reliable review
+requires durable handoff evidence, report the limitation and ask for direction
+instead of silently writing files. Reassess and reconfirm when the review scope
+or risk changes enough to alter the recommended mode or artifact set.
 
 ## Place the output
 
@@ -50,8 +64,8 @@ Do not modify ignore rules or stage review artifacts unless the user explicitly 
 5. Preserve the user's unrelated working-tree changes.
 6. Determine whether the change is large or high risk.
 
-For a recorded review, create the selected review directory after freezing the
-baseline. Treat that directory as output-only: exclude it from later
+For a confirmed recorded review, create the selected review directory after
+freezing the baseline. Treat that directory as output-only: exclude it from later
 repository-change status, diff, code-coverage, and finding calculations, and
 never treat it as code under review. Continue to use `review.md` and
 `coverage.md` as workflow evidence during authorized remediation, and continue
@@ -60,7 +74,8 @@ to report other user changes normally.
 For a lightweight review, keep the exact comparison base and reviewed paths in
 memory. Upgrade to a recorded review before producing artifacts only when the
 inspection reveals cross-module or high-risk behavior, cannot be completed
-reliably in one focused pass, or the user asks for a durable report.
+reliably in one focused pass, or the user asks for a durable report. Apply the
+recorded-mode recommendation and confirmation gate before that upgrade.
 
 Treat a change as large or high risk when it crosses modules or changes persistence, migrations, state transitions, concurrency, background work, security, compatibility, or external side effects, or when it cannot be read reliably in one focused pass.
 

@@ -1,6 +1,6 @@
 ---
 name: maintain-task-checkpoints
-description: Persist, update, restore, hand off, and safely clean up recoverable state for long-running or multi-stage coding tasks. Use when the user explicitly requests checkpoints or persistent task state, when work must be handed between agents, or when a complex task has high recovery cost due to multiple modules, migrations, state transitions, external side effects, likely interruption, or context compaction. Do not create checkpoint files for short, low-risk, single-pass work.
+description: Assess whether long-running or multi-stage coding work needs recoverable persistent state, obtain user confirmation before implicitly creating it, and persist, update, restore, hand off, or safely clean up confirmed checkpoints. Use when the user explicitly requests checkpoints or persistent task state, when work must be handed between agents, or when a complex task has high recovery cost due to multiple modules, migrations, state transitions, external side effects, likely interruption, or context compaction. Do not create checkpoint files for short, low-risk, single-pass work.
 ---
 
 # Maintain Task Checkpoints
@@ -19,6 +19,25 @@ Create a checkpoint when explicitly requested or when losing current context wou
 - known context compaction.
 
 Do not activate merely because many files are present.
+
+Treat this decision as a read-only preflight. An explicit request for a
+checkpoint, persistent task state, or handoff artifact authorizes activation.
+Otherwise:
+
+1. Assess actual recovery cost and the risk of lost or repeated work.
+2. Recommend whether to activate checkpoints using task-specific reasons.
+3. State the proposed directory, files, and categories of information to
+   persist.
+4. Explicitly ask the user to confirm activation.
+5. Do not create or update checkpoint files before confirmation. If the user
+   declines, continue the underlying task without checkpoints when safe and
+   report the resulting recovery limitation.
+
+Once activated, do not repeat confirmation for routine updates within the
+confirmed task identity, scope, location, and artifact set. Reassess and obtain
+confirmation before changing task identity, moving the checkpoint, materially
+expanding persisted scope, or adding optional artifacts that were not included
+in the confirmed recommendation.
 
 ## Choose the output location
 

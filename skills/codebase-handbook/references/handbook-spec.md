@@ -45,8 +45,6 @@ scan:
   exclude_generated: true
 source_references:
   durable_line_numbers: false
-repository_rules:
-  enabled: true
 html:
   title: auto
   show_source_evidence: true
@@ -86,8 +84,6 @@ Recommended schema:
 ```yaml
 schema_version: 2
 handbook_status: planned
-repository_rules:
-  files: []
 parts:
   - id: architecture
     title: Architecture foundations

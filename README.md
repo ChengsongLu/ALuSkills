@@ -131,15 +131,15 @@ npx skills list --global
 
 | Skill | 解决的问题 | 关键产物 |
 | --- | --- | --- |
-| [`clarify-development-request`](skills/clarify-development-request/) | 把会影响实现方向的模糊需求澄清完整 | `brief.md` |
-| [`write-technical-spec`](skills/write-technical-spec/) | 把已确认需求转化为与仓库一致的技术方案 | `flow.md`、`design.md`、`implement.md` |
-| [`review-code-changes`](skills/review-code-changes/) | 从具体变更中发现正确性、可靠性和安全风险 | `review.md`、`coverage.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 让复杂任务在中断、压缩或交接后安全继续 | `STATE.md`、`CHECKPOINTS.md` |
-| [`codebase-handbook`](skills/codebase-handbook/) | 将代码库设计与运行行为沉淀成可维护的技术书 | Markdown 章节、`manifest.yaml`、`handbook.html` |
+| [`clarify-development-request`](skills/clarify-development-request/) | 评估并确认是否进入需求澄清，再形成实现就绪简报 | `brief.md` |
+| [`write-technical-spec`](skills/write-technical-spec/) | 评估任务是否需要技术规格，确认后转化为与仓库一致的方案 | 可选 `flow.md`、`design.md`、`implement.md` |
+| [`review-code-changes`](skills/review-code-changes/) | 确认审查产物深度后发现正确性、可靠性和安全风险 | 可选 `review.md`、`coverage.md` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 评估并确认是否落盘恢复状态，让复杂任务安全继续 | `STATE.md`、`CHECKPOINTS.md` |
+| [`codebase-handbook`](skills/codebase-handbook/) | 确认范围与结构后将代码库行为沉淀成隔离技术书 | Markdown 章节、`manifest.yaml`、`handbook.html` |
 
 ### 2.1 clarify-development-request
 
-在非简单开发开始前调查相关代码、测试和文档，只追问真正会改变产品行为、契约、范围或验收结果的问题。它先进行不落盘的轻量判定；机械修改、明确的低风险任务和仅涉及局部实现选择的工作会直接退出，不创建 `brief.md`。只有确认存在实质未决决策后，才进入完整澄清流程并形成可确认、可交接的开发简报。
+在非简单开发开始前调查相关代码、测试和文档，只追问真正会改变产品行为、契约、范围或验收结果的问题。它先进行不落盘的轻量判定；机械修改、明确的低风险任务和仅涉及局部实现选择的工作会直接退出，不创建 `brief.md`。隐式发现实质未决决策时，会说明证据和影响、建议是否进入结构化澄清并等待用户确认，确认前不落盘；用户明确要求澄清或创建 brief 时不重复询问。简报完成后还会先自我复查并等待用户确认，之后才能进入规格、规划或实现。
 
 适合：
 
@@ -186,7 +186,7 @@ npx skills add ChengsongLu/ALuSkills --skill clarify-development-request --globa
 
 ### 2.2 write-technical-spec
 
-根据已经确认的需求和当前仓库证据编写、审查技术规格。它把核心流程、设计决策和具体实施拆到正确的文档层级，覆盖模块边界、接口、数据与状态、迁移、兼容性、失败恢复、安全和测试策略。独立 `flow.md` 只在用户或仓库要求，或复杂分支、边界和失败路径确实需要可视化时创建，不会为简单方案追加一次无意义确认。
+先根据当前仓库证据和任务的实际复杂度判断是否值得进入技术规格流程，说明理由并请用户确认。确认进入后，再根据参与者、边界、异步状态、分支、失败与恢复路径等流程复杂度建议是否创建独立 `flow.md`，由用户再次确认文档集合；两道确认完成前不会创建规格文件。随后把核心流程、设计决策和具体实施拆到正确的文档层级，覆盖模块边界、接口、数据与状态、迁移、兼容性、失败恢复、安全和测试策略。每个文档或实施阶段完成后都会先自我复查、报告结论并等待用户确认，之后才能编写下一份文档或开始编码。
 
 适合：
 
@@ -229,7 +229,7 @@ npx skills add ChengsongLu/ALuSkills --skill write-technical-spec --global
 
 ### 2.3 review-code-changes
 
-针对工作区 diff、暂存修改、指定 commit、分支比较或 PR 进行证据驱动的代码审查。小型、低风险且无需持久化的审查直接在对话中交付；正式审查、PR/分支就绪性检查以及大型或高风险变更才创建 `review.md`。两种模式都会从契约和对抗性失败角度检查正确性、可靠性、安全性、兼容性、测试和文档风险。
+针对工作区 diff、暂存修改、指定 commit、分支比较或 PR 进行证据驱动的代码审查。冻结只读 baseline 后会根据实际风险建议轻量或持久化审查；一般代码审查请求只授权只读检查，若用户没有明确要求正式或持久化报告，创建 `.review-code-changes/`、`review.md` 或 `coverage.md` 前必须再次确认。两种模式都会从契约和对抗性失败角度检查正确性、可靠性、安全性、兼容性、测试和文档风险。
 
 适合：
 
@@ -269,7 +269,7 @@ npx skills add ChengsongLu/ALuSkills --skill review-code-changes --global
 
 ### 2.4 maintain-task-checkpoints
 
-为长时间、多阶段或高恢复成本的开发任务维护紧凑的恢复状态。它记录已经确认的决策、当前进度、文件变化、验证结果、剩余风险和不可重复的副作用，让任务在会话中断、上下文压缩或 Agent 交接后安全继续。
+为长时间、多阶段或高恢复成本的开发任务维护紧凑的恢复状态。隐式触发时会先评估实际恢复成本，说明建议、目录、文件和记录内容并等待用户确认，确认前不创建 checkpoint；用户明确要求 checkpoint 或交接产物时不重复询问。激活后可在已确认的任务身份、范围、位置和产物集合内持续更新，扩大持久化范围时再次确认。
 
 适合：
 
@@ -318,7 +318,7 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 
 ### 2.5 codebase-handbook
 
-在仓库中创建和维护 `.codebase-handbook/` 技术手册。它以“技术书”而不是逐文件 API 清单的方式，解释稳定概念、模块职责、运行流程、状态变化、失败行为、系统关系和对应的源码证据。机械修改、测试专属修改和局部行为保持不变的修改默认不触发完整同步；当仓库规则要求检查时，只做路径与引用匹配的轻量影响判定，没有实质影响就不改手册、不重建 HTML。
+在仓库中创建和维护 `.codebase-handbook/` 技术手册。它以“技术书”而不是逐文件 API 清单的方式，解释稳定概念、模块职责、运行流程、状态变化、失败行为、系统关系和对应的源码证据。所有写入都限制在 `.codebase-handbook/` 内，源码、配置、测试、普通文档和 `AGENTS.md` 等 Agent 指令文件只作为只读证据，Skill 不会修改它们。初始化只授权空骨架和只读发现，基于证据形成覆盖范围、章节结构和写作批次建议后会等待确认；隐式同步扩大范围以及拆分、合并、重命名或删除章节前也必须先说明影响并确认。
 
 适合：
 

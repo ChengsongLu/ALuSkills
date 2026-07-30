@@ -1,4 +1,4 @@
 interface:
   display_name: "Clarify Development Request"
-  short_description: "Clarify material decisions before complex development"
-  default_prompt: "Use $clarify-development-request to resolve material product decisions before implementation."
+  short_description: "Assess and confirm material clarification"
+  default_prompt: "Use $clarify-development-request to assess whether this task needs structured clarification, confirm implicit entry, and produce a reviewed brief."

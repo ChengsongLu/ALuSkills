@@ -13,7 +13,10 @@ For a lightweight review, remediate directly from the findings reported in the
 conversation. Keep progress and evidence in the conversation unless the user
 requests a durable report or the remediation expands into large or high-risk
 work; in that case, create a recorded-review directory with the original
-baseline and findings before continuing.
+baseline and findings only after explaining the upgrade, its evidence and
+artifacts, and obtaining explicit user confirmation. If the user declines,
+continue without persistent artifacts only when the remediation can still be
+tracked and validated reliably.
 
 ## Confirm the remediation scope
 

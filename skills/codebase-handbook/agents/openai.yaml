@@ -1,7 +1,7 @@
 interface:
   display_name: "Codebase Handbook"
-  short_description: "Maintain handbooks when durable behavior changes"
-  default_prompt: "Use $codebase-handbook to inspect or update this repository handbook when durable behavior changes."
+  short_description: "Maintain confirmed isolated handbooks"
+  default_prompt: "Use $codebase-handbook to assess and confirm material handbook scope or structure, keeping every write inside .codebase-handbook."
 
 policy:
   allow_implicit_invocation: true

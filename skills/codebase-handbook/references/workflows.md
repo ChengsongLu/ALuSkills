@@ -5,7 +5,7 @@
 - Common preparation
 - Initialize
 - Navigate and retrieve
-- Plan and implement a change
+- Assess handbook impact around a code change
 - Incrementally validate
 - Fully audit
 - Evolve or remove content
@@ -45,22 +45,28 @@ Initialize only after an explicit request.
    developer change-task boundaries. Do not collapse distinct topics only to
    keep the chapter count small.
 10. Complete the chapter inventory and relationships before deep writing.
-11. Write orientation, architecture foundations, and core runtime flows first.
-12. Populate chapters in resumable batches. Track workflow status, explanatory
+11. Present the evidence-based initialization plan: scope and exclusions,
+    coverage inventory, parts, chapters, reading paths, relationships, and
+    proposed writing batches. Explain the recommendation and explicitly ask the
+    user to confirm it.
+12. Treat the explicit initialization request as authorization for the empty
+    skeleton and read-only discovery, not as confirmation of the discovered
+    book structure. Keep the proposed inventory and structure in memory; do not
+    begin deep writing until the user confirms the plan.
+13. Write orientation, architecture foundations, and core runtime flows first.
+14. Populate chapters in resumable batches. Track workflow status, explanatory
     coverage, and evidence status independently.
-13. Build `index.md` with:
+15. Build `index.md` with:
     - separate "understand the system" and "change the system" entry points;
     - a recommended first reading path and book map;
     - task, concept, source-area, state-machine, and contract navigation where
       applicable;
     - visible incomplete, stale, conflicted, and `needs-review` coverage.
-14. Check that primary task paths identify conditional reading and source or
+16. Check that primary task paths identify conditional reading and source or
     test evidence.
-15. Integrate concise maintenance guidance into the applicable repository Agent
-    instruction file using `repository-rules.md`.
-16. Generate `handbook.html`.
-17. Run deterministic validation.
-18. Perform a semantic review of coverage, evidence, terminology, links, and
+17. Generate `handbook.html`.
+18. Run deterministic validation.
+19. Perform a semantic review of coverage, evidence, terminology, links, and
     contradictions.
 
 Do not claim initialization is complete until every in-scope topic is covered
@@ -86,11 +92,15 @@ Use the handbook as a decision index, not as a substitute for source inspection.
 6. Verify behavior in source when the answer affects a code change or when a
    chapter is `draft` or `needs-review`.
 
-## Plan and implement a change
+## Assess handbook impact around a code change
 
 Use the full workflow below for changes likely to affect documented design,
 responsibilities, flows, state, contracts, side effects, relationships, or
 durable source evidence.
+
+Treat the source change as separately authorized work outside this skill. Read
+repository content to assess impact, but write only handbook files under
+`.codebase-handbook/`.
 
 When repository instructions require handbook consultation for a small,
 localized change, use a lightweight impact check:
@@ -105,7 +115,7 @@ localized change, use a lightweight impact check:
    no handbook edit and do not rebuild or validate `handbook.html`. Report that
    the lightweight check found no synchronization need.
 
-### Before changing code
+### Before an authorized code change
 
 1. Inspect the task and handbook navigation.
 2. Identify directly responsible modules and flows.
@@ -118,9 +128,10 @@ localized change, use a lightweight impact check:
    - conditional chapters and the condition;
    - relevant source evidence;
    - unresolved scope questions.
-7. Read the affected chapters before implementing.
+7. Read the affected chapters before the separately authorized implementation
+   begins.
 
-### After changing code
+### After an authorized code change
 
 1. Inspect the actual Git diff, including staged and unstaged changes.
 2. Recalculate impact from what changed, not only what was planned.
@@ -131,19 +142,25 @@ localized change, use a lightweight impact check:
    - state, data, failure, retry, cancellation, or recovery behavior;
    - interfaces, configuration, persistence, or side effects;
    - chapter relationships or source references.
-4. Update only affected statements and mappings.
-5. When only internal implementation changed, record that the chapter was
+4. When invocation was implicit, present the actual impact, recommend the
+   chapters and mappings to update, and explicitly ask the user to confirm
+   before writing. Treat an explicit handbook-update request or a repository
+   rule that mandates synchronization as authorization for ordinary scoped
+   updates, but obtain confirmation when actual impact materially expands that
+   scope.
+5. Update only affected statements and mappings within the confirmed scope.
+6. When only internal implementation changed, record that the chapter was
    inspected and avoid a meaningless prose diff.
-6. Update coverage or evidence state when the change exposes missing depth,
+7. Update coverage or evidence state when the change exposes missing depth,
    invalid evidence, or a new design surface.
-7. Update the coverage inventory when responsibilities, flows, state machines,
+8. Update the coverage inventory when responsibilities, flows, state machines,
    contracts, or operational surfaces appear, move, split, merge, or disappear.
-8. Preserve protected and uncertain content. Add `needs-review` when required.
-9. Regenerate `handbook.html` only when handbook Markdown, YAML, or managed
+9. Preserve protected and uncertain content. Add `needs-review` when required.
+10. Regenerate `handbook.html` only when handbook Markdown, YAML, or managed
    assets changed.
-10. Run deterministic validation after handbook source changes or when the user
+11. Run deterministic validation after handbook source changes or when the user
     or repository instructions explicitly require it.
-11. Report updated, inspected-but-unchanged, and unresolved chapters.
+12. Report updated, inspected-but-unchanged, and unresolved chapters.
 
 ## Incrementally validate
 
@@ -180,6 +197,16 @@ an explicit request.
 ## Evolve or remove content
 
 Keep the handbook about the current system.
+
+Before writing, present the repository evidence, recommended structural action,
+affected chapter IDs and relationships, content migration or preservation plan,
+and expected navigation impact. Explicitly ask the user to confirm the
+evidence-based plan; an earlier request to evolve the handbook is intent to
+assess, not confirmation of the resulting structure. Do not rename, split,
+merge, deprecate, remove, or archive content before confirmation unless the
+user explicitly waives this gate.
+
+Within the confirmed plan:
 
 1. For a rename, keep the chapter ID stable when the underlying concept remains
    the same.
