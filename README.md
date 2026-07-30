@@ -132,7 +132,7 @@ npx skills list --global
 | Skill | 解决的问题 | 关键产物 |
 | --- | --- | --- |
 | [`clarify-development-request`](skills/clarify-development-request/) | 把会影响实现方向的模糊需求澄清完整 | `brief.md` |
-| [`write-technical-spec`](skills/write-technical-spec/) | 把已确认需求转化为与仓库一致的技术方案 | `flow.md`、`design.md`、`implement.md` |
+| [`write-technical-spec`](skills/write-technical-spec/) | 评估任务是否需要技术规格，确认后转化为与仓库一致的方案 | 可选 `flow.md`、`design.md`、`implement.md` |
 | [`review-code-changes`](skills/review-code-changes/) | 从具体变更中发现正确性、可靠性和安全风险 | `review.md`、`coverage.md` |
 | [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 让复杂任务在中断、压缩或交接后安全继续 | `STATE.md`、`CHECKPOINTS.md` |
 | [`codebase-handbook`](skills/codebase-handbook/) | 将代码库设计与运行行为沉淀成可维护的技术书 | Markdown 章节、`manifest.yaml`、`handbook.html` |
@@ -186,7 +186,7 @@ npx skills add ChengsongLu/ALuSkills --skill clarify-development-request --globa
 
 ### 2.2 write-technical-spec
 
-根据已经确认的需求和当前仓库证据编写、审查技术规格。它把核心流程、设计决策和具体实施拆到正确的文档层级，覆盖模块边界、接口、数据与状态、迁移、兼容性、失败恢复、安全和测试策略。独立 `flow.md` 只在用户或仓库要求，或复杂分支、边界和失败路径确实需要可视化时创建，不会为简单方案追加一次无意义确认。
+先根据当前仓库证据和任务的实际复杂度判断是否值得进入技术规格流程，说明理由并请用户确认。确认进入后，再根据参与者、边界、异步状态、分支、失败与恢复路径等流程复杂度建议是否创建独立 `flow.md`，由用户再次确认文档集合；两道确认完成前不会创建规格文件。随后把核心流程、设计决策和具体实施拆到正确的文档层级，覆盖模块边界、接口、数据与状态、迁移、兼容性、失败恢复、安全和测试策略。
 
 适合：
 
