@@ -1,4 +1,4 @@
 interface:
   display_name: "Write Technical Spec"
-  short_description: "Assess and create confirmed technical specs"
-  default_prompt: "Use $write-technical-spec to assess whether this task needs a technical specification, recommend the right document set, and ask me to confirm each workflow gate."
+  short_description: "Create, update, and review technical specs"
+  default_prompt: "Use $write-technical-spec to create, update, or run a read-only implementation-readiness review of a repository-grounded technical specification."

@@ -1,11 +1,23 @@
 ---
 name: write-technical-spec
-description: Assess whether a task needs a repository-grounded technical specification, obtain user confirmation before entering the specification workflow, and create or review design, flow, and implementation documents after confirming the appropriate document set. Use when the user asks whether a spec is needed, asks for a technical spec, design document, flow document, implementation plan, design review, or wants confirmed requirements turned into flow.md, design.md, implement.md, or phased implementation documents. Do not invoke merely because an ordinary coding task has a short plan.
+description: Assess, create, update, or review repository-grounded technical specifications, including a read-only preimplementation review of requirements, cross-document consistency, feasibility, state and failure boundaries, and test verifiability. Use when the user asks whether a spec is needed, requests a technical spec, design, flow, implementation plan, design review, implementation-readiness review, or wants confirmed requirements turned into flow.md, design.md, implement.md, or phased implementation documents. Do not invoke merely because an ordinary coding task has a short plan.
 ---
 
 # Write Technical Spec
 
-Assess the task first, recommend whether to enter a specification workflow and whether that workflow needs a separate flow document, and obtain the user's confirmation at both gates. Then turn confirmed requirements and repository evidence into a staged technical specification that keeps process flow, design decisions, and implementation details at the correct level.
+Assess, create, update, or review a technical specification using current repository evidence. Keep creation, revision, and read-only review distinct; make the workflow self-contained and do not delegate any part of it to another Skill.
+
+## Select the operating mode
+
+Read enough repository and specification context to select one mode before taking action:
+
+- **Create:** Assess whether the task needs a specification, then use the entry and document-set gates below.
+- **Update:** Locate the existing specification by scope and evidence, confirm it is the same design effort, and edit only within the user's authorized scope. Reapply the gates only for a material scope or document-set change.
+- **Review:** Inspect an existing specification for implementation readiness. Treat a review request as read-only unless the user explicitly asks for remediation; do not edit specifications, source, tests, repository metadata, or persistent review artifacts.
+
+Do not send review requests through the creation gates. If the target specification or requested review baseline cannot be identified safely, ask the user for the missing location or scope.
+
+Resolve missing inputs within this Skill. Investigate repository facts first. When a remaining choice would change semantics, contracts, scope, data, state, security, visible behavior, compatibility, or acceptance criteria, explain the unresolved decision and its impact, then ask the user directly. Do not continue past the affected gate until it is resolved. Leave reversible local implementation choices to the plan when they cannot affect observable behavior or acceptance.
 
 ## Assess whether to enter the specification workflow
 
@@ -38,7 +50,7 @@ Honor an explicit user waiver or an already confirmed repository-mandated docume
 
 1. Use a user- or repository-specified output location when one is explicit.
 2. Otherwise place specifications under the project-root `.write-technical-spec/`, using a short lowercase underscore-separated feature name.
-3. Confirm that goals, scope, contracts, behavior, and acceptance criteria are sufficiently resolved. Invoke `$clarify-development-request` if a remaining choice would change the design.
+3. Confirm that goals, scope, contracts, behavior, and acceptance criteria are sufficiently resolved. Handle unresolved decisions using the self-contained rule above.
 
 Use the following default document set:
 
@@ -50,7 +62,7 @@ Use the following default document set:
     └── implement.md
 ```
 
-When the user explicitly asks to continue or update an existing specification, locate candidates by feature scope, read their current documents, and reuse one only after confirming that it represents the same design effort. Apply the entry and flow gates to material scope or document-set changes; do not repeat them for a straightforward continuation whose workflow and document set the user already confirmed. Do not reuse a directory merely because its slug matches.
+When updating an existing specification, locate candidates by feature scope, read their current documents, and reuse one only after confirming that it represents the same design effort. Apply the entry and flow gates to material scope or document-set changes; do not repeat them for a straightforward continuation whose workflow and document set the user already confirmed. Do not reuse a directory merely because its slug matches.
 
 For every independent new specification, start `NNN` at `000` and select the next unused sequence for the same date and feature. Never overwrite or silently merge an existing specification. Do not modify ignore rules or stage specification artifacts unless the user explicitly requests it.
 
@@ -141,8 +153,51 @@ After completing each document or implementation phase, perform a self-review be
 
 Report the self-review conclusion and link the completed document when asking the user to confirm the stage. Do not start the next document, phase, or coding until the self-review is complete, blocking issues are resolved, and the user confirms the current stage.
 
-Before coding, ensure the plan is supported by current repository evidence, the documents agree, the user has confirmed the plan, and no design choice has been delegated implicitly to implementation.
+After the implementation plan is complete, run the whole-spec preimplementation review below. Do not start coding until its blocking issues are resolved, its repository baseline is still current, and the user confirms the implementation-ready specification.
+
+## Run the whole-spec preimplementation review
+
+Use this review both as the final gate for a specification created or updated by this Skill and as the complete workflow for a standalone review request.
+
+### Freeze the review baseline
+
+Inventory before judging the specification:
+
+- every in-scope specification document, including `flow.md`, `design.md`, `implement.md`, and phase documents;
+- the confirmed request and any requirement, brief, decision, or acceptance source referenced by the specification;
+- applicable repository instructions, documentation, source, configuration, tests, analogous modules, and earlier specifications;
+- the current branch or revision and any relevant working-tree changes.
+
+State material omissions or baseline ambiguity. In standalone review mode, remain read-only and report them instead of creating or correcting artifacts.
+
+### Check implementation readiness
+
+Review the complete document set against the frozen baseline:
+
+1. **Requirement completeness:** Trace goals, scope, non-goals, constraints, dependencies, user decisions, and acceptance criteria into design decisions, implementation steps, and validation. Flag requirements with no implementation or verification path and plan steps with no requirement basis.
+2. **Cross-document consistency:** Compare terminology, actors, boundaries, interfaces, schemas, state transitions, ordering, side effects, compatibility promises, file inventories, and phase dependencies. Treat later documents that silently contradict confirmed earlier decisions as blocking.
+3. **Repository feasibility:** Resolve named files, symbols, interfaces, dependencies, commands, and test locations against the current repository. Check that sequencing, migration, deployment, rollback, compatibility, permissions, and operational assumptions are executable. Do not allow implementation to decide unresolved product or architectural behavior implicitly.
+4. **State and failure boundaries:** Identify the source of truth, initial and terminal states, valid and invalid transitions, commit points, partial failures, retries, duplicate execution, idempotency, compensation, recovery, cancellation, and side-effect invariants wherever applicable. Require an explicit disposition for each meaningful failure branch.
+5. **Test verifiability:** Trace every acceptance criterion, invariant, state transition, compatibility promise, and meaningful failure branch to a test or explicit manual check. Require the test level or location, setup or fixtures, action, assertions, failure injection or mocks when needed, validation command, and expected result. Flag behavior that cannot be observed deterministically.
+
+Recheck repository evidence immediately before issuing the verdict when the specification or relevant repository state changed during review.
+
+### Report findings and verdict
+
+Lead with findings ordered by severity. For each finding, provide the exact specification location, supporting repository evidence, implementation impact, and the decision or remediation required:
+
+- **P1 — Blocking:** The specification would permit materially incorrect, unsafe, incompatible, or indeterminate implementation. Resolve it before coding.
+- **P2 — Material:** A significant implementation, failure-handling, or verification gap exists, but it does not make the core direction unsafe or indeterminate.
+- **P3 — Minor:** A localized clarity, organization, or non-blocking evidence issue exists.
+
+Finish with exactly one implementation-readiness verdict:
+
+- **READY:** No implementation-blocking or material findings remain.
+- **READY WITH NON-BLOCKING FINDINGS:** Only explicitly identified non-blocking findings remain.
+- **BLOCKED:** At least one P1 finding or unresolved decision remains.
+
+Do not use user confirmation alone to override a `BLOCKED` verdict. Resolve the underlying issue or record an explicit change to the requirement, contract, or accepted risk, then repeat affected review dimensions. If no findings exist, say so explicitly and still summarize the reviewed baseline and residual testing or operational risks.
 
 Use Markdown and the repository's established language. Include a table of contents for substantial documents. Do not provide effort or time estimates unless the user explicitly requests them.
 
-In each stage response, link to the current document. In the final response, summarize the confirmed specification and link to its directory or index document.
+In each authoring stage response, link to the current document. In the final response, summarize the confirmed specification or reviewed baseline, report the implementation-readiness verdict, and link to the specification directory or index document when one exists.
