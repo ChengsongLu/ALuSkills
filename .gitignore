@@ -24,9 +24,6 @@ venv/
 .claude/skills/
 .cursor/skills/
 
-# Personal Agent workflow
-AGENTS.md
-
 # Temporary skill outputs
 .clarify-development-request/
 .write-technical-spec/
