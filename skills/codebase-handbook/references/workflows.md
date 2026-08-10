@@ -54,20 +54,26 @@ Initialize only after an explicit request.
     book structure. Keep the proposed inventory and structure in memory; do not
     begin deep writing until the user confirms the plan.
 13. Write orientation, architecture foundations, and core runtime flows first.
-14. Populate chapters in resumable batches. Track workflow status, explanatory
-    coverage, and evidence status independently.
-15. Build `index.md` with:
+14. Analyze evidence completely, then draft chapters as explanations rather
+    than preserving source-discovery or call order. Populate chapters in
+    resumable batches and track workflow status, explanatory coverage, and
+    evidence status independently.
+15. Run the editorial compression pass from `evidence-and-writing.md` on each
+    completed batch. Consolidate repeated facts, replace repeated exact mappings
+    with tables, move analysis-only detail out of prose, and preserve manifest
+    coverage and evidence mappings.
+16. Build `index.md` with:
     - separate "understand the system" and "change the system" entry points;
     - a recommended first reading path and book map;
     - task, concept, source-area, state-machine, and contract navigation where
       applicable;
     - visible incomplete, stale, conflicted, and `needs-review` coverage.
-16. Check that primary task paths identify conditional reading and source or
+17. Check that primary task paths identify conditional reading and source or
     test evidence.
-17. Generate `handbook.html`.
-18. Run deterministic validation.
-19. Perform a semantic review of coverage, evidence, terminology, links, and
-    contradictions.
+18. Generate `handbook.html`.
+19. Run deterministic validation.
+20. Perform a semantic review of coverage, evidence, terminology, links,
+    contradictions, and expression quality.
 
 Do not claim initialization is complete until every in-scope topic is covered
 at the required status.
@@ -156,11 +162,13 @@ localized change, use a lightweight impact check:
 8. Update the coverage inventory when responsibilities, flows, state machines,
    contracts, or operational surfaces appear, move, split, merge, or disappear.
 9. Preserve protected and uncertain content. Add `needs-review` when required.
-10. Regenerate `handbook.html` only when handbook Markdown, YAML, or managed
-   assets changed.
-11. Run deterministic validation after handbook source changes or when the user
+10. Apply the editorial compression pass to materially changed prose without
+    broadening the confirmed scope or rewriting unaffected sections.
+11. Regenerate `handbook.html` only when handbook Markdown, YAML, or managed
+    assets changed.
+12. Run deterministic validation after handbook source changes or when the user
     or repository instructions explicitly require it.
-12. Report updated, inspected-but-unchanged, and unresolved chapters.
+13. Report updated, inspected-but-unchanged, and unresolved chapters.
 
 ## Incrementally validate
 
@@ -187,12 +195,16 @@ an explicit request.
    distinct lifecycles, owners, failure models, or change tasks.
 5. Check all chapter workflow statuses, coverage levels, evidence statuses,
    terminology, source evidence, relationships, and unresolved items.
-6. Check the human reading path and Agent task routes independently.
-7. Re-read protected content only to detect conflicts; never rewrite it.
-8. Update current-state documentation and remove stale current-state content
+6. Apply the editorial compression pass across chapter boundaries: identify
+   source-traversal prose, duplicated explanations, over-expanded ordinary
+   failures, and evidence references that interrupt the reading path. Preserve
+   complete manifest coverage while making only evidence-driven local edits.
+7. Check the human reading path and Agent task routes independently.
+8. Re-read protected content only to detect conflicts; never rewrite it.
+9. Update current-state documentation and remove stale current-state content
    according to the evolution workflow.
-9. Regenerate `handbook.html`.
-10. Run deterministic validation followed by semantic review.
+10. Regenerate `handbook.html`.
+11. Run deterministic validation followed by semantic review.
 
 ## Evolve or remove content
 

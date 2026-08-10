@@ -318,7 +318,7 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 
 ### 2.5 codebase-handbook
 
-在仓库中创建和维护 `.codebase-handbook/` 技术手册。它以“技术书”而不是逐文件 API 清单的方式，解释稳定概念、模块职责、运行流程、状态变化、失败行为、系统关系和对应的源码证据。所有写入都限制在 `.codebase-handbook/` 内，源码、配置、测试、普通文档和 `AGENTS.md` 等 Agent 指令文件只作为只读证据，Skill 不会修改它们。初始化只授权空骨架和只读发现，基于证据形成覆盖范围、章节结构和写作批次建议后会等待确认；隐式同步扩大范围以及拆分、合并、重命名或删除章节前也必须先说明影响并确认。
+在仓库中创建和维护 `.codebase-handbook/` 技术手册。它以“技术书”而不是逐文件 API 清单的方式，解释稳定概念、模块职责、运行流程、状态变化、失败行为、系统关系和对应的源码证据。完整覆盖、证据和更新触发关系保存在 `manifest.yaml`，章节正文则优先提炼核心结论、心智模型、关键流程与边界，并在写作后执行编辑压缩，避免把证据分析写成源码遍历记录。所有写入都限制在 `.codebase-handbook/` 内，源码、配置、测试、普通文档和 `AGENTS.md` 等 Agent 指令文件只作为只读证据，Skill 不会修改它们。初始化只授权空骨架和只读发现，基于证据形成覆盖范围、章节结构和写作批次建议后会等待确认；隐式同步扩大范围以及拆分、合并、重命名或删除章节前也必须先说明影响并确认。
 
 适合：
 
@@ -349,12 +349,21 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 
 当修改订单查询、权限校验、文件存储或下载状态时阅读本章。
 
-## Normal runtime path
+订单导出将长时间运行的文件生成与请求生命周期分离；数据库任务记录拥有导出状态，存储中的已发布文件是可下载结果。文件发布是不可拆分的提交边界。
+
+## Runtime behavior
+
 1. API 层验证用户权限并规范化筛选条件。
 2. Export Service 分页读取订单并写入临时 CSV。
 3. 文件完整关闭后原子发布，并将任务标记为 ready。
 
+## Key boundaries
+
+- 临时文件不可被下载端观察。
+- 文件发布后即产生外部副作用，状态恢复不能盲目重跑导出。
+
 ## Failure and recovery
+
 - 发布前失败：删除临时文件，任务进入 failed。
 - 发布后状态更新失败：恢复任务扫描存储结果并收敛数据库状态。
 

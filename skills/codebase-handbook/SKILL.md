@@ -15,6 +15,12 @@ Treat the output as a book, not a collection of summaries. Maintain one
 canonical set of chapters with a human reading plane and an Agent task-navigation
 plane.
 
+Optimize for comprehension, not prose volume. Preserve the complete coverage
+model, evidence, relationships, and update triggers in `manifest.yaml`, while
+keeping chapter prose to the smallest sufficient explanation that establishes
+the correct mental model, runtime behavior, boundaries, failure consequences,
+and change impact.
+
 ## Start Here
 
 1. Locate the project root.
@@ -105,6 +111,13 @@ without reading handbook content, creating an impact checklist, rebuilding
 - Separate verified behavior, documented intent, inference, and unresolved
   conflict.
 - Omit inapplicable chapter sections rather than filling them with speculation.
+- Analyze evidence completely before drafting, then edit the chapter as an
+  explanation rather than preserving the order in which files, classes, or
+  calls were inspected.
+- After drafting or materially updating prose, run the editorial compression
+  pass in [evidence-and-writing.md](references/evidence-and-writing.md). Keep
+  analysis-only detail in source evidence or `manifest.yaml` instead of moving
+  it into the narrative.
 
 ### Keep the handbook usable
 
