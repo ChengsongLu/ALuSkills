@@ -151,21 +151,25 @@ Do not derive completeness from chapter count, file count, word count, or
 ## Chapter contract
 
 Begin with a short statement explaining when a developer should read the
-chapter. Then include applicable sections according to chapter type.
+chapter, then state its core conclusion. Organize the rest in the smallest set
+of sections that establishes the mental model and supports safe change. Use
+this default progression when applicable:
 
-Core sections:
+1. Core conclusion
+2. Mental model
+3. Runtime behavior
+4. Key boundaries
+5. Failure and recovery
+6. Change guidance
+7. Source evidence
 
-1. Position and purpose
-2. Responsibilities and explicit boundaries
-3. Prerequisite concepts
-4. Participating modules
-5. Normal runtime path
-6. State and data changes
-7. Failure, retry, cancellation, and recovery paths
-8. External interfaces and side effects
-9. Upstream, downstream, and related chapters
-10. Source evidence
-11. Unresolved questions
+This is an optional structure, not a fill-in template. Omit inapplicable
+sections, rename them to match the project, and add a section only when the
+chapter's dominant purpose requires it. Integrate responsibilities,
+prerequisites, participants, state changes, external interfaces, side effects,
+relationships, and unresolved questions into the section where they best
+support understanding. Do not create empty or repetitive sections merely to
+enumerate the contract.
 
 For `flow` chapters, emphasize phases, participants, control and data movement,
 commit points, failure branches, and observability.
@@ -181,6 +185,9 @@ decision, implementation, and validation path without duplicating source.
 
 Prefer stable design language over code-shaped prose. Depth means complete
 design and runtime understanding, not exhaustive symbol documentation.
+Apply the editorial compression pass in
+[evidence-and-writing.md](evidence-and-writing.md) after drafting or materially
+updating a chapter.
 
 Use source references like:
 

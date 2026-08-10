@@ -116,6 +116,14 @@ an important invariant; a long chapter may still be cohesive.
 
 ## Coverage inventory
 
+Coverage completeness and chapter readability are independent concerns.
+`manifest.yaml` must retain the full map of in-scope design surfaces, chapter
+relationships, evidence, and update triggers. Chapter prose should progressively
+disclose that knowledge and include only the explanation needed to establish
+the correct mental model, runtime behavior, boundaries, failure consequences,
+and change impact. Complete coverage does not require every discovered helper,
+exception, or source relationship to appear in prose.
+
 Record the discovered design surface in `manifest.yaml.coverage_inventory`
 before deep writing. Each entry should use:
 
@@ -143,6 +151,11 @@ Inventory at least:
 Use `disposition: covered` or `excluded`. Require a reason for exclusions. A
 covered entry may map to several chapters. An inventory entry is a discovery
 claim, not proof that the prose is deep enough.
+
+Conversely, concise prose is not proof of shallow coverage. Judge it by whether
+the reader can answer how the mechanism runs, who owns its state, what happens
+on material failure, and what a change can affect, while the manifest preserves
+the complete discovery and synchronization model.
 
 During audit, compare the current repository to this inventory and find new,
 orphaned, over-broad, duplicated, or obsolete entries.
