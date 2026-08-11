@@ -372,7 +372,7 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 - `src/jobs/export_orders.py::run_export`
 ```
 
-`handbook.html` 由 Markdown 章节和 `manifest.yaml` 生成，是一个无需本地服务器即可直接打开的自包含页面。它提供书籍式目录树、全文搜索、面包屑、章节内目录、前后章与相关主题导航、可折叠源码证据、明暗主题和响应式布局，适合开发者浏览，也保留供 Agent 定位任务所需的结构化信息。
+`handbook.html` 由 Markdown 章节和 `manifest.yaml` 生成，是一个无需本地服务器即可直接打开的自包含页面。它面向人类阅读，优先展示章节用途、功能概括、关键概念和正文流程，并将源码证据、更新触发器与验证状态收进可展开的维护区域；书籍式目录、全文搜索、章节地图、面包屑、章节内目录、前后章与相关主题导航、明暗主题和响应式布局仍然保留。Agent 则优先通过 `manifest.yaml` 与 `index.md` 定位相关章节、源码、稳定符号和变更触发关系，再按需读取源码验证，而不是解析生成后的 HTML。
 
 **`handbook.html` 示例**
 

@@ -15,6 +15,12 @@ Treat the output as a book, not a collection of summaries. Maintain one
 canonical set of chapters with a human reading plane and an Agent task-navigation
 plane.
 
+Use Markdown chapters and `handbook.html` as the human explanation plane. Use
+`manifest.yaml` and `index.md` as the Agent routing plane: resolve the relevant
+concept, chapter, source paths, stable symbols, relationships, and update
+triggers there, then inspect current source evidence. Do not make an Agent parse
+generated HTML to locate code when the machine-readable index is available.
+
 Optimize for comprehension, not prose volume. Preserve the complete coverage
 model, evidence, relationships, and update triggers in `manifest.yaml`, while
 keeping chapter prose to the smallest sufficient explanation that establishes
@@ -125,9 +131,15 @@ without reading handbook content, creating an impact checklist, rebuilding
 - Organize the human reading path as parts and ordered chapters.
 - Record machine-readable coverage inventory, chapter, source, relationship,
   status, depth, evidence, and update-trigger mappings in `manifest.yaml`.
+- Give each material chapter a concise manifest summary and stable concept
+  terms when they improve task routing. Keep them generic to the repository and
+  do not copy implementation walkthroughs into manifest metadata.
 - Link related chapters in both directions when the relationship is symmetric.
 - Use Mermaid only when it materially clarifies a relationship or sequence;
   keep the prose independently understandable.
+- Keep `handbook.html` human-first: foreground chapter purpose, functional
+  model, primary flow, and boundaries; place source evidence, synchronization
+  metadata, and workflow state behind progressive disclosure.
 - Describe only the current system by default. Let Git retain history.
 
 ## Deterministic Helpers

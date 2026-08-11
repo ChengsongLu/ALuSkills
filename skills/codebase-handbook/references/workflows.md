@@ -88,15 +88,19 @@ Use the handbook as a decision index, not as a substitute for source inspection.
 3. Use `manifest.yaml` to resolve candidate chapters and source evidence.
 4. Produce or follow a reading plan in this order:
    1. task index or system reading path;
-   2. prerequisite concepts and invariants;
-   3. relevant flows and state machines;
-   4. responsible modules;
-   5. interfaces, state, or operations;
-   6. cited source and tests.
+   2. manifest `summary`, `concepts`, and `read_when` for candidate selection;
+   3. prerequisite concepts and invariants;
+   4. relevant flows and state machines;
+   5. responsible modules;
+   6. interfaces, state, or operations;
+   7. manifest `sources`, `source_symbols`, and cited tests.
 5. Explain why each next item is relevant and what decision determines whether
    deeper reading is necessary.
 6. Verify behavior in source when the answer affects a code change or when a
    chapter is `draft` or `needs-review`.
+7. Do not parse `handbook.html` for Agent routing when the Markdown and manifest
+   sources are available. HTML is a human reading projection, not a separate
+   evidence source.
 
 ## Assess handbook impact around a code change
 

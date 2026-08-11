@@ -92,6 +92,7 @@ parts:
 chapters:
   - id: authentication
     path: modules/authentication.md
+    summary: Owns session authentication and token refresh, but not user authorization policy.
     kind: module
     part: architecture
     order: 30
@@ -100,6 +101,9 @@ chapters:
     evidence_status: verified
     read_when:
       - Changing authentication behavior
+    concepts:
+      - session authentication
+      - token refresh
     sources:
       - src/auth/service.py
       - src/auth/store.py
@@ -128,10 +132,19 @@ Requirements:
 - Use `related` chapter IDs, not titles.
 - Keep `sources` to direct evidence. Use `update_triggers` for broader impact
   candidates.
+- Use `summary` as a compact routing statement: name the chapter's purpose,
+  central mechanism, or most important boundary in one sentence. Do not copy a
+  source walkthrough or the full chapter opening into it.
+- Use `concepts` for stable project terms that help an Agent and HTML search
+  resolve the chapter. Do not turn it into a symbol or keyword dump.
+- Use `read_when` for developer tasks and decisions, not as another topic list.
 - Do not treat an update-trigger match as proof that prose must change.
 - Record unresolved conflicts or coverage gaps in `unresolved`.
 - Preserve schema v1 manifests during ordinary updates. Upgrade structure only
   when the user requests it or a book-wide audit requires it.
+- Populate or refine `summary` and `concepts` when creating a chapter, changing
+  its responsibility, or performing a confirmed structural audit. Do not create
+  unrelated metadata churn during a local synchronization.
 
 ## Book and coverage contract
 
@@ -228,7 +241,9 @@ Do not present a partial handbook as complete.
 
 Treat `handbook.html` as generated output. Never edit it by hand. Regenerate it
 after changing `config.yaml`, `preferences.md`, `manifest.yaml`, `index.md`, or
-any registered chapter. See [html-view.md](html-view.md).
+any registered chapter. Treat it as the human reading projection; Agents should
+use `manifest.yaml`, `index.md`, chapters, and cited repository evidence rather
+than scraping generated HTML. See [html-view.md](html-view.md).
 
 ## Protected content
 
