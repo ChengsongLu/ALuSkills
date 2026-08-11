@@ -21,7 +21,10 @@ Do not create duplicate prose for Agents and humans.
 Organize the handbook as a coherent technical book. Let a reader move from
 orientation, through architecture and runtime behavior, into subsystem design,
 interfaces, and operation. Use parts, prerequisites, chapter order, and
-cross-references to preserve narrative continuity.
+cross-references to preserve narrative continuity. Render this plane through
+the authored Markdown and `handbook.html`. In the HTML view, foreground the
+functional summary and main reading path; keep verification and synchronization
+metadata available without making it compete with the explanation.
 
 ### Agent navigation plane
 
@@ -35,7 +38,16 @@ contract and resolve:
 5. which chapters must be inspected after a change.
 
 Store these routes in `index.md` and machine-readable manifest fields. Link them
-to the same chapters used by the human book.
+to the same chapters used by the human book. Route from manifest chapter
+summaries, concepts, `read_when`, relationships, sources, stable symbols, and
+update triggers before opening broad prose. Inspect the cited source and tests
+when answering a code-change question; generated HTML is not an Agent evidence
+source.
+
+The two planes share knowledge but do not require identical presentation.
+Manifest metadata is a compact route to the canonical chapter and repository
+evidence, while HTML is a human-oriented projection of that chapter. Do not
+create a second body of explanatory prose for either plane.
 
 ## Required discovery model
 
@@ -181,6 +193,8 @@ For every important change task, provide:
 5. post-change inspection targets.
 
 Keep the index concise. Move detailed change procedures to `guide` chapters.
+Keep chapter-level routing metadata concise enough that an Agent can select
+evidence without reading every candidate chapter.
 
 ## Completion standard
 

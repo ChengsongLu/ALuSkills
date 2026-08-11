@@ -32,6 +32,7 @@ class Part:
 class DisplayChapter:
     chapter_id: str
     path: str
+    summary: str = ""
     part: str = ""
     order: int = 0
     kind: str = "chapter"
@@ -39,6 +40,7 @@ class DisplayChapter:
     coverage: str = "outline"
     evidence_status: str = "partial"
     related: list[str] = field(default_factory=list)
+    concepts: list[str] = field(default_factory=list)
     read_when: list[str] = field(default_factory=list)
     sources: list[str] = field(default_factory=list)
     source_symbols: list[str] = field(default_factory=list)
@@ -135,6 +137,8 @@ def parse_manifest_data(text: str) -> tuple[list[Part], list[DisplayChapter]]:
             elif current_chapter is not None:
                 if key == "path":
                     current_chapter.path = scalar(value)
+                elif key == "summary":
+                    current_chapter.summary = scalar(value)
                 elif key == "part":
                     current_chapter.part = scalar(value)
                 elif key == "order":
@@ -525,8 +529,16 @@ def render_page(
         + (f"<p>{html.escape(part.purpose)}</p>" if part.purpose else "")
         + '<div class="book-part-links">'
         + "".join(
-            f'<button data-target="{html.escape(ch.chapter_id, quote=True)}">'
-            f"<span>{html.escape(ch.title)}</span><small>{html.escape(ch.kind)}</small></button>"
+            f'<button class="book-card{" has-summary" if ch.summary else ""}" '
+            f'data-target="{html.escape(ch.chapter_id, quote=True)}">'
+            '<span class="book-card-heading">'
+            f"<strong>{html.escape(ch.title)}</strong><small>{html.escape(ch.kind)}</small></span>"
+            + (
+                f'<span class="book-card-summary">{html.escape(ch.summary)}</span>'
+                if ch.summary
+                else ""
+            )
+            + "</button>"
             for ch in grouped.get(part.part_id, [])
         )
         + "</div></section>"
@@ -549,21 +561,64 @@ def render_page(
             for level, heading, anchor in result.headings
             if level <= 3
         )
-        read_when = (
-            '<aside class="read-when"><strong>Read this chapter when</strong><ul>'
-            + "".join(f"<li>{html.escape(item)}</li>" for item in chapter.read_when)
-            + "</ul></aside>"
-            if chapter.read_when
+        overview_sections: list[str] = []
+        if chapter.read_when:
+            overview_sections.append(
+                '<section><h2>Use this chapter when</h2><ul>'
+                + "".join(f"<li>{html.escape(item)}</li>" for item in chapter.read_when)
+                + "</ul></section>"
+            )
+        if chapter.concepts:
+            overview_sections.append(
+                '<section><h2>Key concepts</h2><div class="concept-list">'
+                + "".join(
+                    f"<span>{html.escape(item)}</span>" for item in chapter.concepts
+                )
+                + "</div></section>"
+            )
+        overview = (
+            '<aside class="chapter-overview" aria-label="Chapter guide">'
+            + "".join(overview_sections)
+            + "</aside>"
+            if overview_sections
             else ""
         )
-        evidence = (
-            '<details class="evidence"><summary>Source evidence</summary><ul>'
-            + "".join(
-                f"<li><code>{html.escape(item)}</code></li>"
-                for item in chapter.sources + chapter.source_symbols
+        maintenance_sections: list[str] = []
+        direct_evidence = chapter.sources + chapter.source_symbols
+        if direct_evidence:
+            maintenance_sections.append(
+                '<section><h2>Direct source evidence</h2><ul class="path-list">'
+                + "".join(
+                    f"<li><code>{html.escape(item)}</code></li>"
+                    for item in direct_evidence
+                )
+                + "</ul></section>"
             )
-            + "</ul></details>"
-            if chapter.sources or chapter.source_symbols
+        if chapter.update_triggers:
+            maintenance_sections.append(
+                '<section><h2>Update triggers</h2><ul class="path-list">'
+                + "".join(
+                    f"<li><code>{html.escape(item)}</code></li>"
+                    for item in chapter.update_triggers
+                )
+                + "</ul></section>"
+            )
+        if chapter.chapter_id != "index":
+            maintenance_sections.append(
+                '<section><h2>Handbook state</h2><dl class="state-grid">'
+                f"<div><dt>Status</dt><dd>{html.escape(chapter.status)}</dd></div>"
+                f"<div><dt>Coverage</dt><dd>{html.escape(chapter.coverage)}</dd></div>"
+                f"<div><dt>Evidence</dt><dd>{html.escape(chapter.evidence_status)}</dd></div>"
+                "</dl></section>"
+            )
+        maintenance_count = len(direct_evidence) + len(chapter.update_triggers)
+        maintenance = (
+            '<details class="maintenance"><summary><span>Sources and maintenance</span>'
+            f"<small>{maintenance_count} indexed paths</small></summary>"
+            '<div class="maintenance-grid">'
+            + "".join(maintenance_sections)
+            + "</div></details>"
+            if maintenance_sections
             else ""
         )
         related = [
@@ -614,18 +669,21 @@ def render_page(
             '<header class="chapter-header"><div>'
             f'<span class="eyebrow">{html.escape(chapter.kind)}</span>'
             f"<h1>{html.escape(chapter.title)}</h1>"
-            f'<div class="chapter-meta"><span>{html.escape(chapter.status)}</span>'
-            f"<span>Coverage: {html.escape(chapter.coverage)}</span>"
-            f"<span>Evidence: {html.escape(chapter.evidence_status)}</span></div></div></header>"
-            f"{read_when}{map_panel}"
+            + (
+                f'<p class="chapter-summary">{html.escape(chapter.summary)}</p>'
+                if chapter.summary
+                else ""
+            )
+            + "</div></header>"
+            f"{overview}{map_panel}"
             '<div class="reading-layout">'
-            f'<div class="prose">{result.body}{evidence}</div>'
+            f'<div class="prose">{result.body}</div>'
             + (
                 f'<aside class="on-page"><strong>On this page</strong>{toc}</aside>'
                 if toc
                 else ""
             )
-            + f"</div>{related_html}{pager}</article>"
+            + f"</div>{maintenance}{related_html}{pager}</article>"
         )
 
     search_data = [
@@ -635,7 +693,19 @@ def render_page(
             "part": part_by_id.get(chapter.part).title
             if chapter.part in part_by_id
             else "",
-            "text": searchable_text(chapter.markdown),
+            "text": " ".join(
+                item
+                for item in [
+                    chapter.summary,
+                    " ".join(chapter.concepts),
+                    " ".join(chapter.read_when),
+                    " ".join(chapter.sources),
+                    " ".join(chapter.source_symbols),
+                    " ".join(chapter.update_triggers),
+                    searchable_text(chapter.markdown),
+                ]
+                if item
+            ),
         }
         for chapter in chapters
     ]
@@ -681,7 +751,7 @@ mark {{ background:#ffe08a; color:#1d2939; border-radius:2px; }}
 .nav-home {{ margin-bottom:10px; }}
 .nav-group {{ margin:16px 0; }}
 .nav-group h2 {{ margin:0 10px 6px; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.09em; }}
-.nav-item {{ width:100%; display:flex; justify-content:space-between; gap:8px; align-items:center; text-align:left; border:0; border-radius:8px; padding:8px 10px; background:transparent; cursor:pointer; }}
+.nav-item {{ width:100%; min-height:44px; display:flex; justify-content:space-between; gap:8px; align-items:center; text-align:left; border:0; border-radius:8px; padding:8px 10px; background:transparent; cursor:pointer; }}
 .nav-item:hover,.nav-item.active {{ background:var(--accent-soft); color:var(--accent); }}
 .status {{ border:1px solid var(--line); border-radius:99px; padding:1px 6px; color:var(--muted); font-size:10px; }}
 .main {{ min-width:0; padding:34px clamp(22px,5vw,76px) 80px; }}
@@ -691,11 +761,14 @@ mark {{ background:#ffe08a; color:#1d2939; border-radius:2px; }}
 .breadcrumbs button {{ border:0; background:transparent; padding:0; cursor:pointer; color:var(--accent); }}
 .chapter-header {{ margin-bottom:24px; }}
 .chapter-header h1 {{ max-width:880px; margin:5px 0 10px; font-size:clamp(34px,5vw,58px); line-height:1.08; letter-spacing:-.035em; }}
+.chapter-summary {{ max-width:72ch; margin:16px 0 0; color:var(--muted); font-size:clamp(17px,2vw,20px); line-height:1.58; }}
 .eyebrow,.kicker {{ color:var(--accent); font-size:12px; font-weight:750; text-transform:uppercase; letter-spacing:.12em; }}
-.chapter-meta {{ display:flex; flex-wrap:wrap; gap:7px; }}
-.chapter-meta span {{ border:1px solid var(--line); border-radius:99px; padding:3px 9px; color:var(--muted); font-size:12px; }}
-.read-when {{ max-width:790px; margin:0 0 24px; padding:15px 18px; border-left:4px solid var(--accent); background:var(--accent-soft); border-radius:0 10px 10px 0; }}
-.read-when ul {{ margin:7px 0 0; }}
+.chapter-overview {{ max-width:1000px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin:0 0 24px; }}
+.chapter-overview section {{ border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:18px 20px; box-shadow:var(--shadow); }}
+.chapter-overview h2 {{ margin:0 0 8px; font-size:14px; }}
+.chapter-overview ul {{ margin:0; padding-left:20px; }}
+.concept-list {{ display:flex; flex-wrap:wrap; gap:7px; }}
+.concept-list span {{ border:1px solid var(--line); border-radius:99px; background:var(--panel-2); padding:4px 9px; font-size:13px; }}
 .reading-layout {{ display:grid; grid-template-columns:minmax(0,760px) 220px; gap:28px; align-items:start; }}
 .prose,.book-map,.related {{ background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:clamp(24px,4vw,44px); }}
 .prose {{ max-width:76ch; }}
@@ -704,7 +777,7 @@ mark {{ background:#ffe08a; color:#1d2939; border-radius:2px; }}
 .prose h2:first-child {{ margin-top:0; }}
 .heading-anchor {{ opacity:0; margin-left:8px; font-size:.7em; text-decoration:none; }}
 .prose h2:hover .heading-anchor,.prose h3:hover .heading-anchor,.heading-anchor:focus {{ opacity:1; }}
-.prose code,.evidence code {{ background:var(--code); border-radius:5px; padding:2px 5px; overflow-wrap:anywhere; }}
+.prose code,.maintenance code {{ background:var(--code); border-radius:5px; padding:2px 5px; overflow-wrap:anywhere; }}
 .code-block {{ margin:1.5em 0; }}
 .code-block figcaption {{ color:var(--muted); font-size:12px; }}
 .prose pre {{ overflow:auto; background:var(--code); border:1px solid var(--line); border-radius:10px; padding:16px; }}
@@ -726,21 +799,36 @@ th,td {{ padding:9px 12px; border:1px solid var(--line); text-align:left; }}
 .book-part {{ padding:20px 0; border-top:1px solid var(--line); }}
 .book-part h3,.book-part p {{ margin:0 0 7px; }}
 .book-part p {{ color:var(--muted); }}
-.book-part-links {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:8px; }}
-.book-part-links button {{ display:flex; justify-content:space-between; text-align:left; gap:8px; border:1px solid var(--line); border-radius:9px; background:var(--panel-2); padding:10px 12px; cursor:pointer; }}
-.book-part-links small {{ color:var(--muted); }}
-.evidence {{ margin-top:2.2em; border-top:1px solid var(--line); padding-top:18px; }}
-.evidence summary {{ cursor:pointer; font-weight:700; }}
+.book-part-links {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; }}
+.book-card {{ min-height:52px; display:grid; align-content:start; text-align:left; gap:7px; border:1px solid var(--line); border-radius:10px; background:var(--panel-2); padding:13px 14px; cursor:pointer; }}
+.book-card.has-summary {{ min-height:88px; }}
+.book-card:hover {{ border-color:var(--accent); background:var(--accent-soft); }}
+.book-card-heading {{ display:flex; justify-content:space-between; gap:10px; align-items:start; }}
+.book-card-heading small,.book-card-summary {{ color:var(--muted); }}
+.book-card-heading small {{ flex:none; }}
+.book-card-summary {{ line-height:1.45; font-size:13px; }}
+.maintenance {{ margin-top:24px; border:1px solid var(--line); border-radius:14px; background:var(--panel); box-shadow:var(--shadow); }}
+.maintenance>summary {{ min-height:52px; display:flex; justify-content:space-between; gap:16px; align-items:center; padding:13px 18px; cursor:pointer; font-weight:700; }}
+.maintenance>summary small {{ color:var(--muted); font-weight:500; }}
+.maintenance[open]>summary {{ border-bottom:1px solid var(--line); }}
+.maintenance-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:24px; padding:20px; }}
+.maintenance-grid h2 {{ margin:0 0 10px; font-size:15px; }}
+.path-list {{ margin:0; padding-left:20px; }}
+.path-list li+li {{ margin-top:6px; }}
+.state-grid {{ display:grid; gap:8px; margin:0; }}
+.state-grid div {{ display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); padding-bottom:7px; }}
+.state-grid dt {{ color:var(--muted); }}
+.state-grid dd {{ margin:0; font-weight:700; }}
 .related {{ margin-top:24px; }}
 .related h2 {{ margin-top:0; font-size:18px; }}
-.related button,.pager button {{ border:1px solid var(--line); border-radius:9px; background:var(--panel-2); padding:8px 11px; cursor:pointer; }}
+.related button,.pager button {{ min-height:44px; border:1px solid var(--line); border-radius:9px; background:var(--panel-2); padding:8px 11px; cursor:pointer; }}
 .pager {{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px; }}
 .pager button {{ display:grid; text-align:left; }}
 .pager button.next {{ text-align:right; }}
 .pager small {{ color:var(--muted); }}
 .build-meta {{ margin:18px 8px; color:var(--muted); font-size:10px; overflow-wrap:anywhere; }}
 @media (max-width:950px) {{ .reading-layout {{ grid-template-columns:1fr; }} .on-page {{ position:relative; top:auto; grid-column:1; grid-row:1; border-left:0; border-bottom:1px solid var(--line); padding:10px 0 16px; }} }}
-@media (max-width:760px) {{ .layout {{ grid-template-columns:1fr; }} .sidebar {{ position:relative; height:auto; border-right:0; border-bottom:1px solid var(--line); }} .nav-groups {{ max-height:330px; overflow:auto; }} .main {{ padding:26px 15px 60px; }} .section-heading {{ display:block; }} }}
+@media (max-width:760px) {{ .layout {{ grid-template-columns:1fr; }} .sidebar {{ position:relative; height:auto; border-right:0; border-bottom:1px solid var(--line); }} .nav-groups {{ max-height:330px; overflow:auto; }} .main {{ padding:26px 15px 60px; }} .section-heading {{ display:block; }} .chapter-overview,.maintenance-grid {{ grid-template-columns:1fr; }} .maintenance>summary {{ align-items:flex-start; flex-direction:column; gap:2px; }} }}
 @media (prefers-reduced-motion:reduce) {{ html {{ scroll-behavior:auto; }} }}
 </style>
 </head>
