@@ -1,3 +1,5 @@
+
+
 # ALuSkills
 
 让 Coding Agent 不只会生成代码，也能更可靠地完成软件开发中的关键工程工作。
@@ -401,7 +403,7 @@ skills/
 └── write-technical-spec/
 ```
 
-部分 skills 还包含 `scripts/`、`references/`、`assets/` 或 `agents/openai.yaml`。安装时这些依赖会和对应的 `SKILL.md` 一起复制或链接到目标 Agent 的 skills 目录。
+每个 skill 都包含 `agents/openai.yaml`；部分 skills 还包含 `scripts/`、`references/` 或 `assets/`。安装时这些依赖会和对应的 `SKILL.md` 一起复制或链接到目标 Agent 的 skills 目录。
 
 ## 4. 开源协议
 
