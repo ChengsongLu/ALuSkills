@@ -1,108 +1,108 @@
-
-
 # ALuSkills
 
-让 Coding Agent 不只会生成代码，也能更可靠地完成软件开发中的关键工程工作。
+**English** | [简体中文](README.zh-CN.md)
 
-ALuSkills 是一组面向真实代码库的 Agent Skills，覆盖从需求进入开发，到方案落地、代码审查、长任务恢复和知识沉淀的完整工作流：
+Help coding agents do more than generate code—help them reliably complete the critical engineering work involved in software development.
+
+ALuSkills is a collection of Agent Skills designed for real-world codebases. Together, they cover the complete workflow from an incoming requirement to design, implementation, code review, long-running task recovery, and knowledge capture:
 
 ```text
-模糊需求 → 开发简报 → 技术规格 → 实现与审查 → 任务恢复 → 代码库手册
+Ambiguous request → Development brief → Technical specification → Implementation and review → Task recovery → Codebase handbook
 ```
 
-它们强调：
+They emphasize:
 
-- **基于仓库事实工作**：先阅读相关代码、测试和文档，再给出结论；
-- **产出可检查的文件**：将需求、设计、审查结果和任务状态持久化，而不是只留在对话中；
-- **覆盖困难路径**：关注失败、恢复、并发、兼容性、安全和外部副作用；
-- **按需触发**：简单任务保持简单，不为低风险修改强行增加流程。
+- **Working from repository evidence**: read the relevant code, tests, and documentation before reaching conclusions;
+- **Producing inspectable artifacts**: persist requirements, designs, review results, and task state instead of leaving them only in a conversation;
+- **Covering difficult paths**: account for failures, recovery, concurrency, compatibility, security, and external side effects;
+- **Triggering only when needed**: keep simple tasks simple and avoid imposing extra process on low-risk changes.
 
-这些 Skills 遵循 [Agent Skills 规范](https://agentskills.io/specification)，可以通过 [`skills`](https://github.com/vercel-labs/skills) CLI 安装到 Codex、Claude Code、Cursor 等兼容的 Agent。
+These Skills follow the [Agent Skills specification](https://agentskills.io/specification) and can be installed in Codex, Claude Code, Cursor, and other compatible agents through the [`skills`](https://github.com/vercel-labs/skills) CLI.
 
-## 1. 安装
+## 1. Installation
 
-安装由 [`skills`](https://github.com/vercel-labs/skills) CLI 完成，需要本机已经安装 Node.js 和 `npx`。
+Installation uses the [`skills`](https://github.com/vercel-labs/skills) CLI and requires Node.js and `npx` on your machine.
 
-### 1.1 查看可用 Skills
+### 1.1 List available Skills
 
-以下命令只查看，不会安装：
+The following command only lists the Skills; it does not install them:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --list
 ```
 
-确认来源为 `ChengsongLu/ALuSkills`，并显示 5 个 skills。
+Confirm that the source is `ChengsongLu/ALuSkills` and that 5 skills are listed.
 
-### 1.2 全局安装全部 Skills
+### 1.2 Install all Skills globally
 
-推荐首次安装使用交互模式：
+Interactive mode is recommended for the first installation:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill '*' --global
 ```
 
-安装时只需关注以下步骤：
+During installation, focus on these steps:
 
-1. **选择 Agent**
+1. **Select agents**
 
-   使用 `↑`、`↓` 移动，`Space` 选择，`Enter` 确认。
+   Use `↑` and `↓` to move, `Space` to select, and `Enter` to confirm.
 
-   - Codex、Cursor：包含在 `Universal (.agents/skills)` 中，无需额外选择；
-   - Claude Code：在 `Additional agents` 中额外选择 `Claude Code`；
-   - 不要选择自己不用的 Agent，避免创建无关目录或链接。
+   - Codex and Cursor are included in `Universal (.agents/skills)` and do not need to be selected separately;
+   - For Claude Code, additionally select `Claude Code` under `Additional agents`;
+   - Do not select agents you do not use, to avoid creating unrelated directories or links.
 
-2. **检查安装摘要**
+2. **Review the installation summary**
 
-   应看到 5 个 skills 安装到 `~/.agents/skills/`。摘要中的 `copy → Codex ...` 表示这些 Agent 可以读取通用副本，是正常结果。
+   You should see 5 skills installed in `~/.agents/skills/`. Entries such as `copy → Codex ...` mean those agents can read the universal copy and are expected.
 
-   如果需要 Claude Code，还应确认摘要中包含 `Claude Code`；如果没有，选择 `No` 并重新运行安装。
+   If you need Claude Code, also confirm that the summary includes `Claude Code`. If it does not, select `No` and run the installation again.
 
-3. **确认安装**
+3. **Confirm installation**
 
-   在 `Proceed with installation?` 处选择 `Yes`，按 `Enter` 完成安装。
+   At `Proceed with installation?`, select `Yes` and press `Enter`.
 
-安装完成后重新启动 Agent，或新建一个会话。
+Restart your agent or start a new session after installation.
 
-### 1.3 直接指定 Agent
+### 1.3 Specify agents directly
 
-跳过交互，安装给 Codex：
+Skip the interactive prompts and install for Codex:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill '*' --global --agent codex --yes
 ```
 
-安装给 Claude Code：
+Install for Claude Code:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill '*' --global --agent claude-code --yes
 ```
 
-安装给 Cursor：
+Install for Cursor:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill '*' --global --agent cursor --yes
 ```
 
-同时安装给三者：
+Install for all three:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill '*' --global \
   --agent codex --agent claude-code --agent cursor --yes
 ```
 
-### 1.4 安装位置
+### 1.4 Installation locations
 
-| Agent | 项目级目录 | 全局目录 |
+| Agent | Project directory | Global directory |
 | --- | --- | --- |
 | Codex | `.agents/skills/` | `~/.codex/skills/` |
 | Claude Code | `.claude/skills/` | `~/.claude/skills/` |
 | Cursor | `.agents/skills/` | `~/.cursor/skills/` |
 
-CLI 可能将公共副本放在 `~/.agents/skills/`，再由 Agent 直接读取或建立链接；以 `Installation Summary` 显示的路径为准。
+The CLI may place a shared copy in `~/.agents/skills/` for agents to read directly or link to. Treat the paths shown in `Installation Summary` as authoritative.
 
-### 1.5 更新
+### 1.5 Update
 
-更新已经全局安装的 ALuSkills：
+Update the globally installed ALuSkills:
 
 ```bash
 npx skills update --global \
@@ -113,46 +113,66 @@ npx skills update --global \
   codebase-handbook
 ```
 
-该命令只更新列出的 5 个 skills。若希望更新所有来源的全局 skills，可以使用：
+This command updates only the 5 listed skills. To update all globally installed skills from every source, use:
 
 ```bash
 npx skills update --global
 ```
 
-更新完成后重新启动 Agent，或新建一个会话，使新的 Skill 内容和触发规则生效。
+Restart your agent or start a new session after updating so that the new Skill content and trigger rules take effect.
 
-### 1.6 验证
+### 1.6 Verify
 
 ```bash
 npx skills list --global
 ```
 
-输出中应能看到本仓库的 5 个 skills。
+The output should include the 5 skills from this repository.
 
 ## 2. Skills
 
-| Skill | 解决的问题 | 关键产物 |
+| Skill | Problem it solves | Key artifacts |
 | --- | --- | --- |
-| [`clarify-development-request`](skills/clarify-development-request/) | 评估并确认是否进入需求澄清，再形成实现就绪简报 | `brief.md` |
-| [`write-technical-spec`](skills/write-technical-spec/) | 评估任务是否需要技术规格，确认后转化为与仓库一致的方案 | 可选 `flow.md`、`design.md`、`implement.md` |
-| [`review-code-changes`](skills/review-code-changes/) | 确认审查产物深度后发现正确性、可靠性和安全风险 | 可选 `review.md`、`coverage.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 评估并确认是否落盘恢复状态，让复杂任务安全继续 | `STATE.md`、`CHECKPOINTS.md` |
-| [`codebase-handbook`](skills/codebase-handbook/) | 确认范围与结构后将代码库行为沉淀成隔离技术书 | Markdown 章节、`manifest.yaml`、`handbook.html` |
+| [`clarify-development-request`](skills/clarify-development-request/) | Determines and confirms whether structured clarification is needed, then produces an implementation-ready brief | `brief.md` |
+| [`write-technical-spec`](skills/write-technical-spec/) | Determines whether a task needs a technical specification and, after confirmation, turns it into a repository-aligned design | Optional `flow.md`, `design.md`, and `implement.md` |
+| [`review-code-changes`](skills/review-code-changes/) | Confirms the appropriate review depth, then identifies correctness, reliability, and security risks | Optional `review.md` and `coverage.md` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Determines and confirms whether recovery state should be persisted so complex tasks can continue safely | `STATE.md` and `CHECKPOINTS.md` |
+| [`codebase-handbook`](skills/codebase-handbook/) | After confirming scope and structure, captures codebase behavior in an isolated technical book | Markdown chapters, `manifest.yaml`, and `handbook.html` |
 
 ### 2.1 clarify-development-request
 
-在非简单开发开始前调查相关代码、测试和文档，只追问真正会改变产品行为、契约、范围或验收结果的问题。它先进行不落盘的轻量判定；机械修改、明确的低风险任务和仅涉及局部实现选择的工作会直接退出，不创建 `brief.md`。隐式发现实质未决决策时，会说明证据和影响、建议是否进入结构化澄清并等待用户确认，确认前不落盘；用户明确要求澄清或创建 brief 时不重复询问。简报完成后还会先自我复查并等待用户确认，之后才能进入规格、规划或实现。
+Before non-trivial development begins, this Skill investigates relevant code, tests, and documentation, then asks only the questions that would genuinely change product behavior, contracts, scope, or acceptance outcomes. It first makes a lightweight decision without writing files. Mechanical edits, clearly low-risk tasks, and work involving only local implementation choices exit immediately without creating `brief.md`. When implicitly triggered and material decisions remain unresolved, it explains the evidence and impact, recommends whether to enter structured clarification, and waits for confirmation before writing files. When the user explicitly asks for clarification or a brief, it does not ask for redundant confirmation. Once the brief is complete, it performs a self-review and waits for user approval before specification, planning, or implementation can begin.
 
-适合：
+Use it to:
 
-- 将“一句话需求”整理成实现就绪的 brief；
-- 明确目标、范围、非目标和验收标准；
-- 澄清状态、失败语义、兼容性、安全和副作用边界；
-- 在进入技术设计前消除会改变方案的未决问题。
+- Turn a one-line request into an implementation-ready brief;
+- Define goals, scope, non-goals, and acceptance criteria;
+- Clarify state, failure semantics, compatibility, security, and side-effect boundaries;
+- Resolve open decisions that would affect the design before technical design begins.
 
-不适合普通咨询、纯诊断、纯审查、机械修改，或已经足够明确的低风险任务。
+It is not intended for ordinary consultation, diagnosis-only or review-only work, mechanical edits, or clearly specified low-risk tasks.
 
-**关键产物**
+**Simple usage example**
+
+> **User:** Add an order-export feature.
+>
+> **Agent:** I inspected the existing order query and permission logic. The repository does not determine the export format or maximum record count; these choices affect the API, performance limits, and acceptance criteria. I recommend entering structured clarification with `clarify-development-request`, which will create a `brief.md` after we resolve the open decisions. Would you like to proceed?
+>
+> **User:** Yes.
+>
+> **Agent:** Which format should the first release support: CSV, XLSX, or both? I recommend CSV only because it supports streaming and keeps the initial scope smaller.
+>
+> **User:** CSV only.
+>
+> **Agent:** Should the export contain the user's current filtered results or all orders they can access? This choice changes both the request contract and acceptance tests.
+>
+> **User:** Export the current filtered results, with a limit of 10,000 records.
+>
+> **Agent:** Understood. I will record CSV-only export, reuse of the current filters and permissions, and the 10,000-record limit in `brief.md`, together with failure behavior and testable acceptance criteria. I will self-review the brief and ask you to confirm it before design or implementation begins.
+
+The Agent does not ask questions that repository evidence can answer. If the repository and the request already determine the required behavior, it continues normally without starting the clarification workflow.
+
+**Key artifact**
 
 ```text
 .clarify-development-request/
@@ -160,27 +180,27 @@ npx skills list --global
     └── brief.md
 ```
 
-`brief.md` 示例：
+Example `brief.md`:
 
 ```markdown
 # Export orders
 
 ## Goal and success criteria
-- 用户可以导出当前筛选结果，而不是全部订单。
-- 10,000 条以内的导出请求在 30 秒内完成。
+- Users can export the currently filtered results rather than all orders.
+- Export requests containing up to 10,000 records finish within 30 seconds.
 
 ## Scope
-- 支持 CSV；本次不支持 XLSX。
-- 沿用现有订单查询权限和筛选条件。
+- Support CSV; XLSX is out of scope for this change.
+- Reuse the existing order-query permissions and filters.
 
 ## Failure behavior
-- 导出失败时不生成不完整文件，并向用户返回可重试提示。
+- Do not produce an incomplete file when export fails, and return a retryable message to the user.
 
 ## Acceptance
-- 覆盖空结果、权限不足、超量和生成失败场景。
+- Cover empty results, insufficient permissions, over-limit requests, and generation failures.
 ```
 
-安装：
+Install:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill clarify-development-request --global
@@ -188,42 +208,42 @@ npx skills add ChengsongLu/ALuSkills --skill clarify-development-request --globa
 
 ### 2.2 write-technical-spec
 
-先区分创建、更新与审查模式。创建模式根据当前仓库证据和任务复杂度确认是否进入技术规格流程，再确认是否需要独立 `flow.md`；更新模式只在实质扩大范围或改变文档集合时重新经过相应门禁；审查模式直接对已有 Spec 做只读的实施就绪检查，不修改文档或代码。Skill 自身完成需求完整性、跨文档一致性、仓库可实现性、状态与失败边界及测试可验证性审查，不依赖其他 Skill。最终以 `READY`、`READY WITH NON-BLOCKING FINDINGS` 或 `BLOCKED` 给出明确门禁结论，阻塞项解决前不会开始编码。
+This Skill first distinguishes creation, update, and review modes. In creation mode, it uses current repository evidence and task complexity to confirm whether to enter the technical-specification workflow, then confirms whether a separate `flow.md` is needed. Update mode repeats the relevant gate only when a change materially expands scope or changes the document set. Review mode performs a read-only implementation-readiness review of an existing specification without modifying documentation or code. The Skill independently reviews requirement completeness, cross-document consistency, repository feasibility, state and failure boundaries, and test verifiability. It does not depend on another Skill. It ends with an explicit gate result of `READY`, `READY WITH NON-BLOCKING FINDINGS`, or `BLOCKED`, and coding does not begin until blocking findings are resolved.
 
-适合：
+Use it to:
 
-- 编写技术方案或设计文档；
-- 用 Mermaid 绘制正常与异常处理流程；
-- 规划模块、接口、数据、状态和兼容性变化；
-- 制定分阶段实施计划和验证策略；
-- 审查已有设计是否完整且与仓库一致。
+- Write technical proposals or design documents;
+- Draw happy-path and failure-handling flows with Mermaid;
+- Plan module, interface, data, state, and compatibility changes;
+- Define phased implementation and validation strategies;
+- Review whether an existing design is complete and consistent with the repository.
 
-**关键产物**
+**Key artifacts**
 
 ```text
 .write-technical-spec/
 └── 2026_07_29_export_orders_000/
-    ├── flow.md       # 可选：流程和关键分支
-    ├── design.md     # 设计边界、契约和决策
-    └── implement.md  # 分阶段改动与验证计划
+    ├── flow.md       # Optional: flows and important branches
+    ├── design.md     # Design boundaries, contracts, and decisions
+    └── implement.md  # Phased changes and validation plan
 ```
 
-`design.md` 示例：
+Example `design.md`:
 
 ```markdown
 ## Design
 
-- `OrderExportService` 接收已授权的查询条件，不重新实现权限判断。
-- 查询使用只读分页游标，逐批写入临时文件，成功后再原子发布。
-- 任一批次失败时删除临时文件，不返回部分导出结果。
+- `OrderExportService` receives authorized query conditions and does not reimplement permission checks.
+- The query uses a read-only pagination cursor, writes batches to a temporary file, and publishes it atomically only after success.
+- If any batch fails, delete the temporary file and do not return a partial export.
 
 ## Compatibility
 
-- 现有订单查询 API 保持不变。
-- 新增的导出接口沿用当前筛选参数格式。
+- The existing order-query API remains unchanged.
+- The new export endpoint reuses the current filter-parameter format.
 ```
 
-安装：
+Install:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill write-technical-spec --global
@@ -231,39 +251,39 @@ npx skills add ChengsongLu/ALuSkills --skill write-technical-spec --global
 
 ### 2.3 review-code-changes
 
-针对工作区 diff、暂存修改、指定 commit、分支比较或 PR 进行证据驱动的代码审查。冻结只读 baseline 后会根据实际风险建议轻量或持久化审查；一般代码审查请求只授权只读检查，若用户没有明确要求正式或持久化报告，创建 `.review-code-changes/`、`review.md` 或 `coverage.md` 前必须再次确认。两种模式都会从契约和对抗性失败角度检查正确性、可靠性、安全性、兼容性、测试和文档风险。
+This Skill performs evidence-driven reviews of working-tree diffs, staged changes, specific commits, branch comparisons, or pull requests. After freezing a read-only baseline, it recommends either a lightweight or persistent review based on actual risk. A normal code-review request authorizes only read-only inspection; if the user has not explicitly requested a formal or persistent report, the Skill must ask for confirmation before creating `.review-code-changes/`, `review.md`, or `coverage.md`. Both modes inspect correctness, reliability, security, compatibility, tests, and documentation risks from the perspective of contracts and adversarial failures.
 
-适合：
+Use it to:
 
-- 审查当前未提交修改；
-- 审查指定 commit 或分支差异；
-- 检查状态、并发、持久化、重试、取消和失败恢复路径；
-- 输出带证据、影响级别和修复方向的审查结果；
-- 在用户明确授权后修复已确认的问题。
+- Review current uncommitted changes;
+- Review a specific commit or branch diff;
+- Inspect state, concurrency, persistence, retry, cancellation, and failure-recovery paths;
+- Produce findings with evidence, impact levels, and remediation direction;
+- Fix confirmed findings after the user explicitly authorizes changes.
 
-默认只审查、不修改实现文件。
+By default, it reviews only and does not modify implementation files.
 
-**关键产物**
+**Key artifacts**
 
 ```text
 .review-code-changes/
 └── 2026_07_29_working-tree_000/
-    ├── review.md       # 已确认的 findings 和总体结论
-    └── coverage.md     # 大型或高风险审查的覆盖记录
+    ├── review.md       # Confirmed findings and overall conclusion
+    └── coverage.md     # Coverage record for large or high-risk reviews
 ```
 
-`review.md` 示例：
+Example `review.md`:
 
 ```markdown
-## [P1] 发布完成前不能暴露导出文件
+## [P1] Do not expose an export file before publication is complete
 
-`export_orders.py:84` 在最后一批数据写入前就把下载地址保存到数据库。
-并发下载可能读取到不完整 CSV；进程崩溃后该地址也会永久指向半成品。
+`export_orders.py:84` saves the download URL to the database before the final batch has been written.
+A concurrent download can read an incomplete CSV, and after a process crash the URL can permanently point to a partial file.
 
-建议先写入临时路径，关闭并校验文件后再原子移动，并在同一提交点更新下载状态。
+Write to a temporary path first, close and validate the file, move it atomically, and update the download state at the same commit boundary.
 ```
 
-安装：
+Install:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill review-code-changes --global
@@ -271,48 +291,48 @@ npx skills add ChengsongLu/ALuSkills --skill review-code-changes --global
 
 ### 2.4 maintain-task-checkpoints
 
-为长时间、多阶段或高恢复成本的开发任务维护紧凑的恢复状态。隐式触发时会先评估实际恢复成本，说明建议、目录、文件和记录内容并等待用户确认，确认前不创建 checkpoint；用户明确要求 checkpoint 或交接产物时不重复询问。激活后可在已确认的任务身份、范围、位置和产物集合内持续更新，扩大持久化范围时再次确认。
+This Skill maintains compact recovery state for long-running, multi-stage, or expensive-to-recover development tasks. When triggered implicitly, it first evaluates the actual recovery cost, explains the recommendation, directory, files, and recorded content, and waits for confirmation before creating a checkpoint. When the user explicitly requests checkpoints or handoff artifacts, it does not ask for redundant confirmation. Once activated, it can continue updating within the confirmed task identity, scope, location, and artifact set; expanding the persisted scope requires confirmation again.
 
-适合：
+Use it for:
 
-- 跨多个模块和阶段的复杂开发；
-- 包含迁移、状态机、并发或外部副作用的任务；
-- 需要在不同 Agent 之间交接的工作；
-- 容易因中断而重复危险操作的任务；
-- 用户明确要求保存检查点的任务。
+- Complex development spanning multiple modules and phases;
+- Tasks involving migrations, state machines, concurrency, or external side effects;
+- Work that must be handed off between agents;
+- Tasks where interruption could cause dangerous operations to be repeated;
+- Any task for which the user explicitly requests saved checkpoints.
 
-短小、低风险、单次即可完成的任务不应创建检查点。
+Short, low-risk tasks that can be completed in one pass should not create checkpoints.
 
-**关键产物**
+**Key artifacts**
 
 ```text
 .maintain-task-checkpoints/
 └── 20260729-143000-export-orders/
-    ├── STATE.md        # 当前可恢复状态
-    └── CHECKPOINTS.md  # 追加式阶段历史
+    ├── STATE.md        # Current recoverable state
+    └── CHECKPOINTS.md  # Append-only phase history
 ```
 
-`STATE.md` 示例：
+Example `STATE.md`:
 
 ```markdown
 ## Current state
 
 - Status: in_progress
-- Completed: 导出查询与 CSV 流式写入
-- Current: 实现临时文件的原子发布
-- Next: 补充失败注入测试和 10,000 条性能验证
+- Completed: export query and streaming CSV writer
+- Current: implementing atomic publication of the temporary file
+- Next: add failure-injection tests and validate performance with 10,000 records
 
 ## Validation
 
-- Passed: 单元测试 18/18
-- Pending: 进程中断后的临时文件清理测试
+- Passed: 18/18 unit tests
+- Pending: temporary-file cleanup test after process interruption
 
 ## Do not repeat
 
-- 测试环境数据库迁移已经执行，不要再次创建同名索引。
+- The test database migration has already run; do not create the same index again.
 ```
 
-安装：
+Install:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
@@ -320,18 +340,18 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 
 ### 2.5 codebase-handbook
 
-在仓库中创建和维护 `.codebase-handbook/` 技术手册。它以“技术书”而不是逐文件 API 清单的方式，解释稳定概念、模块职责、运行流程、状态变化、失败行为、系统关系和对应的源码证据。完整覆盖、证据和更新触发关系保存在 `manifest.yaml`，章节正文则优先提炼核心结论、心智模型、关键流程与边界，并在写作后执行编辑压缩，避免把证据分析写成源码遍历记录。所有写入都限制在 `.codebase-handbook/` 内，源码、配置、测试、普通文档和 `AGENTS.md` 等 Agent 指令文件只作为只读证据，Skill 不会修改它们。初始化只授权空骨架和只读发现，基于证据形成覆盖范围、章节结构和写作批次建议后会等待确认；隐式同步扩大范围以及拆分、合并、重命名或删除章节前也必须先说明影响并确认。
+This Skill creates and maintains a `.codebase-handbook/` technical handbook inside a repository. Rather than presenting a file-by-file API inventory, it works as a technical book that explains stable concepts, module responsibilities, runtime flows, state transitions, failure behavior, system relationships, and the corresponding source evidence. Complete coverage, evidence, and update-trigger relationships live in `manifest.yaml`. Chapter prose prioritizes core conclusions, mental models, important flows, and boundaries, followed by editorial compression that prevents evidence analysis from reading like a source-code traversal log. All writes are confined to `.codebase-handbook/`; source code, configuration, tests, ordinary documentation, and agent instruction files such as `AGENTS.md` are read-only evidence and are never modified by the Skill. Initialization authorizes only an empty skeleton and read-only discovery. After evidence produces a recommended scope, chapter structure, and writing batches, the Skill waits for confirmation. It also requires confirmation before an implicit synchronization expands scope or before chapters are split, merged, renamed, or deleted.
 
-适合：
+Use it to:
 
-- 初始化代码库技术手册；
-- 导航和理解已有手册；
-- 在代码变更前后同步架构与行为说明；
-- 校验手册结构、引用和覆盖范围；
-- 生成可视化友好、自包含的 HTML 阅读视图；
-- 拆分、合并或演进手册章节。
+- Initialize a technical handbook for a codebase;
+- Navigate and understand an existing handbook;
+- Synchronize architecture and behavior documentation before or after code changes;
+- Validate handbook structure, references, and coverage;
+- Generate a visualization-friendly, self-contained HTML reading view;
+- Split, merge, or otherwise evolve handbook chapters.
 
-**关键产物**
+**Key artifacts**
 
 ```text
 .codebase-handbook/
@@ -344,55 +364,55 @@ npx skills add ChengsongLu/ALuSkills --skill maintain-task-checkpoints --global
 └── handbook.html
 ```
 
-章节示例：
+Example chapter:
 
 ```markdown
 # Order export flow
 
-当修改订单查询、权限校验、文件存储或下载状态时阅读本章。
+Read this chapter when changing order queries, permission checks, file storage, or download state.
 
-订单导出将长时间运行的文件生成与请求生命周期分离；数据库任务记录拥有导出状态，存储中的已发布文件是可下载结果。文件发布是不可拆分的提交边界。
+Order export separates long-running file generation from the request lifecycle. The database task record owns export state, while the published file in storage is the downloadable result. File publication is an indivisible commit boundary.
 
 ## Runtime behavior
 
-1. API 层验证用户权限并规范化筛选条件。
-2. Export Service 分页读取订单并写入临时 CSV。
-3. 文件完整关闭后原子发布，并将任务标记为 ready。
+1. The API layer validates user permissions and normalizes filters.
+2. Export Service reads orders page by page and writes a temporary CSV.
+3. After the file is fully closed, it is published atomically and the task is marked ready.
 
 ## Key boundaries
 
-- 临时文件不可被下载端观察。
-- 文件发布后即产生外部副作用，状态恢复不能盲目重跑导出。
+- Download clients must not observe temporary files.
+- File publication creates an external side effect; recovery must not blindly rerun the export after publication.
 
 ## Failure and recovery
 
-- 发布前失败：删除临时文件，任务进入 failed。
-- 发布后状态更新失败：恢复任务扫描存储结果并收敛数据库状态。
+- Failure before publication: delete the temporary file and mark the task failed.
+- State update failure after publication: the recovery task scans storage results and reconciles database state.
 
 ## Source evidence
 - `src/orders/export_service.py::OrderExportService`
 - `src/jobs/export_orders.py::run_export`
 ```
 
-`handbook.html` 由 Markdown 章节和 `manifest.yaml` 生成，是一个无需本地服务器即可直接打开的自包含页面。它面向人类阅读，优先展示章节用途、功能概括、关键概念和正文流程，并将源码证据、更新触发器与验证状态收进可展开的维护区域；书籍式目录、全文搜索、章节地图、面包屑、章节内目录、前后章与相关主题导航、明暗主题和响应式布局仍然保留。Agent 则优先通过 `manifest.yaml` 与 `index.md` 定位相关章节、源码、稳定符号和变更触发关系，再按需读取源码验证，而不是解析生成后的 HTML。
+`handbook.html` is generated from the Markdown chapters and `manifest.yaml`. It is a self-contained page that can be opened directly without a local server. Designed for human readers, it emphasizes chapter purpose, capability summaries, key concepts, and narrative flows, while placing source evidence, update triggers, and validation state in expandable maintenance sections. It retains a book-style table of contents, full-text search, chapter map, breadcrumbs, in-page table of contents, previous/next and related-topic navigation, light and dark themes, and a responsive layout. Agents use `manifest.yaml` and `index.md` first to locate relevant chapters, source files, stable symbols, and change-trigger relationships, then read source code as needed for verification instead of parsing the generated HTML.
 
-**`handbook.html` 示例**
+**`handbook.html` preview**
 
-![codebase-handbook 生成的 handbook.html 阅读视图，包含目录、搜索、状态标记和按卷组织的章节导航](docs/images/codebase-handbook-html-preview.png)
+![The reading view generated for codebase-handbook's handbook.html, with a table of contents, search, status indicators, and volume-based chapter navigation](docs/images/codebase-handbook-html-preview.png)
 
-桌面布局将目录与全文搜索固定在左侧，正文区域展示手册状态、覆盖度、证据状态和按卷组织的章节地图；同一个自包含文件也支持明暗主题与窄屏阅读。
+On desktop, the table of contents and full-text search stay fixed on the left, while the reading area shows handbook status, coverage, evidence state, and a volume-based chapter map. The same self-contained file also supports light and dark themes and narrow-screen reading.
 
-该 skill 不会因为普通编码任务而自动初始化手册；初始化需要用户明确提出。
+This Skill does not initialize a handbook merely because an ordinary coding task is underway; initialization requires an explicit user request.
 
-安装：
+Install:
 
 ```bash
 npx skills add ChengsongLu/ALuSkills --skill codebase-handbook --global
 ```
 
-## 3. 目录结构
+## 3. Repository structure
 
-每个 skill 都是一个独立目录，并至少包含一个带 YAML frontmatter 的 `SKILL.md`：
+Each Skill is an independent directory containing at least one `SKILL.md` with YAML frontmatter:
 
 ```text
 skills/
@@ -403,10 +423,10 @@ skills/
 └── write-technical-spec/
 ```
 
-每个 skill 都包含 `agents/openai.yaml`；部分 skills 还包含 `scripts/`、`references/` 或 `assets/`。安装时这些依赖会和对应的 `SKILL.md` 一起复制或链接到目标 Agent 的 skills 目录。
+Every Skill contains `agents/openai.yaml`; some also contain `scripts/`, `references/`, or `assets/`. During installation, these dependencies are copied or linked to the target agent's Skills directory together with the corresponding `SKILL.md`.
 
-## 4. 开源协议
+## 4. License
 
-本项目采用 [Apache License 2.0](LICENSE) 开源。
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 Copyright 2026 Chengsong Lu.
