@@ -1,6 +1,6 @@
 ---
 name: clarify-development-request
-description: Assess whether non-trivial software development needs structured clarification, obtain user confirmation before implicitly entering that workflow, and clarify goals, scope, behavior, contracts, state, side effects, risks, compatibility, and acceptance criteria. Use when the user explicitly asks to refine or prepare a development request, or when a decision that cannot be resolved from repository evidence would materially change product behavior, contracts, scope, or acceptance criteria. Do not invoke merely because a request is short, lacks implementation detail, or involves local technical choices. Do not invoke for ordinary consultation, diagnosis, review-only work, mechanical edits, or well-specified low-risk changes.
+description: Turn a non-trivial software development request into a confirmed, implementation-ready brief by investigating repository evidence and asking one focused, decision-changing question at a time. Use when the user explicitly asks to clarify or refine requirements, enter a brief workflow, create a brief.md, confirm a request item by item, ask one question at a time, first get the requirements clear, or collaboratively define feature behavior or boundaries before design or implementation. Also use when a decision that repository evidence cannot resolve would materially change product behavior, contracts, scope, or acceptance criteria. Treat those explicit requests as authorization to enter the workflow; obtain confirmation before implicit entry. Do not invoke merely because a request is short, lacks implementation detail, or involves local technical choices. Do not invoke for ordinary consultation, diagnosis, review-only work, mechanical edits, or well-specified low-risk changes.
 ---
 
 # Clarify Development Request
@@ -18,9 +18,11 @@ clarification workflow:
 2. Classify the request as consultation, diagnosis, review, mechanical change,
    well-specified low-risk development, or non-trivial development with a
    material unresolved decision.
-3. Enter this workflow only when the user explicitly requested clarification or
-   a remaining decision would change product behavior, contracts, scope, or
-   acceptance criteria.
+3. Enter this workflow only when the user explicitly requested clarification,
+   item-by-item confirmation, one-question-at-a-time discovery, or collaborative
+   definition of feature behavior or boundaries before design or implementation;
+   or when a remaining decision would change product behavior, contracts, scope,
+   or acceptance criteria.
 4. Treat naming inside a private implementation, file placement, refactoring
    mechanics, test organization, and other reversible local choices as
    implementation decisions unless they affect an observable contract.
@@ -29,9 +31,11 @@ clarification workflow:
    a directory or `brief.md`, do not ask for confirmation, and continue the
    user's requested work normally.
 
-Treat an explicit request to clarify the task or create a development brief as
-authorization to enter this workflow. Otherwise, when preflight finds a
-material unresolved decision:
+Treat an explicit request to clarify the task, create a development brief,
+confirm the request item by item, ask one question at a time, first get the
+requirements clear, or collaboratively define feature behavior or boundaries
+as authorization to enter this workflow. Do not ask for redundant entry
+confirmation. Otherwise, when preflight finds a material unresolved decision:
 
 1. Explain the decision, what it changes, and why repository evidence cannot
    resolve it.
@@ -132,7 +136,8 @@ Write a concise, deterministic `brief.md` containing:
 - **Risk, security, and compatibility boundaries**
 - **Acceptance and validation criteria**
 - **Open decisions**; write `None` only when none remain
-- **Next step and its scope**
+- **Next step and its scope**; write `Awaiting user direction` when the user has
+  not chosen one
 
 Do not leave decision-changing language such as “could,” “prefer,” “by default,” “later,” or “A or B” in the confirmed brief. Explicitly defer only local implementation choices that cannot change contracts, behavior, or acceptance.
 
@@ -151,11 +156,14 @@ Before presenting the brief for confirmation:
 Do not enter specification, planning, or implementation until the self-review
 is complete, blocking issues are resolved, and the user confirms the brief.
 Consider clarification complete only when no material decision remains, the
-user confirms the brief, and the next phase is identified. If the next phase is
-a technical specification, invoke `$write-technical-spec` and provide the
-confirmed `brief.md` as its source rather than relying on conversation history.
+user confirms the brief. After confirmation, stop this workflow, report that
+clarification is complete, and ask the user to choose the next action when the
+brief records `Awaiting user direction`. Do not invoke, require, or direct the
+user to another Skill, and do not begin specification, planning, or
+implementation as part of this workflow.
 
-If requirements change later, reopen only the affected decisions and update any dependent brief or specification before continuing implementation.
+If requirements change later, reopen only the affected decisions and update the
+brief before any downstream work continues.
 
 When this workflow produced a brief, summarize the outcome and link to
 `brief.md` in the final response. When the preflight gate exits, continue the

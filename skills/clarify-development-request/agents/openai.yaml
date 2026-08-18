@@ -1,4 +1,4 @@
 interface:
   display_name: "Clarify Development Request"
   short_description: "Assess and confirm material clarification"
-  default_prompt: "Use $clarify-development-request to assess whether this task needs structured clarification, confirm implicit entry, and produce a reviewed brief."
+  default_prompt: "Use $clarify-development-request to clarify this development request one decision at a time and produce a confirmed, self-contained brief."
