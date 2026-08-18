@@ -141,14 +141,15 @@ The output should include the 5 skills from this repository.
 
 ### 2.1 clarify-development-request
 
-Before non-trivial development begins, this Skill investigates relevant code, tests, and documentation, then asks only the questions that would genuinely change product behavior, contracts, scope, or acceptance outcomes. It first makes a lightweight decision without writing files. Mechanical edits, clearly low-risk tasks, and work involving only local implementation choices exit immediately without creating `brief.md`. When implicitly triggered and material decisions remain unresolved, it explains the evidence and impact, recommends whether to enter structured clarification, and waits for confirmation before writing files. When the user explicitly asks for clarification or a brief, it does not ask for redundant confirmation. Once the brief is complete, it performs a self-review and waits for user approval before specification, planning, or implementation can begin.
+Before non-trivial development begins, this Skill investigates relevant code, tests, and documentation, then asks only the questions that would genuinely change product behavior, contracts, scope, or acceptance outcomes. It first makes a lightweight decision without writing files. Mechanical edits, clearly low-risk tasks, and work involving only local implementation choices exit immediately without creating `brief.md`. When implicitly triggered and material decisions remain unresolved, it explains the evidence and impact, recommends whether to enter structured clarification, and waits for confirmation before writing files. Explicit requests to clarify requirements, confirm a request item by item, ask one question at a time, first get the requirements clear, collaboratively define feature behavior or boundaries, or create a brief authorize entry without redundant confirmation. Once the brief is complete, the Skill performs a self-review, waits for user approval, reports clarification complete, and stops without invoking or requiring another Skill.
 
 Use it to:
 
 - Turn a one-line request into an implementation-ready brief;
+- Clarify a feature one decision at a time when the user asks for item-by-item confirmation;
 - Define goals, scope, non-goals, and acceptance criteria;
 - Clarify state, failure semantics, compatibility, security, and side-effect boundaries;
-- Resolve open decisions that would affect the design before technical design begins.
+- Resolve open decisions that would affect downstream work while remaining independent of other Skills.
 
 It is not intended for ordinary consultation, diagnosis-only or review-only work, mechanical edits, or clearly specified low-risk tasks.
 
@@ -171,6 +172,7 @@ It is not intended for ordinary consultation, diagnosis-only or review-only work
 > **Agent:** Understood. I will record CSV-only export, reuse of the current filters and permissions, and the 10,000-record limit in `brief.md`, together with failure behavior and testable acceptance criteria. I will self-review the brief and ask you to confirm it before design or implementation begins.
 
 The Agent does not ask questions that repository evidence can answer. If the repository and the request already determine the required behavior, it continues normally without starting the clarification workflow.
+After the user confirms `brief.md`, the Skill stops and waits for the user to choose the next action. It does not automatically enter specification, planning, or implementation and has no dependency on another Skill.
 
 **Key artifact**
 
