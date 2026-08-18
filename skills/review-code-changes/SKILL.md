@@ -15,7 +15,12 @@ Review changed code against its intended contract and adversarial failure condit
 - **Recorded review:** Use when the user requests a formal or persistent review,
   when assessing PR or branch readiness, or when the change is large, high risk,
   or needs a durable handoff. Persist the review as described below.
-- **Remediation:** Enter only when the user explicitly asks to fix or optimize identified findings. Read [references/remediation.md](references/remediation.md) completely before modifying code.
+- **Remediation:** Enter only when the user explicitly asks to fix or optimize
+  identified findings. Read [references/remediation.md](references/remediation.md)
+  completely before modifying code. Adversarially assess the proposed fix before
+  implementation, then re-review the final remediation diff and affected paths
+  after validation. Do not close remediation while that fresh review identifies
+  a credible defect or vulnerability introduced by the fix.
 
 This workflow covers changed code. Do not use it as a project-wide or module-wide codebase inspection process.
 

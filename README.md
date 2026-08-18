@@ -135,7 +135,7 @@ The output should include the 5 skills from this repository.
 | --- | --- | --- |
 | [`clarify-development-request`](skills/clarify-development-request/) | Determines and confirms whether structured clarification is needed, then produces an implementation-ready brief | `brief.md` |
 | [`write-technical-spec`](skills/write-technical-spec/) | Determines whether a task needs a technical specification and, after confirmation, turns it into a repository-aligned design | Optional `flow.md`, `design.md`, and `implement.md` |
-| [`review-code-changes`](skills/review-code-changes/) | Confirms the appropriate review depth, then identifies correctness, reliability, and security risks | Optional `review.md` and `coverage.md` |
+| [`review-code-changes`](skills/review-code-changes/) | Reviews changes and safely remediates explicitly authorized findings with a final re-review | Optional `review.md`, `coverage.md`, and `remediation.md` |
 | [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Determines and confirms whether recovery state should be persisted so complex tasks can continue safely | `STATE.md` and `CHECKPOINTS.md` |
 | [`codebase-handbook`](skills/codebase-handbook/) | After confirming scope and structure, captures codebase behavior in an isolated technical book | Markdown chapters, `manifest.yaml`, and `handbook.html` |
 
@@ -261,9 +261,13 @@ Use it to:
 - Review a specific commit or branch diff;
 - Inspect state, concurrency, persistence, retry, cancellation, and failure-recovery paths;
 - Produce findings with evidence, impact levels, and remediation direction;
-- Fix confirmed findings after the user explicitly authorizes changes.
+- Fix confirmed findings after the user explicitly authorizes changes;
+- Challenge each proposed fix for new vulnerabilities and regressions before implementation;
+- Re-review the final remediation diff and affected paths, repeating the fix-and-review cycle until no credible remediation-caused issue remains.
 
-By default, it reviews only and does not modify implementation files.
+By default, it reviews only and does not modify implementation files. During
+authorized remediation, passing tests do not replace the required final
+re-review.
 
 **Key artifacts**
 
@@ -271,7 +275,8 @@ By default, it reviews only and does not modify implementation files.
 .review-code-changes/
 └── 2026_07_29_working-tree_000/
     ├── review.md       # Confirmed findings and overall conclusion
-    └── coverage.md     # Coverage record for large or high-risk reviews
+    ├── coverage.md     # Coverage record for large or high-risk reviews
+    └── remediation.md  # Authorized fixes, validation, and final re-review evidence
 ```
 
 Example `review.md`:

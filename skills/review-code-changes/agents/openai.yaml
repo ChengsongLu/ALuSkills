@@ -1,4 +1,4 @@
 interface:
   display_name: "Review Code Changes"
-  short_description: "Review changes at confirmed artifact depth"
-  default_prompt: "Use $review-code-changes to assess the appropriate review mode, confirm before creating unrequested persistent artifacts, and review this change set."
+  short_description: "Review changes and safely remediate findings"
+  default_prompt: "Use $review-code-changes to choose the appropriate review mode, confirm before creating unrequested persistent artifacts, and review this change set; if I authorize remediation, assess the fix design for new risks and re-review the final remediation diff before closing."

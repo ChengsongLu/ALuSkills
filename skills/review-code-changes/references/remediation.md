@@ -37,6 +37,28 @@ Use current code rather than old line numbers or assumptions.
 - Separate validation of the original defect from validation of risks introduced by the fix.
 - Capture applicable invariants and forbidden outcomes for state, persistence, concurrency, security, and side effects.
 
+## Review the fix design before implementation
+
+Before editing, define the smallest root-cause fix and challenge it as an
+attacker, a failing dependency, and a concurrent caller would. Inspect the
+proposed change for applicable risks involving:
+
+- trust boundaries, authorization, validation, canonicalization, injection,
+  escaping, serialization, and sensitive-data exposure;
+- privilege or access expansion, insecure defaults, fail-open behavior, and
+  bypasses of existing security controls;
+- partial failure, rollback, retries, duplicate execution, races, stale state,
+  exception ordering, and repeated external side effects;
+- compatibility changes that could cause callers to skip validation or fall
+  back to unsafe behavior.
+
+Prefer a narrow change that preserves existing invariants and security controls.
+Define negative tests or equivalent static evidence for credible abuse and
+failure cases, not only an expected success case. Revise the design before
+implementation when it creates a plausible new vulnerability. If no safe design
+can be established within the authorized scope, stop and obtain the missing
+decision or scope authorization instead of applying a speculative fix.
+
 ## Implement within scope
 
 - Fix the root cause and directly related paths, not only the visible symptom.
@@ -55,10 +77,24 @@ After each independently testable finding:
 2. Reproduce the original failure or establish equivalent evidence.
 3. Exercise directly related failure, state, concurrency, duplicate-execution, compatibility, and side-effect boundaries.
 
-After all fixes, perform two distinct checks:
+After all fixes and their initial validation, discard the pre-fix conclusion and
+perform a fresh review from the final combined diff and current affected code.
+Perform both of these distinct checks:
 
 - **Remediation-diff review:** Inspect only the new fix for regressions, state-precedence errors, exception-order changes, repeated side effects, security problems, unrelated edits, and documentation drift.
 - **Original-change review:** For a large or high-risk original change, revisit all high-risk capabilities and call chains from the original coverage record, not only the known findings. Rebuild the necessary coverage record if it was not retained.
+
+Apply the contract-and-structure and adversarial perspectives from the main
+review workflow during this fresh review. Trace changed trust boundaries and
+direct callers or callees far enough to detect vulnerabilities or regressions
+that are not visible in the remediation hunk alone.
+
+Treat every credible issue found during re-review as an active finding. Resolve
+issues introduced by the remediation, rerun the affected validation, and repeat
+the fresh review on the new final diff. Do not close while a remediation-caused
+correctness, reliability, security, compatibility, or side-effect problem
+remains. Report unrelated or out-of-scope findings without silently modifying
+them.
 
 Do not replace either review with passing tests. When a test fails, distinguish implementation defects, stale tests, environmental limits, and unrelated known failures. Do not weaken valid assertions or make production code conform to an incorrect test merely to get a pass.
 
@@ -72,6 +108,7 @@ report:
 - actual result and changed area;
 - original-defect evidence;
 - fix-risk validation;
+- final re-review results and any resulting fix-and-review iterations;
 - incomplete or unverified work;
 - residual risk and the condition required to continue.
 
