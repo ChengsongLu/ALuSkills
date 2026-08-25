@@ -25,7 +25,7 @@ tracked and validated reliably.
 2. Identify exactly which findings the user authorized.
 3. Treat the confirmed set as the required closure boundary.
 4. Do not silently include other findings or treat excluded findings as resolved, ignored, or deferred.
-5. Invoke `$clarify-development-request` when the fix introduces unresolved product or technical decisions. After those decisions are confirmed, invoke `$write-technical-spec` when the user requests a specification or the repository's major-change rules require one.
+5. When the fix introduces unresolved product or technical decisions, investigate repository evidence and ask the user directly. If the requested remediation would expand into a new design effort or the repository requires a separate formal specification, stop before implementation, explain the required next activity in generic terms, and return control to the user.
 
 ## Revalidate each finding
 
