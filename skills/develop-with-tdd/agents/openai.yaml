@@ -1,0 +1,4 @@
+interface:
+  display_name: "TDD Development"
+  short_description: "Implement high-risk changes with focused TDD"
+  default_prompt: "Use $develop-with-tdd to implement this change with selective, risk-driven test-driven development."

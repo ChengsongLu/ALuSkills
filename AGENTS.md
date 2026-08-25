@@ -128,3 +128,20 @@ failing validation as successful.
   installation and usage behavior changes.
 - Treat changes to `SKILL.md`, references, scripts, assets, and Agent metadata
   as behavior changes that require the same care as source-code changes.
+
+## Keep every Skill independent and portable
+
+- Each Skill must remain self-contained and useful when installed by itself.
+  Its behavior must not depend on another Skill being installed, available, or
+  invoked before or after it.
+- Do not make one Skill invoke, require, recommend, route to, or name another
+  Skill in its `SKILL.md`, references, scripts, assets, or Agent metadata.
+- Resolve overlap through precise trigger conditions and explicit scope
+  boundaries, not cross-Skill orchestration. A Skill must investigate the
+  repository facts and resolve decisions needed for its own workflow directly.
+- When work falls outside a Skill's scope, stop the affected workflow, explain
+  the missing decision or next activity in generic terms, and return control to
+  the user without prescribing another Skill.
+- Collection-level documentation may describe how independently installable
+  Skills cover adjacent development stages, but no individual Skill may assume
+  that collection context at runtime.
