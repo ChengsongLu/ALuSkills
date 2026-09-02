@@ -1,4 +1,4 @@
 interface:
   display_name: "Write Technical Spec"
-  short_description: "Create, update, and review technical specs"
-  default_prompt: "Use $write-technical-spec to create, update, or run a read-only implementation-readiness review of a repository-grounded technical specification."
+  short_description: "Assess spec needs, author, and review designs"
+  default_prompt: "Use $write-technical-spec to assess whether this development task needs a specification, or to create, update, or review a requested specification, confirming entry before creating artifacts."

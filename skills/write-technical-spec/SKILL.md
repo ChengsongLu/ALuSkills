@@ -1,6 +1,6 @@
 ---
 name: write-technical-spec
-description: Assess, create, update, or review repository-grounded technical specifications, including a read-only preimplementation review of requirements, cross-document consistency, feasibility, state and failure boundaries, and test verifiability. Use when the user asks whether a spec is needed, requests a technical spec, design, flow, implementation plan, design review, implementation-readiness review, or wants confirmed requirements turned into flow.md, design.md, implement.md, or phased implementation documents. Do not invoke merely because an ordinary coding task has a short plan.
+description: Assess whether a development task needs a technical specification when the request or repository investigation reveals interacting module or service changes, significant state or contract changes, migration, compatibility, concurrency, security, or failure-recovery risks, even if the user never mentions a spec. Also use for explicit spec assessment, creation, updates, technical design, flow or implementation plans, and read-only implementation-readiness reviews. Automatic assessment is read-only; confirm entry before creating spec artifacts. Skip localized low-risk work with clear behavior and validation; a short coding plan alone is not a trigger.
 ---
 
 # Write Technical Spec
@@ -11,7 +11,7 @@ Assess, create, update, or review a technical specification using current reposi
 
 Read enough repository and specification context to select one mode before taking action:
 
-- **Create:** Assess whether the task needs a specification, then use the entry and document-set gates below.
+- **Assess or create:** Use the entry assessment below for explicit requests or development work whose request or repository evidence reveals material design risk. Assessment alone does not authorize specification artifacts. After confirmed entry, use the document-set gate before writing.
 - **Update:** Locate the existing specification by scope and evidence, confirm it is the same design effort, and edit only within the user's authorized scope. Reapply the gates only for a material scope or document-set change.
 - **Review:** Inspect an existing specification for implementation readiness. Treat a review request as read-only unless the user explicitly asks for remediation; do not edit specifications, source, tests, repository metadata, or persistent review artifacts.
 
@@ -21,7 +21,13 @@ Resolve missing inputs within this Skill. Investigate repository facts first. Wh
 
 ## Assess whether to enter the specification workflow
 
-1. Read repository instructions, documentation conventions, current implementation, relevant tests, existing specifications, and analogous modules.
+Apply this read-only assessment before implementing the affected behavior when
+the request or repository investigation reveals the risks below. Do not wait
+for the user to mention a specification. Reassess if later investigation exposes
+material design risk that was not apparent initially; do not repeat an already
+resolved gate unless its scope or risk materially changes.
+
+1. Read enough repository instructions, documentation conventions, current implementation, relevant tests, existing specifications, and analogous modules to assess the affected behavior.
 2. Assess actual complexity and risk rather than using file count or request length as a proxy. Consider:
    - changes to public contracts, user-visible behavior, data, state, or schemas;
    - coordination across modules, services, processes, or external systems;
@@ -29,10 +35,10 @@ Resolve missing inputs within this Skill. Investigate repository facts first. Wh
    - multiple meaningful branches, failure modes, recovery paths, or side effects;
    - unresolved tradeoffs that implementation should not decide implicitly.
 3. Recommend entering the specification workflow when several of these concerns interact, when the change has material risk, or when repository rules require a spec. Recommend skipping it for localized, low-risk work whose behavior and validation are already clear.
-4. Present the recommendation, its task-specific reasons, and the expected artifact set at a high level. Explicitly ask the user to confirm whether to enter the specification workflow.
-5. Do not create a specification directory or write specification artifacts before the user confirms this gate. If the user confirms skipping the workflow, stop this skill and hand off to the requested next activity.
+4. If implicit assessment finds localized low-risk work with clear behavior and validation, stop this workflow and continue the requested task without an entry-confirmation question or artifacts. For an explicit assessment or specification request, report the recommendation even when it is to skip.
+5. When recommending entry, present task-specific reasons and the expected artifact set at a high level, then explicitly ask the user to confirm. Do not create a specification directory or write specification artifacts before confirmation. If the user chooses to skip, stop this workflow and return to the requested activity; resolve any remaining decision that affects behavior before implementing it.
 
-Treat an earlier request for a specification as intent to assess and propose the workflow, not as confirmation of the evidence-based recommendation. A user may explicitly waive the gate or direct a mandatory repository workflow; otherwise obtain confirmation after presenting the recommendation.
+Treat an earlier request for a specification as intent to assess and propose the workflow, not as confirmation of the evidence-based recommendation. When entry is recommended, obtain confirmation after presenting the recommendation unless the user explicitly waives the gate or directs a mandatory repository workflow.
 
 ## Confirm whether the specification needs a flow document
 

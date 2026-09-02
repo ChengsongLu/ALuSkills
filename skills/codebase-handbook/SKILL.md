@@ -1,6 +1,6 @@
 ---
 name: codebase-handbook
-description: Create, navigate, synchronize, validate, render, and evolve a repository's natural-language technical handbook in .codebase-handbook, confirm evidence-based scope or structural changes before material handbook writes, and treat all other repository content as read-only evidence. Use when the user asks to initialize, consult, update, validate, or render a handbook, or when a repository already contains .codebase-handbook and a task is likely to change documented design, responsibilities, runtime behavior, contracts, state, side effects, relationships, or durable cited symbols. Do not invoke for mechanical edits, formatting, comments, tests-only changes, or localized behavior-preserving changes unless the user asks or repository instructions explicitly require handbook inspection. Never initialize a handbook during an ordinary coding task.
+description: Use an existing .codebase-handbook to answer codebase questions about architecture, responsibilities, runtime flows, contracts, or implementation locations, even when the user does not mention the handbook. Also assess synchronization needs when changes may affect documented behavior, state, side effects, relationships, or cited symbols. Support explicit handbook initialization, consultation, updates, validation, rendering, and restructuring. Keep navigation read-only and confirm material writes as required; write only inside the handbook. Skip mechanical, formatting, comments-only, tests-only, and localized behavior-preserving edits unless handbook inspection is requested or required. Never initialize a handbook implicitly.
 ---
 
 # Codebase Handbook
@@ -31,17 +31,24 @@ and change impact.
 
 1. Locate the project root.
 2. Check whether `<project-root>/.codebase-handbook/` exists.
-3. If it exists, read these files in order before acting:
+3. For implicit invocation, select read-only navigation for codebase questions
+   about architecture, responsibilities, flows, contracts, or implementation
+   locations when a handbook exists. For edit requests, first apply the
+   low-impact exclusions below. If no handbook exists, continue the underlying
+   task without initializing one.
+4. For an applicable task with an existing handbook, read these files in order:
    1. `config.yaml`
    2. `preferences.md`
    3. `manifest.yaml`
    4. `index.md`
-4. Apply requirements in this precedence order:
+5. Apply requirements in this precedence order:
    1. The user's current explicit instructions
    2. `.codebase-handbook/preferences.md`
    3. `.codebase-handbook/config.yaml`
    4. This skill's defaults
-5. Choose the matching workflow below.
+6. Choose the matching workflow below. Read-only navigation does not authorize
+   synchronization, rebuilding, or other handbook writes; report stale evidence
+   relevant to the answer and verify it against current source.
 
 Never infer that a missing handbook should be created. Initialize only when the
 user explicitly requests it.
