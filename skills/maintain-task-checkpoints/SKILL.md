@@ -1,11 +1,27 @@
 ---
 name: maintain-task-checkpoints
-description: Assess whether long-running or multi-stage coding work needs recoverable persistent state, obtain user confirmation before implicitly creating it, and persist, update, restore, hand off, or safely clean up confirmed checkpoints. Use when the user explicitly requests checkpoints or persistent task state, when work must be handed between agents, or when a complex task has high recovery cost due to multiple modules, migrations, state transitions, external side effects, likely interruption, or context compaction. Do not create checkpoint files for short, low-risk, single-pass work.
+description: Assess checkpoint needs for long-running, multi-stage, or interruption-prone development with high recovery cost, including migrations, state transitions, external side effects, and agent handoffs. Also use when resuming interrupted work, continuing with incomplete context, or restoring an existing task checkpoint, even if the user does not mention checkpoints. Verify matching saved state against current instructions, source, and Git before continuing. Support explicit checkpoint requests and confirmed updates, handoffs, and cleanup. Confirm before implicitly creating persistent state; do not create checkpoints for short, low-risk work or merely to resume a task.
 ---
 
 # Maintain Task Checkpoints
 
 Maintain a compact recovery index for complex coding work. Treat checkpoints as temporary evidence subordinate to user instructions, repository rules, current source, Git state, tests, and formal design documents.
+
+## Select the entry path
+
+- **Resume:** After interruption, handoff, or incomplete-context continuation,
+  look for a matching existing checkpoint and follow **Restore safely** before
+  repeating work. The user need not mention checkpoints, and the remaining work
+  need not still be complex. Discovery and verification are read-only and do not
+  require the activation gate for creating new files.
+- **Assess or maintain:** For new work or work whose recovery cost has grown,
+  use the persistence assessment below. Continue routine updates to a matching,
+  previously authorized checkpoint within its confirmed scope.
+
+If no matching checkpoint exists, continue from available repository and task
+evidence, asking for missing task identity or decisions when needed. Apply the
+creation gate only if new persistent state is warranted; resuming alone does
+not authorize creating it.
 
 ## Decide whether to persist state
 
@@ -57,7 +73,7 @@ Before writing, verify that the directory is permitted and writable. If it confl
 
 ## Create the initial state
 
-After development scope is confirmed and before implementation begins, create `STATE.md` with:
+After activation and development scope are confirmed, create `STATE.md` before implementation begins, or before the next affected operation if the need is discovered mid-task. Record verified progress already made, including:
 
 - task ID, status, last update, absolute repository path, branch, and starting commit;
 - goal, scope, and non-goals;

@@ -18,26 +18,30 @@ self-contained, independently installable, and does not rely on another Skill.
 | Skill | Use it for | Output |
 | --- | --- | --- |
 | [`clarify-development-request`](skills/clarify-development-request/) | Resolving material requirement decisions before implementation | `brief.md` |
-| [`write-technical-spec`](skills/write-technical-spec/) | Creating, updating, or reviewing a repository-grounded design | Optional `flow.md`, `design.md`, and `implement.md` |
+| [`write-technical-spec`](skills/write-technical-spec/) | Assessing spec needs and creating, updating, or reviewing a repository-grounded design | Optional `flow.md`, `design.md`, and `implement.md` |
 | [`develop-with-tdd`](skills/develop-with-tdd/) | Implementing selected high-risk behavior with focused TDD | Source code and tests |
 | [`review-code-changes`](skills/review-code-changes/) | Reviewing a diff and safely remediating authorized findings | Optional `review.md`, `coverage.md`, and `remediation.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Preserving recoverable state for long or interruption-prone work | `STATE.md` and `CHECKPOINTS.md` |
-| [`codebase-handbook`](skills/codebase-handbook/) | Building and maintaining an evidence-linked technical handbook | Markdown chapters, `manifest.yaml`, and `handbook.html` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Assessing persistence needs and recovering interrupted work from checkpoints | `STATE.md` and `CHECKPOINTS.md` |
+| [`codebase-handbook`](skills/codebase-handbook/) | Navigating codebases through existing handbooks and maintaining them | Markdown chapters, `manifest.yaml`, and `handbook.html` |
 
 ### clarify-development-request
 
 Use this Skill when a development request contains unresolved decisions that
-would change behavior, contracts, scope, or acceptance criteria. It inspects the
-repository first, asks one decision-changing question at a time, and produces a
-confirmed `brief.md`. It skips ordinary consultation, mechanical edits, and
-well-specified low-risk work.
+would change behavior, contracts, scope, or acceptance criteria, even when the
+user has not requested clarification. It inspects repository facts first and
+confirms implicit entry before asking structured questions and writing
+`brief.md`. Explicit clarification requests authorize entry. It skips ordinary
+consultation, mechanical edits, and well-specified low-risk work.
 
 ### write-technical-spec
 
-Use this Skill to create, update, or review a technical specification. It checks
-requirements against the repository, defines relevant flows, boundaries,
-contracts, failure behavior, and validation, and produces `design.md`,
-`implement.md`, and an optional `flow.md`. Review mode is read-only.
+Use this Skill to assess spec needs when a development request or repository
+investigation reveals interacting changes or material design risk, even without
+a spec request. Implicit assessment is read-only; localized low-risk work
+continues without an entry question or artifacts. Recommended entry requires
+confirmation before writing. Explicit creation, updates, and read-only reviews
+remain supported. Authoring defines flows, boundaries, contracts, failure
+behavior, and validation in `design.md`, `implement.md`, and optional `flow.md`.
 
 ### develop-with-tdd
 
@@ -58,17 +62,25 @@ authorized; completed remediation is validated and reviewed again.
 ### maintain-task-checkpoints
 
 Use this Skill when a task is long-running, multi-stage, expensive to recover,
-likely to be interrupted, or explicitly needs a handoff. It records current
-state and completed checkpoints without storing credentials or replacing Git.
-Implicit activation requires confirmation before writing files.
+likely to be interrupted, or explicitly needs a handoff. Also use it to resume
+interrupted work or continue with incomplete context by locating and verifying
+a matching checkpoint against current instructions, source, and Git. Recovery
+does not require the remaining task to be complex or authorize new files.
+Creating persistent state implicitly requires confirmation; routine updates
+stay within the previously confirmed scope. Checkpoints never store credentials
+or replace Git.
 
 ### codebase-handbook
 
 Use this Skill to initialize, consult, synchronize, validate, or render a
-repository's technical handbook. It explains stable architecture, runtime
-behavior, state, failures, and relationships with source evidence. Every write
-stays under `.codebase-handbook/`; source code and ordinary repository files
-remain read-only evidence.
+repository's technical handbook. When a handbook exists, also use it for
+codebase questions about architecture, responsibilities, flows, contracts, and
+implementation locations without requiring the user to mention the handbook.
+Navigation is read-only and verifies relevant stale evidence against source;
+it does not authorize handbook writes or initialize a missing handbook.
+Changes affecting documented behavior or cited symbols trigger an impact
+assessment. Every handbook write stays under `.codebase-handbook/`; source code
+and ordinary repository files remain read-only evidence for this Skill.
 
 ## Install and update
 

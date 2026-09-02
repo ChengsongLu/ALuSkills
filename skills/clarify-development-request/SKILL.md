@@ -1,6 +1,6 @@
 ---
 name: clarify-development-request
-description: Turn a non-trivial software development request into a confirmed, implementation-ready brief by investigating repository evidence and asking one focused, decision-changing question at a time. Use when the user explicitly asks to clarify or refine requirements, enter a brief workflow, create a brief.md, confirm a request item by item, ask one question at a time, first get the requirements clear, or collaboratively define feature behavior or boundaries before design or implementation. Also use when a decision that repository evidence cannot resolve would materially change product behavior, contracts, scope, or acceptance criteria. Treat those explicit requests as authorization to enter the workflow; obtain confirmation before implicit entry. Do not invoke merely because a request is short, lacks implementation detail, or involves local technical choices. Do not invoke for ordinary consultation, diagnosis, review-only work, mechanical edits, or well-specified low-risk changes.
+description: Assess development requests when unresolved decisions could materially change product behavior, contracts, scope, or acceptance criteria, even without an explicit clarification request. Investigate repository facts first; confirm structured clarification before implicit entry or writing brief.md. Explicit requests to clarify requirements, create a brief, ask one question at a time, confirm items, or collaboratively define feature behavior authorize entry. Resolve decisions one focused question at a time. Skip ordinary consultation, diagnosis, review-only work, mechanical edits, and clear low-risk changes; a short request, missing local implementation details, or reversible technical choices alone are not triggers.
 ---
 
 # Clarify Development Request
@@ -10,7 +10,11 @@ Convert an ambiguous development request into a confirmed, implementation-ready 
 ## Gate the workflow before writing
 
 Treat initial classification as a read-only preflight, not as entry into the
-clarification workflow:
+clarification workflow.
+
+Use this preflight when the request or later repository investigation exposes a
+potentially material unresolved requirement, before implementing the affected
+behavior. The user need not ask for clarification by name.
 
 1. Read only enough repository instructions, code, tests, documentation, and
    analogous implementations to distinguish missing facts from missing product
