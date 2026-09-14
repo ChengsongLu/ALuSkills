@@ -9,14 +9,11 @@ update finding statuses only when their actual implementation and validation
 state changes. Do not create a separate review directory for the remediation
 itself.
 
-For a lightweight review, remediate directly from the findings reported in the
+For a conversation review, remediate directly from the findings reported in the
 conversation. Keep progress and evidence in the conversation unless the user
-requests a durable report or the remediation expands into large or high-risk
-work; in that case, create a recorded-review directory with the original
-baseline and findings only after explaining the upgrade, its evidence and
-artifacts, and obtaining explicit user confirmation. If the user declines,
-continue without persistent artifacts only when the remediation can still be
-tracked and validated reliably.
+requests a durable report or agrees to one because a concrete handoff need arises.
+Risk determines validation depth, not whether artifacts are required. Continue
+inspection and authorized remediation without waiting for a format decision.
 
 ## Confirm the remediation scope
 
@@ -82,7 +79,7 @@ perform a fresh review from the final combined diff and current affected code.
 Perform both of these distinct checks:
 
 - **Remediation-diff review:** Inspect only the new fix for regressions, state-precedence errors, exception-order changes, repeated side effects, security problems, unrelated edits, and documentation drift.
-- **Original-change review:** For a large or high-risk original change, revisit all high-risk capabilities and call chains from the original coverage record, not only the known findings. Rebuild the necessary coverage record if it was not retained.
+- **Original-change impact check:** Reuse valid prior review evidence. Revisit original capabilities when the fix changes their assumptions, shared invariants, or relevant baseline; expand further only when that evidence warrants it.
 
 Apply the contract-and-structure and adversarial perspectives from the main
 review workflow during this fresh review. Trace changed trust boundaries and
@@ -90,8 +87,8 @@ direct callers or callees far enough to detect vulnerabilities or regressions
 that are not visible in the remediation hunk alone.
 
 Treat every credible issue found during re-review as an active finding. Resolve
-issues introduced by the remediation, rerun the affected validation, and repeat
-the fresh review on the new final diff. Do not close while a remediation-caused
+issues introduced by the remediation, rerun the affected validation, and review
+the updated diff and affected paths. Reuse unaffected review evidence. Do not close while a remediation-caused
 correctness, reliability, security, compatibility, or side-effect problem
 remains. Report unrelated or out-of-scope findings without silently modifying
 them.
@@ -114,7 +111,7 @@ report:
 
 List excluded original findings separately and leave their status unchanged. Report new out-of-scope findings separately.
 
-For lightweight remediation, report the same evidence directly in the final
+For conversation remediation, report the same evidence directly in the final
 response without creating review artifacts.
 
 If the findings belong to a persistent inspection report, update only that report using its status vocabulary and include actual code locations and validation evidence. Never mark unimplemented or unvalidated work as resolved.

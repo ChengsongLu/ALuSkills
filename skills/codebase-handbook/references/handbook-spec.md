@@ -56,7 +56,7 @@ language. Ask the user when there is no reliable primary language.
 ## Preferences contract
 
 Treat `preferences.md` as project-specific natural-language user requirements.
-Read it before every create, navigate, update, validation, and audit operation.
+Read it once per task and refresh it when changed; reuse it across operations.
 Never rewrite, normalize, or automatically append to it.
 
 Preferences may specify:

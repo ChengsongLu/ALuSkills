@@ -17,7 +17,7 @@ self-contained, independently installable, and does not rely on another Skill.
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
-| [`clarify-development-request`](skills/clarify-development-request/) | Resolving material requirement decisions before implementation | `brief.md` |
+| [`clarify-development-request`](skills/clarify-development-request/) | Resolving material requirement decisions before implementation | Decisions in conversation; optional `brief.md` |
 | [`write-technical-spec`](skills/write-technical-spec/) | Assessing spec needs and creating, updating, or reviewing a repository-grounded design | Optional `flow.md`, `design.md`, and `implement.md` |
 | [`develop-with-tdd`](skills/develop-with-tdd/) | Implementing selected high-risk behavior with focused TDD | Source code and tests |
 | [`review-code-changes`](skills/review-code-changes/) | Reviewing a diff and safely remediating authorized findings | Optional `review.md`, `coverage.md`, and `remediation.md` |
@@ -29,8 +29,9 @@ self-contained, independently installable, and does not rely on another Skill.
 Use this Skill when a development request contains unresolved decisions that
 would change behavior, contracts, scope, or acceptance criteria, even when the
 user has not requested clarification. It inspects repository facts first and
-confirms implicit entry before asking structured questions and writing
-`brief.md`. Explicit clarification requests authorize entry. It skips ordinary
+asks blocking decisions directly, batching independent questions when useful.
+It creates `brief.md` only when requested or agreed and resumes already authorized
+work once the decisions are resolved. It skips ordinary
 consultation, mechanical edits, and well-specified low-risk work.
 
 ### write-technical-spec
@@ -38,10 +39,12 @@ consultation, mechanical edits, and well-specified low-risk work.
 Use this Skill to assess spec needs when a development request or repository
 investigation reveals interacting changes or material design risk, even without
 a spec request. Implicit assessment is read-only; localized low-risk work
-continues without an entry question or artifacts. Recommended entry requires
-confirmation before writing. Explicit creation, updates, and read-only reviews
-remain supported. Authoring defines flows, boundaries, contracts, failure
-behavior, and validation in `design.md`, `implement.md`, and optional `flow.md`.
+continues without an entry question or artifacts. Implicitly proposed artifacts
+require one confirmation covering scope and document set. Explicit authoring
+requests authorize that scope without repeated entry or document-by-document
+approval; material unresolved decisions still require direction. Assessment,
+authoring, and read-only review load only their relevant guidance. Authoring
+uses `design.md`, `implement.md`, and optional `flow.md`, respecting narrower requests.
 
 ### develop-with-tdd
 
@@ -56,8 +59,12 @@ not impose TDD on low-risk changes.
 
 Use this Skill to review a working-tree diff, commit, branch comparison, or pull
 request. It checks correctness, reliability, security, compatibility, testing,
-and documentation. Reviews remain read-only unless remediation is explicitly
-authorized; completed remediation is validated and reviewed again.
+and documentation related to the code logic. PRs and branches identify the diff;
+the Skill does not manage PR approvals, CI status, or merge readiness. Review
+depth follows actual risk, while reports stay in the conversation unless persistent
+artifacts are requested or agreed. Reviews remain read-only unless remediation
+is explicitly authorized; fixes are validated and re-reviewed over affected paths,
+reusing unaffected evidence.
 
 ### maintain-task-checkpoints
 
@@ -68,7 +75,8 @@ a matching checkpoint against current instructions, source, and Git. Recovery
 does not require the remaining task to be complex or authorize new files.
 Creating persistent state implicitly requires confirmation; routine updates
 stay within the previously confirmed scope. Checkpoints never store credentials
-or replace Git.
+or replace Git. They link durable conclusions to existing records and do not
+automatically expand the task into formal documentation work.
 
 ### codebase-handbook
 
@@ -80,7 +88,10 @@ Navigation is read-only and verifies relevant stale evidence against source;
 it does not authorize handbook writes or initialize a missing handbook.
 Changes affecting documented behavior or cited symbols trigger an impact
 assessment. Every handbook write stays under `.codebase-handbook/`; source code
-and ordinary repository files remain read-only evidence for this Skill.
+and ordinary repository files remain read-only evidence for this Skill. Focused
+queries read matching index and manifest entries and reuse unchanged preferences.
+Explicit handbook work authorizes ordinary in-scope writing; material scope
+expansion and ambiguous destructive changes still require confirmation.
 
 ## Install and update
 

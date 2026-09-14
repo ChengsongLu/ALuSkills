@@ -1,6 +1,6 @@
 ---
 name: codebase-handbook
-description: Use an existing .codebase-handbook to answer codebase questions about architecture, responsibilities, runtime flows, contracts, or implementation locations, even when the user does not mention the handbook. Also assess synchronization needs when changes may affect documented behavior, state, side effects, relationships, or cited symbols. Support explicit handbook initialization, consultation, updates, validation, rendering, and restructuring. Keep navigation read-only and confirm material writes as required; write only inside the handbook. Skip mechanical, formatting, comments-only, tests-only, and localized behavior-preserving edits unless handbook inspection is requested or required. Never initialize a handbook implicitly.
+description: Use an existing handbook for codebase questions and assess changes affecting its documented behavior. Also initialize or maintain a handbook when requested; skip unrelated or mechanical edits.
 ---
 
 # Codebase Handbook
@@ -36,11 +36,11 @@ and change impact.
    locations when a handbook exists. For edit requests, first apply the
    low-impact exclusions below. If no handbook exists, continue the underlying
    task without initializing one.
-4. For an applicable task with an existing handbook, read these files in order:
-   1. `config.yaml`
-   2. `preferences.md`
-   3. `manifest.yaml`
-   4. `index.md`
+4. For an applicable task, read `config.yaml` and `preferences.md` once and
+   reuse them unless changed. Start navigation with `index.md`, then retrieve
+   matching `manifest.yaml` entries and relevant chapters. The lightweight
+   impact path takes precedence over full preparation; do not read the entire
+   manifest merely to answer a focused question.
 5. Apply requirements in this precedence order:
    1. The user's current explicit instructions
    2. `.codebase-handbook/preferences.md`
@@ -60,6 +60,9 @@ without reading handbook content, creating an impact checklist, rebuilding
 `handbook.html`, or running handbook validation.
 
 ## Choose a Workflow
+
+Read only the matching section of `workflows.md` and its applicable preparation.
+Do not load other workflow sections for a focused request.
 
 - **Initialize**: Read [workflows.md](references/workflows.md), then
   [handbook-spec.md](references/handbook-spec.md),
@@ -92,8 +95,10 @@ without reading handbook content, creating an impact checklist, rebuilding
 - Treat Git-tracked files as the default analysis boundary.
 - Respect `.gitignore`. Exclude dependencies, build products, caches,
   binaries, and generated files by default.
-- Explain why ignored content is needed and request permission before reading
-  it. Never modify `.gitignore` automatically.
+- Exclude ignored content by default. Read a directly relevant, non-sensitive
+  ignored file when the task already authorizes it and project policy permits;
+  ask only when sensitivity or authorization is unresolved. Never modify
+  `.gitignore` automatically.
 - Do not prescribe whether `.codebase-handbook/` is tracked or ignored. Do not
   inspect or alter its Git tracking policy unless the user asks.
 - Preserve unrelated working-tree changes and concurrent edits.

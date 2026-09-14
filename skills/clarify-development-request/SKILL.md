@@ -1,11 +1,11 @@
 ---
 name: clarify-development-request
-description: Assess development requests when unresolved decisions could materially change product behavior, contracts, scope, or acceptance criteria, even without an explicit clarification request. Investigate repository facts first; confirm structured clarification before implicit entry or writing brief.md. Explicit requests to clarify requirements, create a brief, ask one question at a time, confirm items, or collaboratively define feature behavior authorize entry. Resolve decisions one focused question at a time. Skip ordinary consultation, diagnosis, review-only work, mechanical edits, and clear low-risk changes; a short request, missing local implementation details, or reversible technical choices alone are not triggers.
+description: Resolve material requirement decisions that repository evidence cannot answer. Use for ambiguous development behavior or explicit clarification requests; skip routine implementation choices and review-only work.
 ---
 
 # Clarify Development Request
 
-Convert an ambiguous development request into a confirmed, implementation-ready brief. Investigate repository facts first, ask only decision-changing questions, and do not implement while material choices remain unresolved.
+Resolve ambiguous development requirements from repository facts and decision-changing questions. Keep resolved decisions in the conversation or an authorized brief, and pause only implementation that depends on unresolved material choices.
 
 ## Gate the workflow before writing
 
@@ -35,24 +35,17 @@ behavior. The user need not ask for clarification by name.
    a directory or `brief.md`, do not ask for confirmation, and continue the
    user's requested work normally.
 
-Treat an explicit request to clarify the task, create a development brief,
-confirm the request item by item, ask one question at a time, first get the
-requirements clear, or collaboratively define feature behavior or boundaries
-as authorization to enter this workflow. Do not ask for redundant entry
-confirmation. Otherwise, when preflight finds a material unresolved decision:
-
-1. Explain the decision, what it changes, and why repository evidence cannot
-   resolve it.
-2. Recommend whether to enter structured clarification and name the expected
-   `brief.md` artifact.
-3. Explicitly ask the user to confirm entering the workflow.
-4. Do not create a clarification directory or write `brief.md` before
-   confirmation. If the user declines, leave the underlying implementation
-   paused and report the unresolved decision that still needs direction.
+Ask the unresolved decision directly; permission to ask a question is not a
+separate gate. Continue unaffected authorized work while awaiting the answer.
+Resolve a small set of decisions in the conversation without creating files.
+An explicit request for a brief authorizes `brief.md`. Otherwise propose a brief
+only when durable decisions would materially help, and confirm that artifact
+before writing it. Declining a brief does not block work once the underlying
+decisions are resolved. Clarification alone does not authorize a persistent file.
 
 ## Place the output
 
-Use a user- or repository-specified location when one is explicit. Otherwise persist each clarification under the project root:
+When a brief is authorized, use a user- or repository-specified location, or the following default:
 
 ```text
 .clarify-development-request/
@@ -63,14 +56,14 @@ Use a user- or repository-specified location when one is explicit. Otherwise per
 Derive `short-name` from confirmed scope, not from an unverified initial guess. Start `NNN` at `000` and select the next unused sequence for the same date and short name. Keep every clarification run isolated.
 
 Create `brief.md` only after the preflight gate confirms that the request belongs
-in this workflow, the user has authorized entry, and enough scope is known to
+in this workflow, the user has authorized the artifact, and enough scope is known to
 name it safely. Update that file as decisions change; do not create parallel
 notes that can drift. Do not modify ignore rules or stage the artifact unless
 the user explicitly requests it.
 
 ## Establish the boundary
 
-1. Finish reading applicable repository instructions, current documentation, relevant code, tests, existing specs, and analogous implementations.
+1. Reuse established repository evidence; read additional sources only to resolve a material uncertainty.
 2. Split an oversized request into independently deliverable concerns. Explain the split and obtain agreement on the concern to clarify first.
 3. Treat repository facts as evidence, not as substitutes for product decisions. Surface conflicts between current code and historical design.
 
@@ -89,9 +82,9 @@ Do not ask the user for information that can be determined from the repository.
 
 ## Resolve material decisions
 
-Ask one focused question at a time. Explain what the answer changes. Give a recommendation and its evidence when useful, but do not use a recommendation to decide product semantics on the user's behalf.
+Ask dependent questions one at a time; batch a few independent questions when easier to answer. Honor an explicit request for one question at a time. Explain what each answer changes. Give a recommendation and its evidence when useful, but do not use a recommendation to decide product semantics on the user's behalf.
 
-Check only applicable dimensions, in this order:
+Check applicable unresolved dimensions; use dependencies to choose the order:
 
 1. goal and success criteria;
 2. scope and non-goals;
@@ -126,11 +119,11 @@ After the request is sufficiently clear:
 3. Recommend an approach using current repository evidence.
 4. Avoid manufacturing alternatives when one approach is plainly appropriate.
 5. Describe the selected direction at the level of module boundaries, data flow, visible behavior, error handling, and validation—not file-by-file implementation.
-6. Confirm independent design decisions separately rather than hiding them in one blanket approval.
+6. Make each material design choice explicit; independent choices may be presented together.
 
 ## Deliver the development brief
 
-Write a concise, deterministic `brief.md` containing:
+When authorized, write a concise, deterministic `brief.md` containing:
 
 - **Goal and success criteria**
 - **Scope and non-goals**
@@ -145,7 +138,7 @@ Write a concise, deterministic `brief.md` containing:
 
 Do not leave decision-changing language such as “could,” “prefer,” “by default,” “later,” or “A or B” in the confirmed brief. Explicitly defer only local implementation choices that cannot change contracts, behavior, or acceptance.
 
-Before presenting the brief for confirmation:
+Before delivering an authorized brief:
 
 1. Self-review it against repository evidence and every conversation decision.
 2. Check completeness, internal consistency, acceptance testability, and the
@@ -154,20 +147,18 @@ Before presenting the brief for confirmation:
    behavior.
 4. Ask the user to resolve any issue that changes semantics, scope, contracts,
    state, security, compatibility, or acceptance.
-5. Report the self-review conclusion, link `brief.md`, and explicitly ask the
-   user to confirm the brief and its next step.
+5. Report the self-review conclusion and link `brief.md`. Ask only about material
+   decisions still unresolved or a review checkpoint explicitly requested by the user.
 
-Do not enter specification, planning, or implementation until the self-review
-is complete, blocking issues are resolved, and the user confirms the brief.
-Consider clarification complete only when no material decision remains, the
-user confirms the brief. After confirmation, stop this workflow, report that
-clarification is complete, and ask the user to choose the next action when the
-brief records `Awaiting user direction`. Do not invoke, require, or direct the
-user to another Skill, and do not begin specification, planning, or
-implementation as part of this workflow.
+Clarification is complete when material decisions are resolved and any authorized
+brief records them accurately. Do not require repeated confirmation of decisions
+already made. Return to the original authorized task; if the user requested only
+clarification, deliver the result without starting implementation. Ask for a next
+step only when the user has not already specified one. Do not invoke or prescribe
+another Skill.
 
-If requirements change later, reopen only the affected decisions and update the
-brief before any downstream work continues.
+If requirements change later, reopen only the affected decisions and update any
+authorized brief before dependent work continues.
 
 When this workflow produced a brief, summarize the outcome and link to
 `brief.md` in the final response. When the preflight gate exits, continue the
