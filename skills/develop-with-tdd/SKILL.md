@@ -1,6 +1,6 @@
 ---
 name: develop-with-tdd
-description: Implement repository changes with selective, risk-driven test-driven development by mapping tests to confirmed behavior, choosing stable seams and appropriate test levels, and completing focused red-green-refactor cycles. Use when the user explicitly requests TDD or when implementing a regression fix, complex business rule, state transition, concurrency behavior, security boundary, external contract, or side effect where TDD materially reduces risk. Do not invoke for review-only work, test-only requests, documentation, simple configuration, mechanical edits, or other low-risk changes.
+description: Implement regression fixes and high-risk behavior with focused TDD, or use when TDD is explicitly requested. Skip documentation, mechanical edits, and other low-risk changes.
 ---
 
 # Develop With TDD

@@ -1,6 +1,6 @@
 ---
 name: maintain-task-checkpoints
-description: Assess checkpoint needs for long-running, multi-stage, or interruption-prone development with high recovery cost, including migrations, state transitions, external side effects, and agent handoffs. Also use when resuming interrupted work, continuing with incomplete context, or restoring an existing task checkpoint, even if the user does not mention checkpoints. Verify matching saved state against current instructions, source, and Git before continuing. Support explicit checkpoint requests and confirmed updates, handoffs, and cleanup. Confirm before implicitly creating persistent state; do not create checkpoints for short, low-risk work or merely to resume a task.
+description: Maintain recovery checkpoints for work with high recovery cost, or verify an existing checkpoint when resuming interrupted work. Do not create checkpoints merely because a task resumes.
 ---
 
 # Maintain Task Checkpoints
@@ -121,7 +121,7 @@ Never store:
 - unredacted full logs, requests, responses, or command output;
 - large source excerpts, test output, conversation history, or formal documents.
 
-Move durable architecture, interface, business, security, or operational conclusions into the project's formal documentation. A checkpoint must not become the only copy of a long-lived decision.
+Link durable conclusions to existing authoritative records. If a long-lived decision exists only in the checkpoint, report it at handoff; transfer it only within an already authorized documentation scope. Checkpoint maintenance does not authorize new formal-documentation work.
 
 ## Restore safely
 
@@ -138,7 +138,7 @@ Resolve truth in this order:
 After reading a checkpoint:
 
 - verify repository path, branch, task ID, timestamp, and diff;
-- recheck current files and validation before continuing;
+- recheck relevant files and validation evidence; rerun checks only when changes or missing evidence make earlier results unreliable;
 - correct stale state when higher-priority evidence disagrees;
 - avoid repeating migrations, messages, deployments, task creation, file operations, or other side effects;
 - do not merge multiple plausible checkpoints without reliable evidence; ask the user when identity remains ambiguous.
@@ -150,7 +150,7 @@ At completion:
 1. Mark `STATE.md` as `completed`.
 2. Record final changes, validation, unverified items, and residual risks.
 3. Append a final checkpoint.
-4. Confirm that durable conclusions exist in source, tests, specs, or maintained documentation.
+4. Link durable conclusions to source, tests, specs, or maintained documentation; report any conclusion still held only here without expanding the task.
 
 Before handoff, make current work, next work, blockers, and non-repeatable side effects accurate and prominent. Require the receiver to revalidate the checkpoint against higher-priority evidence.
 

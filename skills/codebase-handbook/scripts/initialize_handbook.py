@@ -54,8 +54,8 @@ def main() -> int:
     build_handbook(root)
     print(f"created {target}")
     print(
-        "next: read preferences.md, inventory the project, and confirm the "
-        "handbook plan before deep writing"
+        "next: read preferences.md, inventory the project, and write within the "
+        "requested scope; ask only about unresolved material decisions"
     )
     return 0
 

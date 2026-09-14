@@ -15,8 +15,11 @@
 
 1. Resolve the project root.
 2. Inspect Git status and preserve unrelated changes.
-3. If `.codebase-handbook/` exists, read `config.yaml`, `preferences.md`,
-   `manifest.yaml`, and `index.md` in that order.
+3. If a handbook exists, reuse `config.yaml` and `preferences.md` already read
+   for this task, refreshing them if changed. Start with `index.md` and retrieve
+   relevant manifest entries. Read the full inventory only for initialization
+   or a full audit. Focused navigation and lightweight impact checks do not
+   require full preparation.
 4. Resolve the active language and scope.
 5. Use Git-tracked files as the default source inventory.
 6. Treat source code, configuration, migrations, and tests as evidence of
@@ -45,14 +48,10 @@ Initialize only after an explicit request.
    developer change-task boundaries. Do not collapse distinct topics only to
    keep the chapter count small.
 10. Complete the chapter inventory and relationships before deep writing.
-11. Present the evidence-based initialization plan: scope and exclusions,
-    coverage inventory, parts, chapters, reading paths, relationships, and
-    proposed writing batches. Explain the recommendation and explicitly ask the
-    user to confirm it.
-12. Treat the explicit initialization request as authorization for the empty
-    skeleton and read-only discovery, not as confirmation of the discovered
-    book structure. Keep the proposed inventory and structure in memory; do not
-    begin deep writing until the user confirms the plan.
+11. Summarize the evidence-based scope, exclusions, structure, and writing batches.
+12. An explicit initialization request authorizes ordinary structure and writing
+    within that scope. Ask only when discovery exposes material scope or content
+    decisions, or the user requested approval of the structure.
 13. Write orientation, architecture foundations, and core runtime flows first.
 14. Analyze evidence completely, then draft chapters as explanations rather
     than preserving source-discovery or call order. Populate chapters in
@@ -176,7 +175,9 @@ localized change, use a lightweight impact check:
 
 ## Incrementally validate
 
-Run after a related code or handbook change.
+Run when handbook sources changed, the user or repository requires validation,
+or evidence indicates stale mappings. A related code change alone does not
+require a rebuild or deterministic validation; apply the impact check first.
 
 1. Validate required files, Schema versions, Markdown links, manifest chapter
    paths, source paths, and the `handbook.html` source hash.
@@ -214,13 +215,11 @@ an explicit request.
 
 Keep the handbook about the current system.
 
-Before writing, present the repository evidence, recommended structural action,
-affected chapter IDs and relationships, content migration or preservation plan,
-and expected navigation impact. Explicitly ask the user to confirm the
-evidence-based plan; an earlier request to evolve the handbook is intent to
-assess, not confirmation of the resulting structure. Do not rename, split,
-merge, deprecate, remove, or archive content before confirmation unless the
-user explicitly waives this gate.
+Use the repository evidence to identify affected chapters, relationships, and
+content that must be preserved. An explicit structural request authorizes its
+specified operation and scope. Confirm a material expansion, ambiguous target,
+or removal of still-valid content; do not require a second approval for an
+already specified rename, split, or merge. Preserve protected content.
 
 Within the confirmed plan:
 

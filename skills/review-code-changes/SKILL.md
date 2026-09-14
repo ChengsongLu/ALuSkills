@@ -1,6 +1,6 @@
 ---
 name: review-code-changes
-description: Review a working-tree diff, staged changes, commit, branch comparison, or pull-request change set for concrete correctness, reliability, security, compatibility, testing, and documentation risks, and confirm before creating persistent review artifacts that the user did not explicitly request. Use when the user explicitly requests a code review, asks to inspect a diff or commit for findings, or asks to remediate findings from such a review. Do not invoke merely to self-check an ordinary implementation, validate a small edit, or inspect code without a requested change set. Review-only requests must not modify code.
+description: Review a requested code diff for logic, correctness, and related risks, or remediate its findings when authorized. Skip routine implementation self-checks and whole-codebase audits.
 ---
 
 # Review Code Changes
@@ -9,12 +9,10 @@ Review changed code against its intended contract and adversarial failure condit
 
 ## Select the mode
 
-- **Lightweight review:** Use for a focused, low-risk change that can be read
-  reliably in one pass when the user did not request a persistent artifact.
-  Inspect and report in the conversation without creating review files.
-- **Recorded review:** Use when the user requests a formal or persistent review,
-  when assessing PR or branch readiness, or when the change is large, high risk,
-  or needs a durable handoff. Persist the review as described below.
+- **Conversation review:** Default for any requested change set. Report findings
+  in the conversation; use an in-memory coverage checklist when useful.
+- **Recorded review:** Use when the user requests a persistent report, or agrees
+  to one because durable handoff evidence is needed. Risk alone does not require files.
 - **Remediation:** Enter only when the user explicitly asks to fix or optimize
   identified findings. Read [references/remediation.md](references/remediation.md)
   completely before modifying code. Adversarially assess the proposed fix before
@@ -22,25 +20,19 @@ Review changed code against its intended contract and adversarial failure condit
   after validation. Do not close remediation while that fresh review identifies
   a credible defect or vulnerability introduced by the fix.
 
-This workflow covers changed code. Do not use it as a project-wide or module-wide codebase inspection process.
+This workflow covers code logic, correctness, and related reliability, security,
+compatibility, test, and documentation risks in changed code. A PR or branch is
+only a source for the comparison diff. Do not turn this into PR approval, CI-status,
+merge-readiness, or repository-wide inspection work.
 
-Treat initial mode selection as a read-only preflight and finalize it after
-freezing the baseline below. Use actual change risk, not file count alone.
-Explain the recommendation and the proposed artifacts. An explicit request for
-a formal, recorded, or persistent review authorizes recorded mode.
-Otherwise, explicitly ask the user to confirm recorded mode before creating
-`.review-code-changes/`, `review.md`, or `coverage.md`; a general request to
-review code authorizes read-only inspection, not persistent artifacts.
-
-If the user declines recorded mode, continue as a lightweight review with an
-in-memory coverage checklist when that remains reliable. If a reliable review
-requires durable handoff evidence, report the limitation and ask for direction
-instead of silently writing files. Reassess and reconfirm when the review scope
-or risk changes enough to alter the recommended mode or artifact set.
+Select review depth from the actual behavior and impact. Persist findings only
+when requested or after confirming a concrete need for durable handoff evidence.
+Do not pause code inspection merely to ask about report format. If persistence
+is declined, continue in the conversation and report any material evidence limit.
 
 ## Place the output
 
-Skip this section in lightweight review mode. For a recorded review, use a user-
+Skip this section in conversation review mode. For a recorded review, use a user-
 or repository-specified location when one is explicit. Otherwise create one
 isolated review directory under the project root:
 
@@ -76,17 +68,14 @@ never treat it as code under review. Continue to use `review.md` and
 `coverage.md` as workflow evidence during authorized remediation, and continue
 to report other user changes normally.
 
-For a lightweight review, keep the exact comparison base and reviewed paths in
-memory. Upgrade to a recorded review before producing artifacts only when the
-inspection reveals cross-module or high-risk behavior, cannot be completed
-reliably in one focused pass, or the user asks for a durable report. Apply the
-recorded-mode recommendation and confirmation gate before that upgrade.
-
-Treat a change as large or high risk when it crosses modules or changes persistence, migrations, state transitions, concurrency, background work, security, compatibility, or external side effects, or when it cannot be read reliably in one focused pass.
+For a conversation review, keep the exact comparison base and reviewed paths in
+memory. Increase depth when evidence reveals material risk; changing depth does
+not change the output mode. Cross-module edits alone are not high risk. Consider
+changed contracts, state, persistence, concurrency, security, and external effects.
 
 ## Record high-risk coverage
 
-For a large or high-risk review, maintain `coverage.md` in the current review directory. If the output directory cannot be written, keep an in-memory checklist and report that limitation rather than writing elsewhere.
+For a large or high-risk review, maintain a coverage checklist; use `coverage.md` only in an authorized recorded review. If the output directory cannot be written, keep an in-memory checklist and report that limitation rather than writing elsewhere.
 
 Organize coverage by capability, call chain, or state machine—not by file count. For each area, inspect or mark with a reason:
 
@@ -158,7 +147,7 @@ Do not report theoretical speculation, style preference, or a concern without a 
 
 ## Deliver the review
 
-For a lightweight review, report findings first in the final response with tight
+For a conversation review, report findings first in the final response with tight
 file and line references, followed by meaningful validation gaps and residual
 risks. Do not create `review.md` merely to record that no finding was found.
 
