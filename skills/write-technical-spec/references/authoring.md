@@ -102,7 +102,11 @@ Do not require approval after every document or implementation phase.
 
 When the requested set is complete, apply
 [readiness-review.md](readiness-review.md) to check cross-document consistency and
-implementation readiness. Report the verdict and link the documents together.
+implementation readiness, including one overall design simplification check.
+Present any proposed simplification and its specific update points for explicit
+user confirmation before modifying the specification as described in that review.
+Report the verdict, the simplification outcome, and any proposals awaiting
+confirmation, and link the documents together.
 A request to author a specification does not itself authorize coding. If coding
 was also authorized, return to it after blocking design issues are resolved;
 otherwise deliver the specification and stop.
