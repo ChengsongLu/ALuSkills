@@ -45,6 +45,9 @@ requests authorize that scope without repeated entry or document-by-document
 approval; material unresolved decisions still require direction. Assessment,
 authoring, and read-only review load only their relevant guidance. Authoring
 uses `design.md`, `implement.md`, and optional `flow.md`, respecting narrower requests.
+After authoring or updating the requested set, it reviews the overall design for
+simplifications that improve stability and reduce complexity. It presents proposed
+update points for explicit user confirmation before applying any simplification.
 
 ### develop-with-tdd
 
