@@ -1,157 +1,110 @@
 ---
 name: maintain-task-checkpoints
-description: Maintain recovery checkpoints for work with high recovery cost, or verify an existing checkpoint when resuming interrupted work. Do not create checkpoints merely because a task resumes.
+description: Create and maintain task recovery checkpoints when the user explicitly asks for persistent task state or a cross-session handoff, or verify an existing checkpoint when resuming interrupted work. Do not create checkpoints on your own initiative.
 ---
 
 # Maintain Task Checkpoints
 
-Maintain a compact recovery index for complex coding work. Treat checkpoints as temporary evidence subordinate to user instructions, repository rules, current source, Git state, tests, and formal design documents.
+Maintain a compact recovery index for coding work that the user wants to
+persist or hand off. Checkpoints are temporary evidence, subordinate to user
+instructions, repository rules, current source, Git state, tests, and formal
+design documents.
 
 ## Select the entry path
 
-- **Resume:** After interruption, handoff, or incomplete-context continuation,
-  look for a matching existing checkpoint and follow **Restore safely** before
-  repeating work. The user need not mention checkpoints, and the remaining work
-  need not still be complex. Discovery and verification are read-only and do not
-  require the activation gate for creating new files.
-- **Assess or maintain:** For new work or work whose recovery cost has grown,
-  use the persistence assessment below. Continue routine updates to a matching,
-  previously authorized checkpoint within its confirmed scope.
+- **Create or maintain:** Only when the user explicitly asks for a checkpoint,
+  persistent task state, or a cross-session or agent-to-agent handoff. That
+  request authorizes creation and routine updates within the stated task scope.
+  Do not propose or create checkpoints merely because a task is long or
+  complex.
+- **Resume:** After interruption, handoff, or continuation with incomplete
+  context, look for a matching existing checkpoint and follow **Restore
+  safely** before repeating work. Discovery and verification are read-only, and
+  resuming alone does not authorize creating new checkpoint files.
 
-If no matching checkpoint exists, continue from available repository and task
-evidence, asking for missing task identity or decisions when needed. Apply the
-creation gate only if new persistent state is warranted; resuming alone does
-not authorize creating it.
-
-## Decide whether to persist state
-
-Create a checkpoint when explicitly requested or when losing current context would make safe recovery materially difficult. Consider:
-
-- multiple independently completed stages;
-- changes across several modules;
-- important design decisions, migrations, state machines, concurrency, or side effects;
-- long operations likely to be interrupted;
-- agent-to-agent handoff;
-- known context compaction.
-
-Do not activate merely because many files are present.
-
-Treat this decision as a read-only preflight. An explicit request for a
-checkpoint, persistent task state, or handoff artifact authorizes activation.
-Otherwise:
-
-1. Assess actual recovery cost and the risk of lost or repeated work.
-2. Recommend whether to activate checkpoints using task-specific reasons.
-3. State the proposed directory, files, and categories of information to
-   persist.
-4. Explicitly ask the user to confirm activation.
-5. Do not create or update checkpoint files before confirmation. If the user
-   declines, continue the underlying task without checkpoints when safe and
-   report the resulting recovery limitation.
-
-Once activated, do not repeat confirmation for routine updates within the
-confirmed task identity, scope, location, and artifact set. Reassess and obtain
-confirmation before changing task identity, moving the checkpoint, materially
-expanding persisted scope, or adding optional artifacts that were not included
-in the confirmed recommendation.
+If no matching checkpoint exists, continue from repository and task evidence,
+asking for missing task identity or decisions when needed.
 
 ## Choose the output location
 
-Use a user- or repository-specified location when one is explicit. Otherwise store each task under the project root:
+Use a user- or repository-specified location when one is explicit. Otherwise:
 
 ```text
 .maintain-task-checkpoints/
 └── YYYYMMDD-HHMMSS-short-name/
     ├── STATE.md
     ├── CHECKPOINTS.md
-    └── artifacts/          # create only when necessary
+    └── artifacts/          # only when necessary
 ```
 
-Use a short, descriptive task name that does not invent unconfirmed domain terminology. Keep every task isolated.
+Use a short descriptive name without invented domain terms, and keep each task
+isolated. Verify the directory is permitted and writable; if it conflicts with
+project rules, agree on an alternative rather than writing elsewhere. Do not
+modify ignore rules or stage checkpoint artifacts unless the user explicitly
+asks. Confirm again before changing task identity, moving the checkpoint, or
+materially expanding what is persisted.
 
-Before writing, verify that the directory is permitted and writable. If it conflicts with project rules, obtain agreement on an alternative; do not silently write elsewhere. Do not modify ignore rules or stage checkpoint artifacts unless the user explicitly requests it.
+## Record state
 
-## Create the initial state
+Create `STATE.md` before the next affected operation, recording verified
+progress only:
 
-After activation and development scope are confirmed, create `STATE.md` before implementation begins, or before the next affected operation if the need is discovered mid-task. Record verified progress already made, including:
-
-- task ID, status, last update, absolute repository path, branch, and starting commit;
+- task ID, status (`in_progress`, `blocked`, or `completed`), last update,
+  absolute repository path, branch, and starting commit;
 - goal, scope, and non-goals;
-- confirmed decisions;
-- important assumptions with evidence sources;
+- confirmed decisions and important assumptions with their evidence;
 - completed, current, and next work;
 - changed files and their purposes;
 - passed, failed, and unperformed validation;
 - blockers, open decisions, and residual risks;
 - side effects that must not be repeated during recovery.
 
-Use only `in_progress`, `blocked`, or `completed` as task status. Never record planned or unverified work as completed.
+Initialize `CHECKPOINTS.md` as an append-only stage history. Do not duplicate
+what source, Git, or formal documents already record, and never record planned
+or unverified work as completed.
 
-Initialize `CHECKPOINTS.md` as an append-only stage history. Do not split every operation into a separate file or duplicate information recoverable from source, Git, or formal documents.
+Update `STATE.md` after the current atomic operation when scope or plan
+changes, a meaningful stage completes, an important decision is made, a risky
+operation is about to begin, validation status changes, a blocker appears, or
+the work period is ending. When a stage completes, append a checkpoint with the
+time, stage, work done, decisions, files changed, validation result, and next
+step. Record conclusions, not command transcripts. If writing fails, continue
+safe in-scope work and report the missing recovery evidence.
 
-## Update at meaningful boundaries
-
-Update `STATE.md` after finishing the current atomic operation when:
-
-- confirmed scope or plan changes;
-- an independently meaningful stage completes;
-- an important decision is made;
-- a long, risky, or interruptible operation is about to begin;
-- validation status changes;
-- a blocker or user decision is needed;
-- the current work period is about to end or context is likely to compact.
-
-When a stage completes, also append a checkpoint containing:
-
-- completion time and stage name;
-- work completed;
-- decisions established or changed;
-- files changed;
-- validation result;
-- remaining work and next step.
-
-Record reasons and conclusions, not a command transcript. If checkpoint writing fails, continue safe in-scope implementation when possible, but report the missing recovery evidence.
-
-## Protect information
-
-Never store:
-
-- secrets, tokens, credentials, or `.env` contents;
-- personal or sensitive data;
-- unredacted full logs, requests, responses, or command output;
-- large source excerpts, test output, conversation history, or formal documents.
-
-Link durable conclusions to existing authoritative records. If a long-lived decision exists only in the checkpoint, report it at handoff; transfer it only within an already authorized documentation scope. Checkpoint maintenance does not authorize new formal-documentation work.
+Never store secrets, tokens, credentials, `.env` contents, personal or
+sensitive data, unredacted logs, requests, responses, or large excerpts of
+source, output, or conversation. Link durable conclusions to authoritative
+records; checkpoint maintenance does not authorize new formal-documentation
+work.
 
 ## Restore safely
 
-Look for a matching checkpoint after interruption, handoff, incomplete-context continuation, or unexplained related working-tree changes.
-
-Resolve truth in this order:
-
-1. latest explicit user instruction;
-2. applicable repository rules and current formal specifications;
-3. current source, Git state and diff, and actual validation;
-4. checkpoint files;
-5. historical conversation or summaries.
+Resolve truth in this order: the latest explicit user instruction; repository
+rules and current formal specifications; current source, Git state, diff, and
+actual validation; checkpoint files; historical conversation or summaries.
 
 After reading a checkpoint:
 
 - verify repository path, branch, task ID, timestamp, and diff;
-- recheck relevant files and validation evidence; rerun checks only when changes or missing evidence make earlier results unreliable;
+- recheck relevant files and validation evidence, rerunning checks only when
+  changes or missing evidence make earlier results unreliable;
 - correct stale state when higher-priority evidence disagrees;
-- avoid repeating migrations, messages, deployments, task creation, file operations, or other side effects;
-- do not merge multiple plausible checkpoints without reliable evidence; ask the user when identity remains ambiguous.
+- never repeat migrations, messages, deployments, task creation, file
+  operations, or other recorded side effects;
+- do not merge multiple plausible checkpoints without reliable evidence; ask
+  the user when identity remains ambiguous.
 
-## Complete, hand off, and clean up
+## Complete and hand off
 
-At completion:
+At completion, mark `STATE.md` as `completed`, record final changes,
+validation, unverified items, and residual risks, and append a final checkpoint.
+Report any durable conclusion that exists only in the checkpoint.
 
-1. Mark `STATE.md` as `completed`.
-2. Record final changes, validation, unverified items, and residual risks.
-3. Append a final checkpoint.
-4. Link durable conclusions to source, tests, specs, or maintained documentation; report any conclusion still held only here without expanding the task.
+Before handoff, make current work, next work, blockers, and non-repeatable side
+effects accurate and prominent, and require the receiver to revalidate against
+higher-priority evidence.
 
-Before handoff, make current work, next work, blockers, and non-repeatable side effects accurate and prominent. Require the receiver to revalidate the checkpoint against higher-priority evidence.
-
-Preserve the completed checkpoint by default. Delete it only when the current user request already authorizes checkpoint cleanup or after obtaining explicit user confirmation, and only after confirming it contains no needed deliverable or untransferred durable conclusion. Remove only the confirmed task directory, report what was removed, and never remove another task's checkpoint; preserve and report ambiguous ownership.
+Preserve completed checkpoints by default. Delete one only when the user has
+authorized cleanup and it holds no needed deliverable or untransferred
+conclusion; remove only that task's directory, report what was removed, and
+never remove another task's checkpoint.

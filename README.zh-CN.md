@@ -18,9 +18,11 @@ ALuSkills 是一组面向真实代码库的软件开发 Agent Skills：
 | --- | --- | --- |
 | [`clarify-development-request`](skills/clarify-development-request/) | 在实现前解决会影响需求结果的实质决策 | 对话中的决策；可选 `brief.md` |
 | [`write-technical-spec`](skills/write-technical-spec/) | 评估是否需要规格，并创建、更新或审查技术设计 | 可选 `flow.md`、`design.md`、`implement.md` |
-| [`develop-with-tdd`](skills/develop-with-tdd/) | 使用聚焦 TDD 实现选定的高风险行为 | 源码与测试 |
+| [`develop-with-tdd`](skills/develop-with-tdd/) | 用聚焦 TDD 保护回归缺陷、难以靠阅读判断的逻辑和契约变化 | 源码与测试 |
 | [`review-code-changes`](skills/review-code-changes/) | 审查变更，并安全修复已授权的问题 | 可选 `review.md`、`coverage.md`、`remediation.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 评估持久化需要，并从检查点恢复中断任务 | `STATE.md`、`CHECKPOINTS.md` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 按要求持久化任务状态，并从检查点恢复中断任务 | `STATE.md`、`CHECKPOINTS.md` |
+| [`commit-changes`](skills/commit-changes/) | 以经确认、信息完整的提交信息提交已授权变更 | Git 提交 |
+| [`write-weekly-report`](skills/write-weekly-report/) | 将一周提交记录汇总为简洁周报 | 对话中的周报 |
 | [`codebase-handbook`](skills/codebase-handbook/) | 利用已有手册导航代码库，并维护技术手册 | Markdown 章节、`manifest.yaml`、`handbook.html` |
 
 ### clarify-development-request
@@ -41,10 +43,10 @@ ALuSkills 是一组面向真实代码库的软件开发 Agent Skills：
 
 ### develop-with-tdd
 
-当用户明确要求 TDD，或需要保护回归缺陷、复杂规则、状态流转、并发行为、
-安全边界、外部契约或副作用时使用。它将测试映射到已确认行为，选择稳定的
-测试接缝，并执行小步红—绿—重构循环。它不会创建独立流程产物，也不会把
-TDD 强加给低风险修改。
+当用户明确要求 TDD，或涉及回归缺陷、无法仅靠阅读判断正确性的逻辑（状态机、
+并发、重试与恢复、复杂规则）以及对外契约变化时使用。普通增删改查、接线和
+机械修改直接实现并补充相称的测试。它将测试映射到已确认行为，从最接近真实
+调用方的边界测试，只有实际观察到红测试失败才称为 TDD，不创建独立流程产物。
 
 ### review-code-changes
 
@@ -56,11 +58,21 @@ TDD 强加给低风险修改。
 
 ### maintain-task-checkpoints
 
-用于长期、多阶段、恢复成本高、容易中断或明确需要交接的任务。中断恢复或
-上下文不完整时，也会查找匹配的检查点，并根据当前指令、源码及 Git 核验。
-恢复不要求剩余任务仍然复杂，也不授权新建文件。隐式创建持久化状态前必须
-取得确认；常规更新限于此前确认的范围。检查点不保存凭据，也不替代 Git。
-长期结论链接到现有权威记录，不自动扩大为正式文档维护任务。
+当用户明确要求持久化任务状态或跨会话、跨 Agent 交接时使用，不会主动创建
+检查点。中断恢复时会查找匹配的检查点，并根据当前指令、源码及 Git 核验；
+恢复只读，不授权新建文件。检查点不保存凭据、不替代 Git，也不把任务扩大为
+正式文档维护。
+
+### commit-changes
+
+用户要求提交时使用。它根据实际工作区确定已授权的提交范围，标题概括核心成果，
+正文按主题覆盖重要变更，只记录实际执行过的验证，并在提交前展示完整提交信息
+供确认。未经要求不 push，不对共享分支 force push；仓库规则优先于它的默认约定。
+
+### write-weekly-report
+
+基于当前仓库提交记录生成周报。默认覆盖上一个周五 18:30 以来的提交，按主题
+合并相关提交，只保留最终有效结论，先输出日期范围，再输出简短的编号列表。
 
 ### codebase-handbook
 
@@ -107,7 +119,9 @@ npx skills update --global \
   develop-with-tdd \
   review-code-changes \
   maintain-task-checkpoints \
-  codebase-handbook
+  codebase-handbook \
+  commit-changes \
+  write-weekly-report
 ```
 
 验证安装：
@@ -124,10 +138,12 @@ npx skills list --global
 skills/
 ├── clarify-development-request/
 ├── codebase-handbook/
+├── commit-changes/
 ├── develop-with-tdd/
 ├── maintain-task-checkpoints/
 ├── review-code-changes/
-└── write-technical-spec/
+├── write-technical-spec/
+└── write-weekly-report/
 ```
 
 每个 Skill 都包含 `SKILL.md` 和 `agents/openai.yaml`；只有工作流确实需要时，

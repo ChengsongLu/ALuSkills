@@ -1,153 +1,91 @@
 ---
 name: develop-with-tdd
-description: Implement regression fixes and high-risk behavior with focused TDD, or use when TDD is explicitly requested. Skip documentation, mechanical edits, and other low-risk changes.
+description: Implement regression fixes, logic whose correctness cannot be judged by reading, and external contract changes with focused TDD, or use when TDD is explicitly requested. Skip routine CRUD, wiring, documentation, and other low-risk changes.
 ---
 
 # Develop With TDD
 
-Implement the behavior that needs protection through focused red-green-refactor
-cycles. Apply TDD where its evidence is valuable; do not turn it into a ritual
-for every changed line.
+Protect the behavior that most needs evidence with short red-green cycles. TDD
+is an implementation technique here, not a ritual for every changed line and
+not a separate artifact workflow.
 
-## Select the TDD scope
+## Select the scope
 
-1. Read applicable repository instructions, requirements or specifications,
-   current implementation, relevant tests, and direct callers before editing.
-2. Use TDD when the user explicitly requests it. Otherwise use it only for
-   behavior whose complexity or failure risk justifies the cycle, especially:
-   - regression defects and complex business rules;
-   - state transitions, concurrency, retries, or recovery;
-   - persistence, external side effects, or security boundaries;
-   - public interfaces and other externally consumed contracts.
-3. Exclude documentation, comments, formatting, simple configuration,
-   mechanical changes, and low-risk connection code unless they participate in
-   a behavior that the selected test must exercise.
-4. When one task mixes high- and low-risk work, apply TDD only to the critical
-   behavior and use proportionate validation for the rest.
+1. Read applicable repository instructions, the relevant requirement, current
+   implementation, existing tests, and direct callers before editing.
+2. Use TDD when the user explicitly requests it, or for:
+   - regression defects;
+   - logic whose correctness cannot be confirmed by reading it, such as state
+     machines, concurrency, retry or recovery paths, and complex business rules;
+   - changes to public interfaces or other externally consumed contracts.
+3. Implement routine CRUD, wiring, configuration, documentation, formatting,
+   and mechanical changes directly, then add focused tests where the risk
+   warrants them. When one task mixes both kinds of work, apply TDD only to the
+   critical behavior.
+4. If meaningful TDD would require a new test harness or a broad testability
+   refactor, explain the benefit, the cost, and a narrower validation
+   alternative, then obtain confirmation before expanding the work.
 
-Treat TDD as an implementation technique, not a separate artifact workflow. Do
-not create planning or TDD-report files merely because this Skill applies. Keep
-the workflow self-contained: resolve its repository investigation and
-decision-making directly, do not invoke or recommend external workflows, and
-do not expand the user's requested scope.
+Do not create planning or report files because this Skill applies, and do not
+expand the user's requested scope.
 
-If meaningful TDD would require a new test harness, a broad testability
-refactor, or substantially higher delivery cost, explain the concrete benefit,
-cost, and a narrower validation alternative, then obtain confirmation before
-expanding the work.
+## Write tests that matter
 
-## Confirm behavior and risk
+- Map each test to a confirmed requirement, acceptance criterion, historical
+  defect, or concrete risk. Do not invent product behavior to make a test
+  possible; ask when a remaining ambiguity would change visible behavior,
+  contracts, state, or security.
+- Test through the boundary closest to the real caller that is still cheap and
+  deterministic: a public function, module entry point, API, event, persisted
+  result, or user-visible outcome.
+- Do not test private methods merely because they are easy to call, and do not
+  expose internals or add abstractions, forwarding layers, or dependency
+  injection solely to create a test hook.
+- Mock only uncontrollable, slow, expensive, or externally side-effecting
+  dependencies. Assert observable outcomes rather than chains of internal calls.
+- Control time, randomness, ordering, and shared state so tests stay
+  deterministic and independent.
+- For persistent or side-effecting behavior, cover the most relevant failure
+  boundary around the core commit point in addition to the main path: failure
+  before commit, auxiliary failure after commit, or duplicate execution. A
+  completed core side effect must not be repeated because later logging,
+  cleanup, or synchronization fails.
 
-Before writing a test, identify:
+## Run red-green cycles
 
-- the confirmed behavior or defect the test will protect;
-- the observable result and stable boundary through which it can be verified;
-- the realistic failure that the test prevents;
-- the smallest useful success, boundary, or failure case.
+1. **Red:** Write the tests for one behavior; its success and failure
+   boundaries may be written together. Run the narrowest command and confirm
+   each new test fails because the behavior is absent or the defect
+   remains—not because of a bad assertion, fixture, mock, environment, or
+   unrelated pre-existing failure. If a test unexpectedly passes, determine
+   whether the behavior already exists or the test observes the wrong thing
+   before changing production code.
+2. **Green:** Make the smallest implementation change that passes those tests
+   without breaking confirmed contracts or adjacent behavior. Rerun them.
+3. **Refactor when useful:** If the green change introduced duplication or
+   unclear responsibility, clean it up under the passing tests and rerun them.
+   Skip this step when the diff is already minimal.
+4. Move to the next behavior. Do not write tests for many unrelated behaviors
+   before starting implementation.
 
-Map every new test to a confirmed requirement, acceptance criterion, historical
-defect, or concrete risk. Do not invent product behavior to make a test
-possible. Investigate repository evidence first; when a remaining ambiguity
-would change visible behavior, contracts, state, security, compatibility, or
-acceptance, ask the user and pause the affected cycle.
+For a defect, reproduce it through a stable external boundary before fixing it.
+When an existing test conflicts with confirmed behavior, determine whether the
+test or the implementation is stale; do not bend a correct contract or keep a
+wrong implementation merely to make the suite green.
 
-Tests are implementation evidence, not a substitute for reviewing unmodeled
-failure orderings, state combinations, side effects, or recovery paths.
+Do not describe work as TDD if the red run was not actually observed failing
+for the intended reason. When the environment prevents a red or green run,
+continue only as far as repository constraints allow and report the missing
+evidence.
 
-## Choose the seam and test level
+## Validate and report
 
-A useful test seam is a boundary that a real caller uses and a test can observe
-or control reliably: a public interface, module entry point, API, event,
-persistent result, task terminal state, or user-visible outcome.
-
-- Prefer the seam closest to the real caller that can verify the behavior with
-  acceptable cost and determinism.
-- Use unit tests for isolated rules, integration tests for module cooperation,
-  contract or API tests for external interfaces, and end-to-end tests only when
-  a critical path cannot be protected more cheaply.
-- Do not begin from a private method merely because it is easy to call. Test an
-  internal algorithm directly only when it is itself a meaningful, complex
-  rule.
-- Do not expose private interfaces or introduce abstractions, compatibility
-  layers, forwarding modules, or dependency injection solely to create a test
-  hook.
-- Use mocks or stubs only for dependencies that are uncontrollable, slow,
-  expensive, or externally side-effecting. Prefer observable outcomes over a
-  network of assertions about internal calls.
-- Control time, randomness, execution order, and shared external state so that
-  tests remain deterministic and independent.
-
-For work crossing modules or layers, first select a minimal vertical slice from
-the real entry point to the core result. Keep the slice small in data and
-features without choosing temporary core boundaries, data models, or contracts
-that the next increment must replace. Use it to validate module relationships
-and the important seams before filling in secondary capabilities.
-
-## Run focused red-green-refactor cycles
-
-Complete one behavior or closely related risk boundary at a time:
-
-1. **Red:** Add the smallest test that expresses the selected behavior. Run the
-   narrowest command that exercises it and verify that it fails because the
-   behavior is absent or the defect remains—not because of a bad assertion,
-   fixture, mock, environment, syntax error, or unrelated pre-existing failure.
-   If it unexpectedly passes, determine whether the behavior already exists or
-   the test observes the wrong thing before changing production code.
-2. **Green:** Make the smallest implementation change that satisfies the test
-   without violating confirmed contracts, data boundaries, failure semantics,
-   or adjacent behavior. Run the focused test again and verify that it passes.
-3. **Refactor:** Remove relevant duplication and improve names or responsibility
-   boundaries under the passing test. Do not add speculative abstractions or
-   broaden the feature. Rerun the focused test after refactoring.
-4. **Expand:** Select the next highest-value behavior or failure boundary and
-   repeat. Avoid writing a large batch of unvalidated tests before starting the
-   implementation.
-
-Do not describe work as a completed TDD cycle if the red test was not actually
-run and observed failing for the intended reason. When the environment prevents
-either the red or green run, continue only as far as the user and repository
-constraints allow, and report the missing evidence precisely.
-
-## Protect state and side effects
-
-For stateful, concurrent, asynchronous, persistent, or side-effecting behavior,
-identify the core commit point and test the most relevant failure boundary in
-addition to the main regression or success path. Depending on the risk, cover:
-
-- failure before the core commit;
-- auxiliary work failing after the core commit;
-- cancellation, retry, duplicate delivery, or repeated execution;
-- legal terminal-state convergence and prevention of duplicate side effects;
-- restart or recovery from an intermediate state.
-
-An already completed core side effect must not be repeated merely because
-logging, metrics, cleanup, projection, or state synchronization fails later.
-When concurrency or recovery cannot be automated reliably, record the manual
-validation performed and the residual risk.
-
-## Handle defects and legacy behavior
-
-- For a defect, prefer a regression test through a stable external boundary.
-  Verify that it reproduces the defect before applying the minimal fix.
-- When legacy behavior is unclear, use a characterization test only when it
-  provides needed protection. Label it conceptually as observed current
-  behavior; do not treat history as proof of the correct requirement.
-- When an existing test conflicts with confirmed behavior, inspect the source,
-  assertion, fixture, and mocks to determine what is stale. Do not preserve an
-  incorrect implementation or rewrite a correct contract merely to make the
-  suite green.
-
-## Validate and deliver
-
-After the focused cycles:
-
-1. Run the directly affected tests, then the smallest relevant adjacent,
-   integration, or contract checks required by the impact.
-2. Review the final diff and confirm that each new test protects behavior or a
-   concrete risk rather than private implementation details.
-3. Check for omitted high-risk failure boundaries and remove redundant tests
-   that add maintenance cost without meaningful evidence.
-4. Follow repository-specific validation and delivery requirements.
-5. Report the behavior protected through TDD, the red and green evidence
-   actually observed, the final validation run, anything not run, and residual
-   risk. Do not claim that passing tests prove untested states cannot fail.
+1. Run the directly affected tests, then the smallest adjacent, integration, or
+   contract checks the impact requires.
+2. Review the final diff: remove tests that only pin private implementation
+   details or duplicate other evidence, and check for an omitted high-risk
+   failure boundary.
+3. Follow repository-specific validation and delivery requirements.
+4. Report, briefly per behavior, the red and green evidence actually observed,
+   the final validation run, anything not run, and residual risk. Do not claim
+   that passing tests prove untested states cannot fail.
