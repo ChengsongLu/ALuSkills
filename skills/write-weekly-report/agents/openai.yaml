@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Weekly Report"
+  short_description: "Summarize a week's commits into a report"
+  default_prompt: "Use $write-weekly-report to summarize this repository's commits since last Friday 18:30 into a numbered weekly report."

@@ -1,4 +1,4 @@
 interface:
   display_name: "Maintain Task Checkpoints"
-  short_description: "Assess checkpoint needs and restore task state"
-  default_prompt: "Use $maintain-task-checkpoints to verify and restore a matching checkpoint for interrupted work, or assess this task's need for persistent state and confirm before implicitly creating it."
+  short_description: "Persist requested task state and restore checkpoints"
+  default_prompt: "Use $maintain-task-checkpoints to verify and restore a matching checkpoint for interrupted work, or to create and maintain the checkpoint I am requesting for this task."

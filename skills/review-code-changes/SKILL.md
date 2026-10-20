@@ -5,172 +5,131 @@ description: Review a requested code diff for logic, correctness, and related ri
 
 # Review Code Changes
 
-Review changed code against its intended contract and adversarial failure conditions. Report actionable findings with evidence and keep implementation files read-only during review-only work.
+Review changed code against its intended contract and adversarial failure
+conditions. Report actionable findings with evidence and keep implementation
+files read-only during review-only work.
 
 ## Select the mode
 
-- **Conversation review:** Default for any requested change set. Report findings
-  in the conversation; use an in-memory coverage checklist when useful.
-- **Recorded review:** Use when the user requests a persistent report, or agrees
-  to one because durable handoff evidence is needed. Risk alone does not require files.
-- **Remediation:** Enter only when the user explicitly asks to fix or optimize
-  identified findings. Read [references/remediation.md](references/remediation.md)
-  completely before modifying code. Adversarially assess the proposed fix before
-  implementation, then re-review the final remediation diff and affected paths
-  after validation. Do not close remediation while that fresh review identifies
-  a credible defect or vulnerability introduced by the fix.
+- **Conversation review (default):** Report findings in the conversation; keep
+  any coverage checklist in memory.
+- **Recorded review:** Only when the user requests a persistent report, or
+  agrees to one because durable handoff evidence is needed. Risk alone does not
+  require files, and choosing a format never pauses code inspection.
+- **Remediation:** Only when the user explicitly asks to fix identified
+  findings. Read [references/remediation.md](references/remediation.md)
+  completely before modifying code, adversarially assess the proposed fix
+  first, and re-review the final remediation diff and affected paths after
+  validation. Do not close remediation while that review finds a credible
+  defect introduced by the fix.
 
-This workflow covers code logic, correctness, and related reliability, security,
+This workflow covers logic, correctness, and related reliability, security,
 compatibility, test, and documentation risks in changed code. A PR or branch is
-only a source for the comparison diff. Do not turn this into PR approval, CI-status,
-merge-readiness, or repository-wide inspection work.
+only a source for the comparison diff; do not turn this into PR approval,
+CI-status, merge-readiness, or repository-wide inspection work.
 
-Select review depth from the actual behavior and impact. Persist findings only
-when requested or after confirming a concrete need for durable handoff evidence.
-Do not pause code inspection merely to ask about report format. If persistence
-is declined, continue in the conversation and report any material evidence limit.
+## Establish the baseline
 
-## Place the output
+1. Read applicable repository instructions.
+2. Inspect tracked, staged, and untracked status and diff statistics, and fix
+   the exact set of paths under review.
+3. Use the requested comparison base; never silently substitute another.
+4. Read the relevant diff, current requirements or specifications, affected
+   module documentation, tests, direct callers, and direct dependencies.
+5. Preserve unrelated working-tree changes.
+6. Decide whether the change is large or high risk from changed contracts,
+   state, persistence, concurrency, security, and external effects—not from the
+   number of modules touched. Increase depth when evidence reveals risk;
+   depth never changes the output mode.
 
-Skip this section in conversation review mode. For a recorded review, use a user-
-or repository-specified location when one is explicit. Otherwise create one
-isolated review directory under the project root:
+For a recorded review, create the output only after the baseline is fixed. Use
+a user- or repository-specified location, or by default:
 
 ```text
 .review-code-changes/
 └── YYYY_MM_DD_scope_NNN/
     ├── review.md
-    ├── coverage.md       # required for large or high-risk reviews
-    └── remediation.md    # create only after authorized remediation
+    ├── coverage.md       # large or high-risk reviews only
+    └── remediation.md    # only after authorized remediation
 ```
 
-Use `working-tree`, a short commit or branch slug, or another unambiguous comparison slug for `scope`. Start `NNN` at `000` and select the next unused sequence for the same date and scope. Record the comparison base inside `review.md`; do not rely on the directory name as evidence.
+Use `working-tree`, a short commit or branch slug, or another unambiguous slug
+for `scope`; start `NNN` at `000` and take the next unused sequence. Record the
+comparison base inside `review.md`. Exclude the review directory from all later
+status, diff, and finding calculations. If it cannot be written, keep the
+checklist in memory and report the limitation. Do not modify ignore rules or
+stage review artifacts unless the user explicitly asks.
 
-Resolve the prospective output path at this stage, but do not create it yet.
-First complete the baseline steps below and freeze the exact review input.
-Create the review directory only after the baseline is frozen.
+## Track high-risk coverage
 
-Do not modify ignore rules or stage review artifacts unless the user explicitly requests it.
+For a large or high-risk review, keep a coverage checklist organized by
+capability, call chain, or state machine. For each area, mark checked, not
+applicable, or limited: entry point and contract; source of truth and state
+transitions; persistence and external side effects; success path; failure,
+cancellation, retry, recovery, and restart paths; relevant tests and
+documentation. Do not claim complete coverage while a high-risk area remains
+unchecked.
 
-## Establish the baseline
+## Review in two passes
 
-1. Read applicable repository instructions.
-2. Inspect tracked, staged, and untracked status and the overall diff statistics. Capture the exact set of paths that belong to the review before creating any review artifact.
-3. Identify the requested comparison base. Do not silently substitute a different base.
-4. Read the relevant diff, current specification or requirements, affected module documentation, tests, direct callers, and direct dependencies as needed.
-5. Preserve the user's unrelated working-tree changes.
-6. Determine whether the change is large or high risk.
+**Contract and structure:** Confirm the change solves the stated problem and
+stays consistent with requirements and specifications, module ownership,
+interfaces and visible responses, state machines and persistence ownership,
+migrations and compatibility, and documentation and operations.
 
-For a confirmed recorded review, create the selected review directory after
-freezing the baseline. Treat that directory as output-only: exclude it from later
-repository-change status, diff, code-coverage, and finding calculations, and
-never treat it as code under review. Continue to use `review.md` and
-`coverage.md` as workflow evidence during authorized remediation, and continue
-to report other user changes normally.
+**Adversarial behavior:** Drop the assumption that the happy path succeeds and
+check applicable cases: failure of each important await, commit, write, or
+external call; partial effects before a later failure; auxiliary logging,
+metrics, cleanup, or synchronization failing after the core commit; stale
+snapshots overwriting newer state; cancellation before the first event, after
+partial output, and near completion; retries, recovery, concurrency, and
+at-least-once delivery duplicating effects; restart in an intermediate state;
+sensitive data escaping through responses, logs, files, or diagnostics.
 
-For a conversation review, keep the exact comparison base and reviewed paths in
-memory. Increase depth when evidence reveals material risk; changing depth does
-not change the output mode. Cross-module edits alone are not high risk. Consider
-changed contracts, state, persistence, concurrency, security, and external effects.
+Small low-risk changes may combine both passes but must not omit applicable
+adversarial checks.
 
-## Record high-risk coverage
-
-For a large or high-risk review, maintain a coverage checklist; use `coverage.md` only in an authorized recorded review. If the output directory cannot be written, keep an in-memory checklist and report that limitation rather than writing elsewhere.
-
-Organize coverage by capability, call chain, or state machine—not by file count. For each area, inspect or mark with a reason:
-
-- entry point and contract;
-- source of truth and state transitions;
-- persistence and external side effects;
-- success path;
-- failure, cancellation, retry, recovery, and restart paths;
-- relevant tests and documentation.
-
-Mark areas as checked, not applicable, or limited. Do not claim complete coverage while a high-risk area remains unchecked.
-
-## Perform two review passes
-
-### Pass 1: Contract and structure
-
-Check that the implementation solves the stated problem and remains consistent with:
-
-- requirements and current specifications;
-- module boundaries and ownership;
-- interfaces and externally visible responses;
-- state machines and persistence ownership;
-- migrations and backward compatibility;
-- documentation and operational expectations.
-
-### Pass 2: Adversarial behavior
-
-Discard the assumption that the happy path succeeds. Check applicable cases:
-
-- failure of each important await, commit, file write, or external call;
-- partial effects before a later failure;
-- auxiliary logging, metrics, cleanup, projection, or synchronization failing after the core commit;
-- stale snapshots or request data overwriting newer runtime state;
-- cancellation before the first event, after partial output, and near natural completion;
-- retries, recovery, concurrent execution, and at-least-once delivery duplicating persistence or side effects;
-- service restart while work is in an intermediate state;
-- sensitive information escaping through responses, logs, files, or diagnostics.
-
-Small low-risk changes may combine both perspectives in one pass, but must not omit applicable adversarial checks.
-
-## Evaluate tests
-
-Treat passing tests as evidence, not as proof of review completeness.
-
-- Verify that assertions express the real contract.
-- Check whether fixtures and mocks preserve important failure behavior.
-- For state, concurrency, persistence, or side effects, look for failure injection, state combinations, duplicate execution, and recovery coverage.
-- Use static analysis to assess uncovered paths.
-- Record missing evidence as a validation gap or residual risk rather than inventing a confirmed defect.
+Treat passing tests as evidence, not proof. Check that assertions express the
+real contract, that fixtures and mocks preserve important failure behavior,
+and, for state or side effects, whether failure injection, duplicate execution,
+and recovery are covered. Record missing evidence as a validation gap or
+residual risk rather than inventing a defect.
 
 ## Classify findings
 
-Assign impact independently from recommended action.
-
 Impact:
 
-- **Critical:** data loss, security exposure, production outage, repeated dangerous side effects, or core-flow breakage.
-- **High:** important functional error, compatibility regression, inconsistent state, migration risk, or common reproducible failure.
+- **Critical:** data loss, security exposure, outage, repeated dangerous side
+  effects, or core-flow breakage.
+- **High:** important functional error, compatibility regression, inconsistent
+  state, migration risk, or common reproducible failure.
 - **Medium:** localized, boundary, or recoverable problem.
-- **Low:** maintainability, documentation, coverage, or minor experience problem.
+- **Low:** maintainability, documentation, coverage, or minor experience issue.
 
 Action:
 
-- **Must fix:** concrete evidence and a realistic path to incorrect behavior, state or data inconsistency, security exposure, compatibility regression, material user impact, or a critical evidence gap that prevents a safe change.
-- **Should fix:** a real but limited issue with reliable mitigation, or mainly maintainability or minor experience impact.
-- **May ignore:** a highly constrained and very unlikely case with no material business, data, security, or user impact.
+- **Must fix:** concrete evidence and a realistic path to incorrect behavior,
+  inconsistent data, security exposure, compatibility regression, material user
+  impact, or a critical evidence gap that prevents a safe change.
+- **Should fix:** a real but limited issue with reliable mitigation, or mainly
+  maintainability or minor experience impact.
+- **May ignore:** a highly constrained, very unlikely case with no material
+  business, data, security, or user impact.
 
-Do not report theoretical speculation, style preference, or a concern without a plausible trigger as a finding.
+Do not report speculation, style preference, or a concern without a plausible
+trigger as a finding.
 
-## Deliver the review
+## Deliver
 
-For a conversation review, report findings first in the final response with tight
-file and line references, followed by meaningful validation gaps and residual
-risks. Do not create `review.md` merely to record that no finding was found.
+List findings first, grouped by action and ordered by impact. For each give an
+identifier and title, file and tight line range, impact and action, code
+evidence, trigger and consequence, and a focused remediation direction. Then
+summarize validation performed and not performed, evidence gaps, covered call
+chains for a large review, limited areas, residual risks, and confidence.
 
-For a recorded review, write `review.md`. List findings first, grouped by `Must
-fix`, `Should fix`, and `May ignore`, then ordered by impact. For every finding
-include:
-
-- identifier and concise title;
-- file and tight line range;
-- impact and action;
-- code evidence;
-- trigger and consequence;
-- focused remediation direction.
-
-After findings, summarize:
-
-- validation performed and not performed;
-- testing, manual-validation, or evidence gaps;
-- covered capabilities or call chains for a large review;
-- limited areas and residual risks;
-- confidence based on evidence boundaries.
-
-When no finding meets the evidence bar, say so plainly and still report meaningful gaps and residual risks. Do not imply that no defect can exist.
-
-In the final response, summarize the highest-priority findings and link to
-`review.md` and `coverage.md` only when those artifacts were created.
+In conversation mode, deliver this in the final response. In recorded mode,
+write it to `review.md` and summarize the highest-priority findings in the
+final response with links to the artifacts actually created. Do not create
+`review.md` merely to record that nothing was found. When no finding meets the
+evidence bar, say so plainly, still report meaningful gaps, and do not imply
+that no defect can exist.

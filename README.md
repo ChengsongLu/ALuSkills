@@ -19,9 +19,11 @@ self-contained, independently installable, and does not rely on another Skill.
 | --- | --- | --- |
 | [`clarify-development-request`](skills/clarify-development-request/) | Resolving material requirement decisions before implementation | Decisions in conversation; optional `brief.md` |
 | [`write-technical-spec`](skills/write-technical-spec/) | Assessing spec needs and creating, updating, or reviewing a repository-grounded design | Optional `flow.md`, `design.md`, and `implement.md` |
-| [`develop-with-tdd`](skills/develop-with-tdd/) | Implementing selected high-risk behavior with focused TDD | Source code and tests |
+| [`develop-with-tdd`](skills/develop-with-tdd/) | Protecting regressions, hard-to-verify logic, and contract changes with focused TDD | Source code and tests |
 | [`review-code-changes`](skills/review-code-changes/) | Reviewing a diff and safely remediating authorized findings | Optional `review.md`, `coverage.md`, and `remediation.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Assessing persistence needs and recovering interrupted work from checkpoints | `STATE.md` and `CHECKPOINTS.md` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Persisting requested task state and recovering interrupted work from checkpoints | `STATE.md` and `CHECKPOINTS.md` |
+| [`commit-changes`](skills/commit-changes/) | Committing authorized changes with a reviewed, informative message | Git commit |
+| [`write-weekly-report`](skills/write-weekly-report/) | Summarizing a week's commits into a concise progress report | Report in conversation |
 | [`codebase-handbook`](skills/codebase-handbook/) | Navigating codebases through existing handbooks and maintaining them | Markdown chapters, `manifest.yaml`, and `handbook.html` |
 
 ### clarify-development-request
@@ -51,12 +53,13 @@ update points for explicit user confirmation before applying any simplification.
 
 ### develop-with-tdd
 
-Use this Skill when the user explicitly requests TDD or when a regression,
-complex rule, state transition, concurrency behavior, security boundary,
-external contract, or side effect needs focused protection. It maps each test
-to confirmed behavior, selects a stable test seam, and runs small
-red-green-refactor cycles. It creates no separate workflow artifact and does
-not impose TDD on low-risk changes.
+Use this Skill when the user explicitly requests TDD, or for regression
+defects, logic whose correctness cannot be judged by reading it (state machines,
+concurrency, retry and recovery, complex rules), and external contract changes.
+Routine CRUD, wiring, and mechanical changes are implemented directly with
+proportionate tests. It maps each test to confirmed behavior, tests through the
+boundary closest to the real caller, and requires an observed red run before
+claiming TDD. It creates no separate workflow artifact.
 
 ### review-code-changes
 
@@ -71,15 +74,28 @@ reusing unaffected evidence.
 
 ### maintain-task-checkpoints
 
-Use this Skill when a task is long-running, multi-stage, expensive to recover,
-likely to be interrupted, or explicitly needs a handoff. Also use it to resume
-interrupted work or continue with incomplete context by locating and verifying
-a matching checkpoint against current instructions, source, and Git. Recovery
-does not require the remaining task to be complex or authorize new files.
-Creating persistent state implicitly requires confirmation; routine updates
-stay within the previously confirmed scope. Checkpoints never store credentials
-or replace Git. They link durable conclusions to existing records and do not
-automatically expand the task into formal documentation work.
+Use this Skill when the user explicitly asks for persistent task state or a
+cross-session or agent-to-agent handoff. It never creates checkpoints on its own
+initiative. It also resumes interrupted work by locating and verifying a
+matching checkpoint against current instructions, source, and Git; recovery is
+read-only and does not authorize new files. Checkpoints never store credentials
+or replace Git, and they do not expand the task into formal documentation work.
+
+### commit-changes
+
+Use this Skill when the user asks to commit. It determines the authorized scope
+from the actual working tree, writes a message whose title states the outcome
+and whose body covers the important changes by topic, records only validation
+that actually ran, and shows the complete message for confirmation before
+committing. It does not push unless asked and never force-pushes shared
+branches. Repository instructions override its message conventions.
+
+### write-weekly-report
+
+Use this Skill to turn the current repository's commit history into a weekly
+report. By default it covers commits since the previous Friday 18:30, merges
+related commits by topic, keeps only effective conclusions, and outputs the date
+range followed by a short numbered list.
 
 ### codebase-handbook
 
@@ -131,7 +147,9 @@ npx skills update --global \
   develop-with-tdd \
   review-code-changes \
   maintain-task-checkpoints \
-  codebase-handbook
+  codebase-handbook \
+  commit-changes \
+  write-weekly-report
 ```
 
 Verify the installation:
@@ -148,10 +166,12 @@ Restart the agent or open a new session after installation or update.
 skills/
 ├── clarify-development-request/
 ├── codebase-handbook/
+├── commit-changes/
 ├── develop-with-tdd/
 ├── maintain-task-checkpoints/
 ├── review-code-changes/
-└── write-technical-spec/
+├── write-technical-spec/
+└── write-weekly-report/
 ```
 
 Every Skill contains `SKILL.md` and `agents/openai.yaml`. A Skill includes

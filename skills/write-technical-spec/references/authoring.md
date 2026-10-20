@@ -18,6 +18,10 @@ Use the following default document set, respecting a narrower explicit request. 
 
 When updating an existing specification, locate candidates by feature scope, read their current documents, and reuse one only after confirming that it represents the same design effort. Confirm material scope expansion; do not repeat authorization for an ordinary continuation. Do not reuse a directory merely because its slug matches.
 
+Treat a specification whose implementation is complete as a historical snapshot, not a description of current behavior. Update it only when continuing the same design effort or when the user explicitly asks; do not batch-rewrite completed specifications. Record implemented behavior in the repository's current implementation documentation, and when a specification conflicts with source or tests, treat source and tests as authoritative.
+
+Unless the repository specifies otherwise, use numbered section headings (`1.`, `1.1.`). When a Mermaid node label needs a line break, use `<br/>` rather than `\n`.
+
 For every independent new specification, start `NNN` at `000` and select the next unused sequence for the same date and feature. Never overwrite or silently merge an existing specification. Do not modify ignore rules or stage specification artifacts unless the user explicitly requests it.
 
 ## Write the flow document
