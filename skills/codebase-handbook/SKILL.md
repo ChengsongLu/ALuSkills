@@ -5,193 +5,104 @@ description: Use an existing handbook for codebase questions and assess changes 
 
 # Codebase Handbook
 
-Build and maintain a navigable technical book about a repository's design and
-runtime behavior. Explain stable concepts, responsibilities, flows, state,
-failure behavior, and relationships. Cite source files and symbols as evidence
-without turning the handbook into file-by-file or function-by-function
-documentation.
+Maintain a readable technical book explaining the repository's purpose,
+architecture, important runtime flows, state ownership, and change boundaries.
+Help developers understand the system and help Agents locate current evidence.
+Use one canonical body of Markdown chapters, a compact navigation index and
+manifest, and a generated HTML reading view. Do not create implementation
+catalogs or accumulate change logs.
 
-Treat the output as a book, not a collection of summaries. Maintain one
-canonical set of chapters with a human reading plane and an Agent task-navigation
-plane.
+## Start and choose a workflow
 
-Use Markdown chapters and `handbook.html` as the human explanation plane. Use
-`manifest.yaml` and `index.md` as the Agent routing plane: resolve the relevant
-concept, chapter, source paths, stable symbols, relationships, and update
-triggers there, then inspect current source evidence. Do not make an Agent parse
-generated HTML to locate code when the machine-readable index is available.
+Locate the project root and applicable repository instructions. For implicit
+invocation, skip mechanical, tests-only, or localized behavior-preserving edits
+unless repository rules require consultation. If no handbook exists, continue
+the underlying task; initialize only on explicit request.
 
-Optimize for comprehension, not prose volume. Preserve the complete coverage
-model, evidence, relationships, and update triggers in `manifest.yaml`, while
-keeping chapter prose to the smallest sufficient explanation that establishes
-the correct mental model, runtime behavior, boundaries, failure consequences,
-and change impact.
+For applicable work, read `.codebase-handbook/config.yaml` and `preferences.md`
+once, refreshing them only if changed. Apply current user instructions first,
+then repository rules, preferences, configuration, and these defaults. Begin
+with `index.md` and retrieve only relevant manifest entries and chapters.
 
-## Start Here
+Read the matching section of [workflows.md](references/workflows.md):
 
-1. Locate the project root.
-2. Check whether `<project-root>/.codebase-handbook/` exists.
-3. For implicit invocation, select read-only navigation for codebase questions
-   about architecture, responsibilities, flows, contracts, or implementation
-   locations when a handbook exists. For edit requests, first apply the
-   low-impact exclusions below. If no handbook exists, continue the underlying
-   task without initializing one.
-4. For an applicable task, read `config.yaml` and `preferences.md` once and
-   reuse them unless changed. Start navigation with `index.md`, then retrieve
-   matching `manifest.yaml` entries and relevant chapters. The lightweight
-   impact path takes precedence over full preparation; do not read the entire
-   manifest merely to answer a focused question.
-5. Apply requirements in this precedence order:
-   1. The user's current explicit instructions
-   2. `.codebase-handbook/preferences.md`
-   3. `.codebase-handbook/config.yaml`
-   4. This skill's defaults
-6. Choose the matching workflow below. Read-only navigation does not authorize
-   synchronization, rebuilding, or other handbook writes; report stale evidence
-   relevant to the answer and verify it against current source.
+- **Navigate:** read-only answers and source discovery.
+- **Initialize:** also read [book-model.md](references/book-model.md),
+  [handbook-spec.md](references/handbook-spec.md), and
+  [evidence-and-writing.md](references/evidence-and-writing.md).
+- **Assess or synchronize a code change:** inspect impact first; source changes
+  are separately authorized work, outside this Skill's write scope.
+- **Audit or restructure:** also read the book model and specification. Read
+  the writing guide when editing prose.
+- **Build HTML:** read [html-view.md](references/html-view.md).
 
-Never infer that a missing handbook should be created. Initialize only when the
-user explicitly requests it.
+## Boundaries
 
-When invocation is implicit, classify the task before starting a full handbook
-workflow. If it is a mechanical, tests-only, or localized behavior-preserving
-change and repository instructions do not require handbook inspection, stop
-without reading handbook content, creating an impact checklist, rebuilding
-`handbook.html`, or running handbook validation.
+- Write only inside `.codebase-handbook/`. Source, tests, ordinary documents,
+  and Agent instructions are read-only evidence. Never add maintenance hooks
+  or modify ignore rules. Do not decide the handbook's Git tracking policy.
+- Use tracked files as the default inventory; exclude dependencies, generated
+  content, binaries, and caches. Read relevant ignored files only when already
+  authorized, non-sensitive, and permitted by project policy.
+- Preserve unrelated changes and concurrent edits. Never rewrite a chapter
+  solely to match a new template or migrate existing metadata unnecessarily.
+- Do not edit `preferences.md`, `Maintainer notes`, or content enclosed by
+  `codebase-handbook:preserve` markers. Preserve uncertain statements and flag
+  them for review rather than silently removing them.
+- Within authorized affected sections, consolidate duplicate explanations and
+  replace superseded statements using current evidence. Preserve unique valid
+  information and unknown structured fields.
+- Never record secrets or private runtime data as examples or evidence.
 
-## Choose a Workflow
+## Quality standard
 
-Read only the matching section of `workflows.md` and its applicable preparation.
-Do not load other workflow sections for a focused request.
+When maintaining an existing handbook, check it against the current Skill's
+requirements as well as current repository evidence. Apply this to affected
+sections and their navigation during a local update, and to the whole agreed
+scope during overall maintenance or audit. Correct in-scope inconsistencies,
+redundancy, and missing guidance; do not preserve obsolete conventions merely
+because the handbook was generated by an older Skill. Preserve valid content,
+project preferences, protected sections, and compatible metadata. Report
+changes requiring broader restructuring or migration instead of silently
+expanding the task. Read-only use reports relevant gaps without editing.
 
-- **Initialize**: Read [workflows.md](references/workflows.md), then
-  [handbook-spec.md](references/handbook-spec.md),
-  [book-model.md](references/book-model.md),
-  and [evidence-and-writing.md](references/evidence-and-writing.md).
-- **Navigate or answer a codebase question**: Read
-  [workflows.md](references/workflows.md) and follow the navigation workflow.
-- **Assess handbook impact around a separately authorized code change**: Read
-  [workflows.md](references/workflows.md) and follow both the pre-change impact
-  analysis and post-change handbook synchronization workflows. Do not make the
-  code change as part of this skill.
-- **Validate or audit**: Read [workflows.md](references/workflows.md) and
-  [handbook-spec.md](references/handbook-spec.md), then
-  [book-model.md](references/book-model.md).
-- **Build the HTML reading view**: Read
-  [html-view.md](references/html-view.md).
-- **Split, merge, rename, deprecate, or remove a module or chapter**: Read
-  [workflows.md](references/workflows.md) and follow the evolution workflow.
+Explain mechanisms and consequences, not inspection order or individual
+helpers. Keep each fact's main explanation in one place and link to it elsewhere.
+Use the [writing guide](references/evidence-and-writing.md) for drafting and
+local compression. Keep a small set of direct sources and stable symbols;
+avoid durable line numbers.
 
-## Non-Negotiable Rules
+The manifest routes readers to chapters and evidence. It is not an exhaustive
+knowledge database. Add metadata only when it helps retrieval or maintenance;
+use the [book model](references/book-model.md) to identify significant gaps.
 
-### Preserve the repository
+`verified` records a past evidence check, not a guarantee of freshness. Verify
+current source for behavior-sensitive answers and code changes, even when the
+chapter is verified. Separate current behavior, documented intent, inference,
+and uncertainty. Do not parse generated HTML as an Agent evidence source.
 
-- Keep every write made by this skill under `.codebase-handbook/`. Treat source
-  code, configuration, tests, ordinary documentation, repository instructions,
-  and every other project path as read-only evidence.
-- Never create or modify `AGENTS.md`, `CLAUDE.md`, or any other Agent
-  instruction file. Do not add handbook maintenance hooks outside
-  `.codebase-handbook/`.
-- Treat Git-tracked files as the default analysis boundary.
-- Respect `.gitignore`. Exclude dependencies, build products, caches,
-  binaries, and generated files by default.
-- Exclude ignored content by default. Read a directly relevant, non-sensitive
-  ignored file when the task already authorizes it and project policy permits;
-  ask only when sensitivity or authorization is unresolved. Never modify
-  `.gitignore` automatically.
-- Do not prescribe whether `.codebase-handbook/` is tracked or ignored. Do not
-  inspect or alter its Git tracking policy unless the user asks.
-- Preserve unrelated working-tree changes and concurrent edits.
+## Helpers
 
-### Preserve existing content
-
-- Treat all existing handbook prose as intentional regardless of who or what
-  authored it.
-- Make evidence-driven, local edits. Never regenerate a whole existing chapter
-  merely because a template changed.
-- Do not edit `preferences.md`.
-- Do not automatically edit a `Maintainer notes` section or content enclosed
-  by `codebase-handbook:preserve` markers.
-- Preserve uncertain content and mark it `needs-review`; do not silently
-  delete it.
-- Merge structured files without dropping unknown fields.
-
-### Describe the right level
-
-- Document design, responsibilities, boundaries, runtime flows, state and data
-  changes, failure paths, side effects, concurrency, and recovery when relevant.
-- Decompose by mental model, lifecycle, state ownership, failure model, and
-  developer change task. Do not compress distinct subsystems merely because
-  they collaborate.
-- Do not create exhaustive file, class, function, endpoint, or test catalogs.
-- Cite repository-relative paths plus stable symbols. Do not use fixed line
-  numbers as durable references.
-- Separate verified behavior, documented intent, inference, and unresolved
-  conflict.
-- Omit inapplicable chapter sections rather than filling them with speculation.
-- Analyze evidence completely before drafting, then edit the chapter as an
-  explanation rather than preserving the order in which files, classes, or
-  calls were inspected.
-- After drafting or materially updating prose, run the editorial compression
-  pass in [evidence-and-writing.md](references/evidence-and-writing.md). Keep
-  analysis-only detail in source evidence or `manifest.yaml` instead of moving
-  it into the narrative.
-
-### Keep the handbook usable
-
-- Make `index.md` a task and concept navigator, not only a table of contents.
-- Organize the human reading path as parts and ordered chapters.
-- Record machine-readable coverage inventory, chapter, source, relationship,
-  status, depth, evidence, and update-trigger mappings in `manifest.yaml`.
-- Give each material chapter a concise manifest summary and stable concept
-  terms when they improve task routing. Keep them generic to the repository and
-  do not copy implementation walkthroughs into manifest metadata.
-- Link related chapters in both directions when the relationship is symmetric.
-- Use Mermaid only when it materially clarifies a relationship or sequence;
-  keep the prose independently understandable.
-- Keep `handbook.html` human-first: foreground chapter purpose, functional
-  model, primary flow, and boundaries; place source evidence, synchronization
-  metadata, and workflow state behind progressive disclosure.
-- Describe only the current system by default. Let Git retain history.
-
-## Deterministic Helpers
-
-Initialize the empty handbook structure:
+Install the helper dependency in the environment used to run these commands:
 
 ```bash
+python3 -m pip install -r <skill-dir>/scripts/requirements.txt
 python3 <skill-dir>/scripts/initialize_handbook.py --project-root <project-root>
-```
-
-This helper refuses to overwrite an existing handbook and creates an initial
-`handbook.html`. After it succeeds, perform the semantic discovery and writing
-steps from `references/workflows.md`.
-
-Regenerate the self-contained HTML reading view:
-
-```bash
 python3 <skill-dir>/scripts/build_handbook.py --project-root <project-root>
-```
-
-Validate structure, links, manifest paths, and source references:
-
-```bash
 python3 <skill-dir>/scripts/validate_handbook.py --project-root <project-root>
 ```
 
-Validation also checks that `handbook.html` exists and matches its Markdown and
-YAML inputs. Script success proves only deterministic integrity. It does not
-prove that prose still matches repository behavior.
+Initialization refuses to overwrite an existing handbook and creates only a
+shell; discovery and writing still follow. Build after changing handbook inputs.
+Validation checks structure, chapter anchors, source paths, and HTML input
+freshness. It does not verify source symbols, external-document anchors, prose
+accuracy, or semantic coverage.
 
-## Completion Contract
+## Finish
 
-For an initialization, do not claim completion until every in-scope design
-surface is represented in the coverage inventory, every primary reading path is
-usable, and chapters reach the required depth and evidence state. For an
-update, report:
-
-- chapters updated;
-- chapters inspected but unchanged, with the reason;
-- unresolved or `needs-review` items;
-- HTML reading view regenerated and current;
-- deterministic validation performed;
-- semantic areas not verified and why.
+For initialization, cover the agreed major responsibilities and reading paths,
+with remaining gaps visible. Do not call unfinished discovery complete merely
+because validation passes. For updates, briefly report changed chapters,
+material inspected-but-unchanged areas, unresolved items, build and validation
+results, and semantic limits. Read-only work does not require a rebuild or
+handbook writes.

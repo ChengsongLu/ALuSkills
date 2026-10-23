@@ -14,8 +14,9 @@ from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 from urllib.parse import quote, unquote
 
+from handbook_data import load_yaml, records, typed_fields, confined_path, handbook_directory
 
-HANDBOOK_DIR = ".codebase-handbook"
+
 OUTPUT_NAME = "handbook.html"
 HASH_INPUTS = ("config.yaml", "preferences.md", "manifest.yaml", "index.md")
 
@@ -37,8 +38,8 @@ class DisplayChapter:
     order: int = 0
     kind: str = "chapter"
     status: str = "planned"
-    coverage: str = "outline"
-    evidence_status: str = "partial"
+    coverage: str = ""
+    evidence_status: str = ""
     related: list[str] = field(default_factory=list)
     concepts: list[str] = field(default_factory=list)
     read_when: list[str] = field(default_factory=list)
@@ -62,13 +63,6 @@ def scalar(value: str) -> str:
     return value
 
 
-def integer(value: str, default: int = 0) -> int:
-    try:
-        return int(scalar(value))
-    except ValueError:
-        return default
-
-
 def first_heading(markdown: str, fallback: str) -> str:
     match = re.search(r"(?m)^#\s+(.+?)\s*$", markdown)
     return match.group(1).strip() if match else fallback
@@ -79,98 +73,25 @@ def humanize(value: str) -> str:
 
 
 def top_scalar(text: str, key: str, default: str) -> str:
-    match = re.search(rf"(?m)^{re.escape(key)}:\s*([^\s#]+)", text)
-    return scalar(match.group(1)) if match else default
+    value = load_yaml(text).get(key, default)
+    if not isinstance(value, (str, int)) or isinstance(value, bool):
+        raise ValueError(f"{key} must be a string or integer")
+    return str(value)
 
 
 def parse_manifest_data(text: str) -> tuple[list[Part], list[DisplayChapter]]:
-    """Parse the supported manifest subset without adding a YAML dependency."""
-    parts: list[Part] = []
-    chapters: list[DisplayChapter] = []
-    section = ""
-    current_part: Part | None = None
-    current_chapter: DisplayChapter | None = None
-    list_key: str | None = None
-
-    for raw_line in text.splitlines():
-        line = raw_line.split("#", 1)[0].rstrip()
-        if not line:
-            continue
-        indent = len(line) - len(line.lstrip(" "))
-        stripped = line.strip()
-
-        if indent == 0:
-            match = re.match(r"([a-zA-Z_][\w-]*):", stripped)
-            section = match.group(1) if match else ""
-            current_part = None
-            current_chapter = None
-            list_key = None
-            continue
-
-        item_id = re.match(r"-\s+id:\s*(.+)$", stripped)
-        if indent == 2 and item_id and section == "parts":
-            current_part = Part(part_id=scalar(item_id.group(1)))
-            parts.append(current_part)
-            current_chapter = None
-            list_key = None
-            continue
-        if indent == 2 and item_id and section == "chapters":
-            current_chapter = DisplayChapter(
-                chapter_id=scalar(item_id.group(1)), path=""
-            )
-            chapters.append(current_chapter)
-            current_part = None
-            list_key = None
-            continue
-
-        field_match = re.match(r"([a-zA-Z_][\w-]*):\s*(.*)$", stripped)
-        if indent == 4 and field_match:
-            key, value = field_match.groups()
-            list_key = key if not value else None
-            if current_part is not None:
-                if key == "title":
-                    current_part.title = scalar(value)
-                elif key == "purpose":
-                    current_part.purpose = scalar(value)
-                elif key == "order":
-                    current_part.order = integer(value)
-            elif current_chapter is not None:
-                if key == "path":
-                    current_chapter.path = scalar(value)
-                elif key == "summary":
-                    current_chapter.summary = scalar(value)
-                elif key == "part":
-                    current_chapter.part = scalar(value)
-                elif key == "order":
-                    current_chapter.order = integer(value)
-                elif key == "kind":
-                    current_chapter.kind = scalar(value)
-                elif key == "status":
-                    current_chapter.status = scalar(value)
-                elif key == "coverage":
-                    current_chapter.coverage = scalar(value)
-                elif key == "evidence_status":
-                    current_chapter.evidence_status = scalar(value)
-            continue
-
-        list_item = re.match(r"-\s+(.+)$", stripped)
-        if (
-            current_chapter is not None
-            and indent >= 6
-            and list_item
-            and list_key
-        ):
-            value = scalar(list_item.group(1))
-            target = getattr(current_chapter, list_key, None)
-            if isinstance(target, list):
-                target.append(value)
-
+    data = load_yaml(text)
+    parts = [Part(**typed_fields(item, Part, {"id": "part_id"}))
+             for item in records(data, "parts")]
+    chapters = [DisplayChapter(**typed_fields(item, DisplayChapter,
+                                             {"id": "chapter_id"}, excluded=("title", "markdown")))
+                for item in records(data, "chapters")]
     return parts, chapters
 
 
 def load_book(handbook: Path) -> tuple[list[Part], list[DisplayChapter]]:
-    manifest_path = handbook / "manifest.yaml"
-    index_path = handbook / "index.md"
+    manifest_path = confined_path(handbook, "manifest.yaml")
+    index_path = confined_path(handbook, "index.md")
     if not manifest_path.is_file() or not index_path.is_file():
         raise ValueError("manifest.yaml and index.md are required")
 
@@ -202,7 +123,7 @@ def load_book(handbook: Path) -> tuple[list[Part], list[DisplayChapter]]:
         if not chapter.path:
             raise ValueError(f"chapter {chapter.chapter_id} is missing path")
 
-        chapter_path = handbook / chapter.path
+        chapter_path = confined_path(handbook, chapter.path)
         if chapter_path.is_file():
             chapter.markdown = chapter_path.read_text(encoding="utf-8")
             chapter.title = first_heading(
@@ -220,7 +141,7 @@ def load_book(handbook: Path) -> tuple[list[Part], list[DisplayChapter]]:
             )
         chapters.append(chapter)
 
-    if parts:
+    if parts or any(chapter.order for chapter in chapters[1:]):
         part_order = {part.part_id: part.order for part in parts}
         chapters[1:] = sorted(
             chapters[1:],
@@ -242,9 +163,9 @@ def compute_source_hash(
     handbook: Path, chapters: list[DisplayChapter] | None = None
 ) -> str:
     chapters = chapters or load_chapters(handbook)
-    paths = {handbook / name for name in HASH_INPUTS}
+    paths = {confined_path(handbook, name) for name in HASH_INPUTS}
     for chapter in chapters:
-        path = handbook / chapter.path
+        path = confined_path(handbook, chapter.path)
         if path.is_file():
             paths.add(path)
     digest = hashlib.sha256()
@@ -486,6 +407,7 @@ def render_page(
     chapters: list[DisplayChapter],
     source_hash: str,
     title: str,
+    show_source_evidence: bool = True,
 ) -> str:
     path_to_id = {chapter.path: chapter.chapter_id for chapter in chapters}
     chapter_by_id = {chapter.chapter_id: chapter for chapter in chapters}
@@ -523,6 +445,10 @@ def render_page(
             + "</section>"
         )
 
+    display_parts = [
+        part_by_id.get(group_id, Part(part_id=group_id, title=humanize(group_id or "Chapters")))
+        for group_id in ordered_group_ids
+    ]
     book_map = "".join(
         '<section class="book-part">'
         f"<h3>{html.escape(part.title or humanize(part.part_id))}</h3>"
@@ -542,7 +468,7 @@ def render_page(
             for ch in grouped.get(part.part_id, [])
         )
         + "</div></section>"
-        for part in parts
+        for part in display_parts
         if grouped.get(part.part_id)
     )
 
@@ -585,7 +511,7 @@ def render_page(
         )
         maintenance_sections: list[str] = []
         direct_evidence = chapter.sources + chapter.source_symbols
-        if direct_evidence:
+        if direct_evidence and show_source_evidence:
             maintenance_sections.append(
                 '<section><h2>Direct source evidence</h2><ul class="path-list">'
                 + "".join(
@@ -594,7 +520,7 @@ def render_page(
                 )
                 + "</ul></section>"
             )
-        if chapter.update_triggers:
+        if chapter.update_triggers and show_source_evidence:
             maintenance_sections.append(
                 '<section><h2>Update triggers</h2><ul class="path-list">'
                 + "".join(
@@ -604,14 +530,17 @@ def render_page(
                 + "</ul></section>"
             )
         if chapter.chapter_id != "index":
+            states = [("Status", chapter.status), ("Coverage", chapter.coverage),
+                      ("Evidence", chapter.evidence_status)]
             maintenance_sections.append(
                 '<section><h2>Handbook state</h2><dl class="state-grid">'
-                f"<div><dt>Status</dt><dd>{html.escape(chapter.status)}</dd></div>"
-                f"<div><dt>Coverage</dt><dd>{html.escape(chapter.coverage)}</dd></div>"
-                f"<div><dt>Evidence</dt><dd>{html.escape(chapter.evidence_status)}</dd></div>"
-                "</dl></section>"
+                + "".join(
+                    f"<div><dt>{label}</dt><dd>{html.escape(value)}</dd></div>"
+                    for label, value in states if value
+                )
+                + "</dl></section>"
             )
-        maintenance_count = len(direct_evidence) + len(chapter.update_triggers)
+        maintenance_count = (len(direct_evidence) + len(chapter.update_triggers)) if show_source_evidence else 0
         maintenance = (
             '<details class="maintenance"><summary><span>Sources and maintenance</span>'
             f"<small>{maintenance_count} indexed paths</small></summary>"
@@ -655,7 +584,7 @@ def render_page(
         pager += "</nav>"
         map_panel = (
             '<section class="book-map"><div class="section-heading">'
-            "<div><p class=\"kicker\">Book map</p><h2>Explore by part</h2></div>"
+            "<div><p class=\"kicker\">Book map</p><h2>Explore chapters</h2></div>"
             "<p>Use the book to understand the system, or search for a change task.</p>"
             f"</div>{book_map}</section>"
             if chapter.chapter_id == "index" and book_map
@@ -699,9 +628,9 @@ def render_page(
                     chapter.summary,
                     " ".join(chapter.concepts),
                     " ".join(chapter.read_when),
-                    " ".join(chapter.sources),
-                    " ".join(chapter.source_symbols),
-                    " ".join(chapter.update_triggers),
+                    " ".join(chapter.sources) if show_source_evidence else "",
+                    " ".join(chapter.source_symbols) if show_source_evidence else "",
+                    " ".join(chapter.update_triggers) if show_source_evidence else "",
                     searchable_text(chapter.markdown),
                 ]
                 if item
@@ -709,7 +638,7 @@ def render_page(
         }
         for chapter in chapters
     ]
-    config_text = (handbook / "config.yaml").read_text(encoding="utf-8")
+    config_text = confined_path(handbook, "config.yaml").read_text(encoding="utf-8")
     configured_language = top_scalar(config_text, "language", "auto")
     page_language = configured_language if configured_language != "auto" else "und"
 
@@ -914,13 +843,22 @@ const [initialChapter,initialSection]=routeParts();showChapter(initialChapter,in
 
 def build_handbook(root: Path, title: str | None = None) -> Path:
     root = root.expanduser().resolve()
-    handbook = root / HANDBOOK_DIR
+    handbook = handbook_directory(root)
     if not handbook.is_dir():
         raise ValueError(f"handbook does not exist: {handbook}")
     parts, chapters = load_book(handbook)
     source_hash = compute_source_hash(handbook, chapters)
-    display_title = title or f"{root.name} Codebase Handbook"
-    page = render_page(root, handbook, parts, chapters, source_hash, display_title)
+    config = load_yaml(confined_path(handbook, "config.yaml").read_text(encoding="utf-8"))
+    options = config.get("html", {})
+    if not isinstance(options, dict):
+        raise ValueError("html must be a mapping")
+    configured_title = options.get("title", "auto")
+    show_evidence = options.get("show_source_evidence", True)
+    if not isinstance(configured_title, str) or not isinstance(show_evidence, bool):
+        raise ValueError("html.title must be a string and show_source_evidence a boolean")
+    display_title = title or (configured_title if configured_title != "auto"
+                              else f"{root.name} Codebase Handbook")
+    page = render_page(root, handbook, parts, chapters, source_hash, display_title, show_evidence)
     output = handbook / OUTPUT_NAME
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=".handbook.", suffix=".html", dir=handbook
@@ -956,7 +894,7 @@ def main() -> int:
     )
     try:
         output = build_handbook(root, args.title)
-    except ValueError as error:
+    except (ValueError, OSError) as error:
         print(f"error: {error}")
         return 2
     print(f"built {output}")

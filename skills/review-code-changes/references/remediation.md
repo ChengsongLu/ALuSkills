@@ -9,6 +9,13 @@ update finding statuses only when their actual implementation and validation
 state changes. Do not create a separate review directory for the remediation
 itself.
 
+When maintaining these reports, check updated findings and evidence against
+this Skill's current reporting requirements. Correct in-scope omissions without
+rewriting historical conclusions, changing the original comparison baseline,
+or discarding an established status vocabulary merely to match new defaults.
+Report broader gaps separately; a Skill update alone does not authorize editing
+other reports or changing finding closure states.
+
 For a conversation review, remediate directly from the findings reported in the
 conversation. Keep progress and evidence in the conversation unless the user
 requests a durable report or agrees to one because a concrete handoff need arises.

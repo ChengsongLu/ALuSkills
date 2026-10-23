@@ -41,7 +41,7 @@ def main() -> int:
         return 2
 
     target = root / HANDBOOK_DIR
-    if target.exists():
+    if target.exists() or target.is_symlink():
         print(f"error: refusing to overwrite existing {target}", file=sys.stderr)
         return 2
 

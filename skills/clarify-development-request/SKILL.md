@@ -54,6 +54,13 @@ unused sequence for the same date and name. Update that one file as decisions
 change; do not create parallel notes. Do not modify ignore rules or stage the
 artifact unless the user explicitly asks.
 
+When updating an authorized brief, check affected content against this Skill's
+current clarity and acceptance requirements, not only the newly resolved
+decision. Correct in-scope gaps and repetition while preserving confirmed
+decisions and project conventions. Revisit the whole brief for an overall
+revision; do not reopen settled decisions or reformat historical briefs solely
+because the Skill changed.
+
 ## Establish the boundary and inventory
 
 - Reuse established evidence; read more only to resolve a material uncertainty.
@@ -92,9 +99,10 @@ business tradeoff.
 
 ## Select a direction
 
-Once the request is clear, present two or three approaches only when a real
-design choice exists, compare benefits, costs, and risks, and recommend one from
-repository evidence. Do not manufacture alternatives. Describe the direction at
+Compare approaches only when choosing between them is necessary to resolve a
+remaining requirement decision. Once requirements are clear, return to the
+authorized task instead of adding a separate design-selection phase. Do not
+manufacture alternatives. Describe the direction at
 the level of module boundaries, data flow, visible behavior, error handling, and
 validation, not file-by-file steps.
 
@@ -102,9 +110,9 @@ validation, not file-by-file steps.
 
 When a brief is authorized, write a concise `brief.md` with: goal and success
 criteria; scope and non-goals; confirmed decisions; selected approach and
-tradeoffs; invariants and forbidden outcomes (or `Not applicable`); risk,
+tradeoffs; applicable invariants and forbidden outcomes; risk,
 security, and compatibility boundaries; acceptance and validation criteria;
-open decisions (or `None`); and the next step (or `Awaiting user direction`).
+remaining decisions; and the next step. Omit inapplicable sections.
 Do not leave decision-changing language such as "could", "prefer", "later", or
 "A or B" in confirmed content.
 

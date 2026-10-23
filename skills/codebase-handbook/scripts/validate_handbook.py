@@ -16,13 +16,16 @@ from build_handbook import (
     parse_manifest_data,
     scalar,
     top_scalar,
+    render_markdown,
+    slugify,
 )
 
 
-HANDBOOK_DIR = ".codebase-handbook"
+from handbook_data import load_yaml, records, typed_fields, confined_path, handbook_directory
+
+
 REQUIRED_FILES = ("config.yaml", "preferences.md", "manifest.yaml", "index.md")
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
-SCHEMA_RE = re.compile(r"(?m)^schema_version:\s*([^\s#]+)")
 SUPPORTED_SCHEMAS = {"1", "2"}
 STATUSES = {"planned", "draft", "verified", "needs-review"}
 COVERAGE_LEVELS = {"outline", "substantial", "complete"}
@@ -39,41 +42,8 @@ class CoverageEntry:
 
 
 def parse_coverage_inventory(text: str) -> list[CoverageEntry]:
-    entries: list[CoverageEntry] = []
-    section = ""
-    current: CoverageEntry | None = None
-    list_key = ""
-    for raw_line in text.splitlines():
-        line = raw_line.split("#", 1)[0].rstrip()
-        if not line:
-            continue
-        indent = len(line) - len(line.lstrip(" "))
-        stripped = line.strip()
-        if indent == 0:
-            match = re.match(r"([a-zA-Z_][\w-]*):", stripped)
-            section = match.group(1) if match else ""
-            current = None
-            list_key = ""
-            continue
-        area_match = re.match(r"-\s+area:\s*(.+)$", stripped)
-        if section == "coverage_inventory" and indent == 2 and area_match:
-            current = CoverageEntry(area=scalar(area_match.group(1)))
-            entries.append(current)
-            list_key = ""
-            continue
-        if current is None:
-            continue
-        field_match = re.match(r"([a-zA-Z_][\w-]*):\s*(.*)$", stripped)
-        if indent == 4 and field_match:
-            key, value = field_match.groups()
-            list_key = key if not value else ""
-            if key in {"kind", "disposition", "reason"}:
-                setattr(current, key, scalar(value))
-            continue
-        list_item = re.match(r"-\s+(.+)$", stripped)
-        if indent >= 6 and list_item and list_key == "chapters":
-            current.chapters.append(scalar(list_item.group(1)))
-    return entries
+    return [CoverageEntry(**typed_fields(item, CoverageEntry))
+            for item in records(load_yaml(text), "coverage_inventory")]
 
 
 def resolve_project_root(value: str | None) -> Path:
@@ -88,30 +58,35 @@ def is_external_link(target: str) -> bool:
 
 
 def check_markdown_links(handbook: Path, errors: list[str]) -> None:
-    for markdown in handbook.rglob("*.md"):
-        text = markdown.read_text(encoding="utf-8")
+    # Only authored handbook files; ignore code examples when finding links.
+    chapters = load_chapters(handbook)
+    targets = {chapter.path: chapter.chapter_id for chapter in chapters}
+    anchors = {
+        confined_path(handbook, chapter.path): {
+            heading[2] for heading in render_markdown(
+                chapter.markdown, chapter.path, targets).headings
+        } for chapter in chapters
+    }
+    for chapter in chapters:
+        markdown = confined_path(handbook, chapter.path)
+        text = re.sub(r"(?ms)^```[^\n]*\n.*?^```[^\n]*$", "", chapter.markdown)
+        text = re.sub(r"`[^`\n]*`", "", text)
         for raw_target in LINK_RE.findall(text):
             target = raw_target.strip().strip("<>")
-            if not target or target.startswith("#") or is_external_link(target):
+            if not target or is_external_link(target):
                 continue
-            path_part = unquote(target.split("#", 1)[0])
-            if not path_part:
-                continue
-            resolved = (markdown.parent / path_part).resolve()
+            path_part, _, fragment = target.partition("#")
+            resolved = ((markdown.parent / unquote(path_part)).resolve()
+                        if path_part else markdown)
             if not resolved.exists():
-                errors.append(
-                    f"broken Markdown link in {markdown.relative_to(handbook)}: "
-                    f"{raw_target}"
-                )
+                errors.append(f"broken Markdown link in {chapter.path}: {raw_target}")
+            elif fragment and resolved in anchors and slugify(unquote(fragment)) not in anchors[resolved]:
+                errors.append(f"broken chapter anchor in {chapter.path}: {raw_target}")
 
 
 def schema_version(path: Path, errors: list[str]) -> str:
     text = path.read_text(encoding="utf-8")
-    match = SCHEMA_RE.search(text)
-    if not match:
-        errors.append(f"{path.name} is missing schema_version")
-        return ""
-    version = scalar(match.group(1))
+    version = top_scalar(text, "schema_version", "")
     if version not in SUPPORTED_SCHEMAS:
         errors.append(f"{path.name} uses unsupported schema_version {version}")
     return version
@@ -165,34 +140,26 @@ def check_manifest(
                 f"chapter {chapter.chapter_id} has invalid status: {chapter.status}"
             )
         if version == "2":
-            if chapter.coverage not in COVERAGE_LEVELS:
+            if chapter.coverage and chapter.coverage not in COVERAGE_LEVELS:
                 errors.append(
                     f"chapter {chapter.chapter_id} has invalid coverage: "
                     f"{chapter.coverage}"
                 )
-            if chapter.evidence_status not in EVIDENCE_STATUSES:
+            if chapter.evidence_status and chapter.evidence_status not in EVIDENCE_STATUSES:
                 errors.append(
                     f"chapter {chapter.chapter_id} has invalid evidence_status: "
                     f"{chapter.evidence_status}"
                 )
-            if parts and chapter.part not in part_ids:
+            if chapter.part and chapter.part not in part_ids:
                 errors.append(
                     f"chapter {chapter.chapter_id} references unknown part: "
                     f"{chapter.part or '(empty)'}"
-                )
-            if chapter.status != "planned" and not chapter.read_when:
-                warnings.append(
-                    f"chapter {chapter.chapter_id} has no read_when guidance"
                 )
             if chapter.status != "planned" and not chapter.sources:
                 warnings.append(
                     f"chapter {chapter.chapter_id} has no direct source evidence"
                 )
-            if chapter.status != "planned" and not chapter.update_triggers:
-                warnings.append(
-                    f"chapter {chapter.chapter_id} has no update_triggers"
-                )
-            if chapter.status == "verified" and chapter.evidence_status != "verified":
+            if chapter.status == "verified" and chapter.evidence_status not in {"", "verified"}:
                 errors.append(
                     f"verified chapter {chapter.chapter_id} must have "
                     "evidence_status: verified"
@@ -200,7 +167,7 @@ def check_manifest(
         if not chapter.path:
             errors.append(f"chapter {chapter.chapter_id} is missing path")
         else:
-            chapter_path = handbook / chapter.path
+            chapter_path = confined_path(handbook, chapter.path)
             if not chapter_path.exists():
                 message = (
                     f"chapter {chapter.chapter_id} path does not exist: {chapter.path}"
@@ -257,10 +224,6 @@ def check_manifest(
     if handbook_status not in STATUSES:
         errors.append(f"invalid handbook_status: {handbook_status}")
     if version == "2" and handbook_status == "verified":
-        if not inventory:
-            errors.append(
-                "verified schema v2 handbook must have a coverage inventory"
-            )
         for chapter in chapters:
             if chapter.status != "verified":
                 errors.append(
@@ -294,7 +257,7 @@ def check_index_consistency(
 
 
 def check_html(handbook: Path, errors: list[str]) -> None:
-    html_path = handbook / "handbook.html"
+    html_path = confined_path(handbook, "handbook.html")
     if not html_path.is_file():
         errors.append("missing generated HTML reading view: handbook.html")
         return
@@ -334,7 +297,7 @@ def main() -> int:
     except ValueError as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
-    handbook = root / HANDBOOK_DIR
+    handbook = handbook_directory(root)
     if not handbook.is_dir():
         print(f"error: handbook does not exist: {handbook}", file=sys.stderr)
         return 2
@@ -342,7 +305,7 @@ def main() -> int:
     errors: list[str] = []
     warnings: list[str] = []
     for required in REQUIRED_FILES:
-        if not (handbook / required).is_file():
+        if not confined_path(handbook, required).is_file():
             errors.append(f"missing required file: {required}")
 
     if not errors:
@@ -371,9 +334,13 @@ def main() -> int:
         )
         return 1
     print(f"validation passed with {len(warnings)} warning(s)")
-    print("semantic accuracy and coverage depth still require Agent review")
+    print("source symbols, external-file anchors, semantic accuracy, and coverage require manual review")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (ValueError, OSError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        raise SystemExit(2)

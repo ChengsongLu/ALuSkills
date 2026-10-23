@@ -97,32 +97,24 @@ residual risk rather than inventing a defect.
 
 ## Classify findings
 
-Impact:
+Use one severity scale, or the repository's required vocabulary:
 
-- **Critical:** data loss, security exposure, outage, repeated dangerous side
-  effects, or core-flow breakage.
-- **High:** important functional error, compatibility regression, inconsistent
-  state, migration risk, or common reproducible failure.
-- **Medium:** localized, boundary, or recoverable problem.
-- **Low:** maintainability, documentation, coverage, or minor experience issue.
+- **Critical:** data loss, security exposure, outage, or dangerous repeated effects.
+- **High:** important functional errors, incompatible contracts, or inconsistent state.
+- **Medium:** localized or recoverable incorrect behavior.
+- **Low:** concrete maintainability, documentation, or minor experience issues.
 
-Action:
-
-- **Must fix:** concrete evidence and a realistic path to incorrect behavior,
-  inconsistent data, security exposure, compatibility regression, material user
-  impact, or a critical evidence gap that prevents a safe change.
-- **Should fix:** a real but limited issue with reliable mitigation, or mainly
-  maintainability or minor experience impact.
-- **May ignore:** a highly constrained, very unlikely case with no material
-  business, data, security, or user impact.
+Separate confirmed defects from validation gaps and residual risks. Missing a
+check is not itself proof of a defect; explain when it prevents a safe conclusion.
+Do not add a second action taxonomy or list negligible hypothetical cases.
 
 Do not report speculation, style preference, or a concern without a plausible
 trigger as a finding.
 
 ## Deliver
 
-List findings first, grouped by action and ordered by impact. For each give an
-identifier and title, file and tight line range, impact and action, code
+List findings first, ordered by severity. For each give an
+identifier and title, file and tight line range, severity, code
 evidence, trigger and consequence, and a focused remediation direction. Then
 summarize validation performed and not performed, evidence gaps, covered call
 chains for a large review, limited areas, residual risks, and confidence.

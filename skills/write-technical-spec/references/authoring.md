@@ -6,21 +6,33 @@
 2. Otherwise place specifications under the project-root `.write-technical-spec/`, using a short lowercase underscore-separated feature name.
 3. Confirm that goals, scope, contracts, behavior, and acceptance criteria are sufficiently resolved. Investigate missing facts directly and ask only about unresolved material decisions.
 
-Use the following default document set, respecting a narrower explicit request. Include `flow.md` only when requested or when multiple actors, asynchronous transitions, or failure and recovery paths benefit from a separate flow explanation:
+Default to one `design.md` containing the decisions, a concise implementation
+outline, and validation strategy. Add `implement.md` only when independently
+executable phases or substantial execution detail justify a separate plan. Add
+`flow.md` only when requested or when a separate flow explanation materially
+improves understanding. Respect the user's requested document set:
 
 ```text
 .write-technical-spec/
 └── YYYY_MM_DD_feature_NNN/
     ├── flow.md          # optional
     ├── design.md
-    └── implement.md
+    └── implement.md     # optional
 ```
 
 When updating an existing specification, locate candidates by feature scope, read their current documents, and reuse one only after confirming that it represents the same design effort. Confirm material scope expansion; do not repeat authorization for an ordinary continuation. Do not reuse a directory merely because its slug matches.
 
+Check the maintained sections and dependent documents against this Skill's
+current authoring and readiness requirements, not only the latest design
+change. For an overall revision, check the full requested document set.
+Correct in-scope gaps and duplication while preserving confirmed decisions and
+repository conventions. Existing useful document splits need not be merged
+just because the default is now one file; report broader restructuring needs.
+
 Treat a specification whose implementation is complete as a historical snapshot, not a description of current behavior. Update it only when continuing the same design effort or when the user explicitly asks; do not batch-rewrite completed specifications. Record implemented behavior in the repository's current implementation documentation, and when a specification conflicts with source or tests, treat source and tests as authoritative.
 
-Unless the repository specifies otherwise, use numbered section headings (`1.`, `1.1.`). When a Mermaid node label needs a line break, use `<br/>` rather than `\n`.
+Use repository document conventions. Omit inapplicable sections. Use diagrams
+only when they clarify the design.
 
 For every independent new specification, start `NNN` at `000` and select the next unused sequence for the same date and feature. Never overwrite or silently merge an existing specification. Do not modify ignore rules or stage specification artifacts unless the user explicitly requests it.
 
@@ -37,7 +49,10 @@ Use `flow.md` to explain the core processing flow, not detailed design.
 - Keep node labels short; move detailed meaning into notes, rules, or a small table after the diagram.
 - Move tradeoffs, schemas, interfaces, algorithms, tests, and operational details to the appropriate later document.
 
-Continue to design when the flow follows resolved requirements. Ask only about unresolved material decisions or an explicitly requested review checkpoint.
+Continue to design only when it is part of the requested document set and the
+flow follows resolved requirements. For a flow-only request, review and deliver
+that flow without creating additional documents. Ask only about unresolved
+material decisions or a requested review checkpoint.
 
 ## Write the design document
 
@@ -54,38 +69,46 @@ Cover applicable topics:
 - key decisions and tradeoffs;
 - major risks and high-level validation strategy.
 
-Keep implementation detail out of `design.md`. Move file-by-file steps, algorithms, lock or temporary-file mechanics, recovery scans, release commands, test matrices, fixtures, mocks, and individual assertions into `implement.md`.
+Keep enough implementation detail to establish feasibility and important
+constraints. Avoid speculative file inventories and test scaffolding. If a
+separate plan is justified, move detailed execution steps there and link to it
+instead of repeating design decisions.
 
-For high-risk behavior, state the principle and non-negotiable constraint in `design.md`; put the executable sequence and risk-relevant cases in `implement.md`.
+For high-risk behavior, state the invariant and the sequence that enforces it.
+Describe validation for the important failure boundaries at the lowest useful
+level; separate files are not a prerequisite for rigor.
 
 ## Review the design
 
-Before writing the implementation plan:
+Before delivery or writing a separate implementation plan:
 
 1. Compare the design with repository rules, current code, module documentation, related specs, and the confirmed request.
 2. Check module boundaries, state transitions, persistence, migrations, concurrency, idempotency, side effects, failure and recovery behavior, operations, security, privacy, compatibility, and testability.
-3. Remove or relocate detail that belongs in the implementation plan.
+3. Remove duplication and detail that does not help implementation.
 4. Search for decision-changing uncertainty such as “could,” “recommended,” “default,” “prefer,” “decide during implementation,” “A or B,” or unresolved questions.
 5. Directly fix wording and evidence omissions that do not change behavior.
 6. Ask the user to decide any issue that changes semantics, contracts, scope, data, state, security, visible behavior, or acceptance.
-7. Record a concise review note in the document.
+7. Report material unresolved findings; do not add a review log to every document.
 
-Begin `implement.md` when material design decisions are resolved; do not ask again about decisions already authorized.
+If a separate plan is needed, begin it when material design decisions are
+resolved; do not ask again about decisions already authorized.
 
 ## Write the implementation plan
 
-Use `implement.md` to describe execution:
+When a separate plan is justified, use `implement.md` to describe relevant execution details:
 
 - ordered phases and dependencies;
 - files or modules to add or change and why;
 - detailed algorithms and state transitions;
 - persistence, locking, atomicity, compensation, recovery, and deployment mechanics;
 - interface, schema, configuration, migration, and compatibility changes;
-- testing strategy, test locations, fixtures, mocks, assertions, failure injection, and coverage matrix;
+- acceptance checks and key failure cases, with concrete setup or failure
+  injection only where needed to show the behavior can be tested;
 - validation commands and manual checks;
 - documentation updates and final delivery checks.
 
-When the work needs multiple independently executable phases, use:
+Split a large plan into phase documents only when independently maintained
+phases benefit from separate files; otherwise keep phases in one document:
 
 ```text
 implement.md
@@ -107,10 +130,9 @@ Do not require approval after every document or implementation phase.
 When the requested set is complete, apply
 [readiness-review.md](readiness-review.md) to check cross-document consistency and
 implementation readiness, including one overall design simplification check.
-Present any proposed simplification and its specific update points for explicit
-user confirmation before modifying the specification as described in that review.
-Report the verdict, the simplification outcome, and any proposals awaiting
-confirmation, and link the documents together.
+Apply ordinary in-scope simplification directly. Ask before changing confirmed
+design decisions, contracts, or scope. Report the verdict and remaining decisions;
+link separate documents when they exist.
 A request to author a specification does not itself authorize coding. If coding
 was also authorized, return to it after blocking design issues are resolved;
 otherwise deliver the specification and stop.

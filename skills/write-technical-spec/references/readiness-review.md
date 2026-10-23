@@ -26,19 +26,15 @@ Review these applicable dimensions:
 2. **Cross-document consistency:** Compare terminology, actors, boundaries, interfaces, schemas, state transitions, ordering, side effects, compatibility promises, file inventories, and phase dependencies. Treat later documents that silently contradict confirmed earlier decisions as blocking.
 3. **Repository feasibility:** Resolve named files, symbols, interfaces, dependencies, commands, and test locations against the current repository. Check that sequencing, migration, deployment, rollback, compatibility, permissions, and operational assumptions are executable. Do not allow implementation to decide unresolved product or architectural behavior implicitly.
 4. **State and failure boundaries:** Identify the source of truth, initial and terminal states, valid and invalid transitions, commit points, partial failures, retries, duplicate execution, idempotency, compensation, recovery, cancellation, and side-effect invariants wherever applicable. Require an explicit disposition for each meaningful failure branch.
-5. **Test verifiability:** Trace every acceptance criterion, invariant, state transition, compatibility promise, and meaningful failure branch to a test or explicit manual check. Require the test level or location, setup or fixtures, action, assertions, failure injection or mocks when needed, validation command, and expected result. Flag behavior that cannot be observed deterministically.
+5. **Test verifiability:** Connect acceptance criteria and high-risk invariants to focused tests or explicit manual checks. Specify setup, assertions, and failure injection only where needed to establish observability or a critical boundary. Reuse existing test infrastructure; do not require a Cartesian test matrix or duplicate the same evidence for every transition.
 6. **Overall design simplicity:** Check whether the design can be simplified to improve stability and reduce complexity while preserving confirmed requirements and necessary safeguards. Look for unnecessary layers, duplicated state or sources of truth, avoidable coordination, and redundant failure or recovery paths. For each concrete opportunity, explain the current design, proposed simplification, affected documents and exact changes, expected stability benefit, and tradeoffs. Do not recommend simplification merely to reduce document length or remove necessary safety mechanisms. If no justified simplification exists, say so explicitly.
 
-For simplifications found during authoring or updates, present the proposed update
-points to the user and obtain explicit confirmation before applying them, even
-when they preserve observable behavior. Existing authorization to write or update
-the specification does not approve these newly proposed simplifications. Continue
-unaffected review work while awaiting confirmation. Apply only confirmed changes,
-synchronize affected documents, and recheck affected review dimensions. If the
-user declines, retain the existing design and report any remaining findings on
-their merits; an optional simplification alone is not an implementation blocker.
-In standalone review mode, report proposals without editing; confirmation must
-also authorize remediation before any changes are made.
+During authorized authoring or updates, apply local simplifications that preserve
+confirmed design decisions, behavior, and scope. Ask only when a proposal changes
+those decisions, contracts, acceptance criteria, or scope. Continue unaffected
+work while awaiting the answer. Optional simplification alone is not an
+implementation blocker. Standalone review remains read-only unless remediation
+is explicitly authorized.
 
 Recheck repository evidence immediately before issuing the verdict when the specification or relevant repository state changed during review.
 

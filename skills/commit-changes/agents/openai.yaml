@@ -1,4 +1,4 @@
 interface:
   display_name: "Commit Changes"
   short_description: "Commit authorized changes with a reviewed message"
-  default_prompt: "Use $commit-changes to commit the authorized changes, showing the complete commit message for confirmation before committing."
+  default_prompt: "Use $commit-changes to commit the authorized changes, respecting existing authorization and repository confirmation requirements."

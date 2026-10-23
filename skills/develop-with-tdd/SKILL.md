@@ -1,6 +1,6 @@
 ---
 name: develop-with-tdd
-description: Implement regression fixes, logic whose correctness cannot be judged by reading, and external contract changes with focused TDD, or use when TDD is explicitly requested. Skip routine CRUD, wiring, documentation, and other low-risk changes.
+description: Implement regression fixes, logic whose correctness cannot be judged by reading, and external contract changes with focused TDD, or use when TDD is explicitly requested. Without an explicit TDD request, skip routine CRUD, wiring, documentation, and other low-risk changes.
 ---
 
 # Develop With TDD
@@ -18,10 +18,10 @@ not a separate artifact workflow.
    - logic whose correctness cannot be confirmed by reading it, such as state
      machines, concurrency, retry or recovery paths, and complex business rules;
    - changes to public interfaces or other externally consumed contracts.
-3. Implement routine CRUD, wiring, configuration, documentation, formatting,
-   and mechanical changes directly, then add focused tests where the risk
-   warrants them. When one task mixes both kinds of work, apply TDD only to the
-   critical behavior.
+3. Unless the user explicitly requests TDD for them, implement routine CRUD,
+   wiring, configuration, documentation, formatting, and mechanical changes
+   directly, then add focused tests where the risk warrants them. For mixed
+   tasks without an explicit TDD scope, apply TDD only to critical behavior.
 4. If meaningful TDD would require a new test harness or a broad testability
    refactor, explain the benefit, the cost, and a narrower validation
    alternative, then obtain confirmation before expanding the work.
