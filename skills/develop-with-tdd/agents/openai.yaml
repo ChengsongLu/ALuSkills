@@ -1,4 +1,4 @@
 interface:
   display_name: "TDD Development"
   short_description: "Protect regressions and risky logic with focused TDD"
-  default_prompt: "Use $develop-with-tdd to implement this change, applying red-green TDD only to regressions, hard-to-verify logic, and contract changes."
+  default_prompt: "Use $develop-with-tdd to implement this change, applying red-green TDD where I explicitly request TDD, or otherwise to regressions, hard-to-verify logic, and contract changes."

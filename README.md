@@ -13,15 +13,20 @@ The Skills work from repository evidence, focus on difficult behavior and
 failure paths, and avoid adding process to simple tasks. Each Skill is
 self-contained, independently installable, and does not rely on another Skill.
 
+When maintaining an existing artifact, check the affected content against the
+current installed Skill as well as current evidence. Overall maintenance checks
+the full agreed scope. Preserve user decisions and useful history; read-only
+work reports gaps, and changed defaults alone do not require migration.
+
 ## Skills
 
 | Skill | Use it for | Output |
 | --- | --- | --- |
 | [`clarify-development-request`](skills/clarify-development-request/) | Resolving material requirement decisions before implementation | Decisions in conversation; optional `brief.md` |
-| [`write-technical-spec`](skills/write-technical-spec/) | Assessing spec needs and creating, updating, or reviewing a repository-grounded design | Optional `flow.md`, `design.md`, and `implement.md` |
+| [`write-technical-spec`](skills/write-technical-spec/) | Assessing spec needs and creating, updating, or reviewing a repository-grounded design | `design.md`; optional execution and flow documents |
 | [`develop-with-tdd`](skills/develop-with-tdd/) | Protecting regressions, hard-to-verify logic, and contract changes with focused TDD | Source code and tests |
 | [`review-code-changes`](skills/review-code-changes/) | Reviewing a diff and safely remediating authorized findings | Optional `review.md`, `coverage.md`, and `remediation.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Persisting requested task state and recovering interrupted work from checkpoints | `STATE.md` and `CHECKPOINTS.md` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Persisting requested task state and recovering interrupted work from checkpoints | `STATE.md`; optional stage history |
 | [`commit-changes`](skills/commit-changes/) | Committing authorized changes with a reviewed, informative message | Git commit |
 | [`write-weekly-report`](skills/write-weekly-report/) | Summarizing a week's commits into a concise progress report | Report in conversation |
 | [`codebase-handbook`](skills/codebase-handbook/) | Navigating codebases through existing handbooks and maintaining them | Markdown chapters, `manifest.yaml`, and `handbook.html` |
@@ -46,18 +51,17 @@ require one confirmation covering scope and document set. Explicit authoring
 requests authorize that scope without repeated entry or document-by-document
 approval; material unresolved decisions still require direction. Assessment,
 authoring, and read-only review load only their relevant guidance. Authoring
-uses `design.md`, `implement.md`, and optional `flow.md`, respecting narrower requests.
-After authoring or updating the requested set, it reviews the overall design for
-simplifications that improve stability and reduce complexity. It presents proposed
-update points for explicit user confirmation before applying any simplification.
+defaults to one `design.md`; separate execution plans and flow documents are
+added only when useful or requested. In-scope simplifications proceed directly;
+changes to confirmed design decisions, contracts, or scope require confirmation.
 
 ### develop-with-tdd
 
 Use this Skill when the user explicitly requests TDD, or for regression
 defects, logic whose correctness cannot be judged by reading it (state machines,
 concurrency, retry and recovery, complex rules), and external contract changes.
-Routine CRUD, wiring, and mechanical changes are implemented directly with
-proportionate tests. It maps each test to confirmed behavior, tests through the
+Unless TDD is explicitly requested for them, routine CRUD, wiring, and
+mechanical changes are implemented directly with proportionate tests. It maps each test to confirmed behavior, tests through the
 boundary closest to the real caller, and requires an observed red run before
 claiming TDD. It creates no separate workflow artifact.
 
@@ -80,14 +84,16 @@ initiative. It also resumes interrupted work by locating and verifying a
 matching checkpoint against current instructions, source, and Git; recovery is
 read-only and does not authorize new files. Checkpoints never store credentials
 or replace Git, and they do not expand the task into formal documentation work.
+Use one `STATE.md` by default; keep stage history only when needed. Reconcile
+unknown side effects before deciding whether an authorized retry is safe.
 
 ### commit-changes
 
 Use this Skill when the user asks to commit. It determines the authorized scope
 from the actual working tree, writes a message whose title states the outcome
 and whose body covers the important changes by topic, records only validation
-that actually ran, and shows the complete message for confirmation before
-committing. It does not push unless asked and never force-pushes shared
+that actually ran, and respects existing authorization and repository approval
+requirements before committing. It does not push unless asked and never force-pushes shared
 branches. Repository instructions override its message conventions.
 
 ### write-weekly-report
@@ -95,7 +101,8 @@ branches. Repository instructions override its message conventions.
 Use this Skill to turn the current repository's commit history into a weekly
 report. By default it covers commits since the previous Friday 18:30, merges
 related commits by topic, keeps only effective conclusions, and outputs the date
-range followed by a short numbered list.
+range and revision baseline followed by a short numbered list. It defaults to
+current `HEAD`, handles empty windows, and does not equate commits with deployments.
 
 ### codebase-handbook
 
@@ -111,6 +118,16 @@ and ordinary repository files remain read-only evidence for this Skill. Focused
 queries read matching index and manifest entries and reuse unchanged preferences.
 Explicit handbook work authorizes ordinary in-scope writing; material scope
 expansion and ambiguous destructive changes still require confirmation.
+Keep chapters and routing metadata concise; additional coverage maps and state
+classifications are optional. Existing schema v1/v2 books remain supported.
+Handbook helpers require Python 3.9+ and PyYAML:
+
+```bash
+python3 -m pip install -r <installed-skill-dir>/scripts/requirements.txt
+```
+
+Run helpers with that same Python environment. Validation checks structure and
+HTML input freshness, not current prose accuracy or source symbol existence.
 
 ## Install and update
 

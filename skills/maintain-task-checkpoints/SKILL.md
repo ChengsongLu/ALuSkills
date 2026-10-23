@@ -33,7 +33,7 @@ Use a user- or repository-specified location when one is explicit. Otherwise:
 .maintain-task-checkpoints/
 └── YYYYMMDD-HHMMSS-short-name/
     ├── STATE.md
-    ├── CHECKPOINTS.md
+    ├── CHECKPOINTS.md   # optional stage history
     └── artifacts/          # only when necessary
 ```
 
@@ -45,6 +45,12 @@ asks. Confirm again before changing task identity, moving the checkpoint, or
 materially expanding what is persisted.
 
 ## Record state
+
+When maintaining an existing checkpoint, check the active recovery state against
+this Skill's current requirements for evidence, compactness, and side effects.
+Correct it within the authorized task; preserve useful history and user-defined
+locations. Do not rewrite completed checkpoints or change their layout merely
+because defaults changed. Read-only recovery reports relevant gaps without edits.
 
 Create `STATE.md` before the next affected operation, recording verified
 progress only:
@@ -59,16 +65,17 @@ progress only:
 - blockers, open decisions, and residual risks;
 - side effects that must not be repeated during recovery.
 
-Initialize `CHECKPOINTS.md` as an append-only stage history. Do not duplicate
-what source, Git, or formal documents already record, and never record planned
-or unverified work as completed.
+Use `STATE.md` as the default recovery artifact. Create `CHECKPOINTS.md` only
+when requested or when stage history is necessary for the authorized handoff.
+Preserve existing history, but do not duplicate current state or what Git and
+formal documents already record. Never record unverified work as completed.
 
-Update `STATE.md` after the current atomic operation when scope or plan
-changes, a meaningful stage completes, an important decision is made, a risky
-operation is about to begin, validation status changes, a blocker appears, or
-the work period is ending. When a stage completes, append a checkpoint with the
-time, stage, work done, decisions, files changed, validation result, and next
-step. Record conclusions, not command transcripts. If writing fails, continue
+Update `STATE.md` at meaningful state or decision changes and before handoff.
+Before a non-repeatable side effect, record its intended action and how to
+verify the result; afterward record the observed outcome, including uncertainty.
+When stage history is maintained, append only material milestones and link to
+current state instead of repeating its full contents. Record conclusions, not
+command transcripts. If writing fails, continue
 safe in-scope work and report the missing recovery evidence.
 
 Never store secrets, tokens, credentials, `.env` contents, personal or
@@ -88,16 +95,21 @@ After reading a checkpoint:
 - verify repository path, branch, task ID, timestamp, and diff;
 - recheck relevant files and validation evidence, rerunning checks only when
   changes or missing evidence make earlier results unreliable;
-- correct stale state when higher-priority evidence disagrees;
-- never repeat migrations, messages, deployments, task creation, file
-  operations, or other recorded side effects;
+- report stale checkpoint state when higher-priority evidence disagrees;
+  correct the files only when checkpoint maintenance is authorized;
+- distinguish attempted, completed, failed, and unknown side effects; verify
+  external results before retrying. Do not repeat confirmed completed effects.
+  Retry a confirmed incomplete operation only when still authorized and safe;
+  an unknown outcome requires reconciliation, not an assumption of failure;
 - do not merge multiple plausible checkpoints without reliable evidence; ask
   the user when identity remains ambiguous.
 
 ## Complete and hand off
 
-At completion, mark `STATE.md` as `completed`, record final changes,
-validation, unverified items, and residual risks, and append a final checkpoint.
+When maintaining authorized checkpoint files, at completion mark `STATE.md`
+as `completed`, record final changes,
+validation, unverified items, and residual risks. Append a final checkpoint
+only if stage history is maintained.
 Report any durable conclusion that exists only in the checkpoint.
 
 Before handoff, make current work, next work, blockers, and non-repeatable side

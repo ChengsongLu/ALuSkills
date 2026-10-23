@@ -12,15 +12,19 @@ ALuSkills 是一组面向真实代码库的软件开发 Agent Skills：
 简单任务增加不必要的流程。每个 Skill 都是自包含的，可以独立安装，不依赖
 其他 Skill。
 
+维护已有产物时，同时按当前安装的 Skill 要求和最新证据检查受影响内容；
+整体维护则检查约定的完整范围。保留用户决策和有效历史，只读任务仅报告差异，
+不因默认规则变化而强制迁移产物。
+
 ## Skills
 
 | Skill | 适用场景 | 产物 |
 | --- | --- | --- |
 | [`clarify-development-request`](skills/clarify-development-request/) | 在实现前解决会影响需求结果的实质决策 | 对话中的决策；可选 `brief.md` |
-| [`write-technical-spec`](skills/write-technical-spec/) | 评估是否需要规格，并创建、更新或审查技术设计 | 可选 `flow.md`、`design.md`、`implement.md` |
+| [`write-technical-spec`](skills/write-technical-spec/) | 评估是否需要规格，并创建、更新或审查技术设计 | `design.md`；按需添加实施和流程文档 |
 | [`develop-with-tdd`](skills/develop-with-tdd/) | 用聚焦 TDD 保护回归缺陷、难以靠阅读判断的逻辑和契约变化 | 源码与测试 |
 | [`review-code-changes`](skills/review-code-changes/) | 审查变更，并安全修复已授权的问题 | 可选 `review.md`、`coverage.md`、`remediation.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 按要求持久化任务状态，并从检查点恢复中断任务 | `STATE.md`、`CHECKPOINTS.md` |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | 按要求持久化任务状态，并从检查点恢复中断任务 | `STATE.md`；可选阶段历史 |
 | [`commit-changes`](skills/commit-changes/) | 以经确认、信息完整的提交信息提交已授权变更 | Git 提交 |
 | [`write-weekly-report`](skills/write-weekly-report/) | 将一周提交记录汇总为简洁周报 | 对话中的周报 |
 | [`codebase-handbook`](skills/codebase-handbook/) | 利用已有手册导航代码库，并维护技术手册 | Markdown 章节、`manifest.yaml`、`handbook.html` |
@@ -39,13 +43,14 @@ ALuSkills 是一组面向真实代码库的软件开发 Agent Skills：
 询问是否进入或生成产物。隐式建议创建规格时，一次确认范围和文档集。
 明确的写作请求授权相应范围，不再重复确认进入流程或逐份文档审批；实质未决
 问题仍需用户决策。评估、写作和只读审查按需加载各自说明。默认使用
-`design.md`、`implement.md` 和可选 `flow.md`，尊重用户指定的更小文档范围。
+一个 `design.md`，仅在有实际需要或用户要求时拆分实施计划和流程文档。
+范围内的常规简化直接完成；改变已确认设计、契约或范围时再确认。
 
 ### develop-with-tdd
 
 当用户明确要求 TDD，或涉及回归缺陷、无法仅靠阅读判断正确性的逻辑（状态机、
-并发、重试与恢复、复杂规则）以及对外契约变化时使用。普通增删改查、接线和
-机械修改直接实现并补充相称的测试。它将测试映射到已确认行为，从最接近真实
+并发、重试与恢复、复杂规则）以及对外契约变化时使用。未明确要求 TDD 时，
+普通增删改查、接线和机械修改直接实现并补充相称的测试。它将测试映射到已确认行为，从最接近真实
 调用方的边界测试，只有实际观察到红测试失败才称为 TDD，不创建独立流程产物。
 
 ### review-code-changes
@@ -61,18 +66,20 @@ ALuSkills 是一组面向真实代码库的软件开发 Agent Skills：
 当用户明确要求持久化任务状态或跨会话、跨 Agent 交接时使用，不会主动创建
 检查点。中断恢复时会查找匹配的检查点，并根据当前指令、源码及 Git 核验；
 恢复只读，不授权新建文件。检查点不保存凭据、不替代 Git，也不把任务扩大为
-正式文档维护。
+正式文档维护。默认只维护 `STATE.md`，必要时保留阶段历史；结果未知的副作用
+先核实，再判断是否可在已有授权内安全重试。
 
 ### commit-changes
 
 用户要求提交时使用。它根据实际工作区确定已授权的提交范围，标题概括核心成果，
-正文按主题覆盖重要变更，只记录实际执行过的验证，并在提交前展示完整提交信息
-供确认。未经要求不 push，不对共享分支 force push；仓库规则优先于它的默认约定。
+正文按主题覆盖重要变更，只记录实际执行过的验证；提交前遵循已有授权和
+仓库确认要求，避免重复询问。未经要求不 push，不对共享分支 force push；仓库规则优先于它的默认约定。
 
 ### write-weekly-report
 
 基于当前仓库提交记录生成周报。默认覆盖上一个周五 18:30 以来的提交，按主题
-合并相关提交，只保留最终有效结论，先输出日期范围，再输出简短的编号列表。
+合并相关提交，只保留最终有效结论，先输出日期范围和版本基线，再输出简短的编号列表。
+默认统计当前 `HEAD`，正确处理空时间窗口，不把提交等同于已部署成果。
 
 ### codebase-handbook
 
@@ -83,6 +90,15 @@ ALuSkills 是一组面向真实代码库的软件开发 Agent Skills：
 `.codebase-handbook/` 下，源码和普通仓库文件仅作为该 Skill 的只读证据。
 聚焦查询只读取匹配的索引和 manifest 条目，复用未变化的偏好配置。明确的手册
 请求授权范围内的常规写作；实质扩展范围或目标不明的删除仍需确认。
+章节和导航元数据保持简洁，额外覆盖清单和状态维度按需维护，兼容已有 v1/v2
+手册。辅助脚本需要 Python 3.9+ 和 PyYAML：
+
+```bash
+python3 -m pip install -r <installed-skill-dir>/scripts/requirements.txt
+```
+
+使用同一 Python 环境运行脚本。校验检查结构和 HTML 输入是否最新，不证明正文
+符合当前实现，也不检查源码符号是否存在。
 
 ## 安装与更新
 

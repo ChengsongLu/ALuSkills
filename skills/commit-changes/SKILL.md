@@ -47,10 +47,13 @@ changes is not approval to commit.
 
 ## Confirm and commit
 
-1. Before staging and committing, show the complete proposed message, including
-   the body, and the files it covers, then wait for confirmation. Do not ask
-   again for a message the user already provided or confirmed.
-2. Commit with the confirmed title, body, and line breaks preserved exactly.
+1. Follow the user's authorization and repository approval requirements. By
+   default show the complete proposed message and covered files before committing.
+   Wait for confirmation unless the user already approved them or explicitly
+   authorized committing without another message review. Do not repeat an
+   already satisfied approval gate.
+2. Preserve the approved title, body, and line breaks exactly; when message
+   drafting was delegated, commit the message prepared within that authorization.
 3. Report the commit hash, title, and any remaining uncommitted changes.
 
 Do not push unless the user explicitly asks. Never force-push a shared branch.

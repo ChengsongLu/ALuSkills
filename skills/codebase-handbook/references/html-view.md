@@ -20,7 +20,7 @@ The page must:
 - render chapter summaries in the generated book map so readers can choose a
   chapter by purpose rather than title alone;
 - include manifest summaries, concepts, tasks, source paths, symbols, and
-  update triggers in full-text search;
+  update triggers in full-text search when evidence display is enabled;
 - keep workflow status, coverage depth, evidence status, source evidence, and
   update triggers in a collapsible maintenance section;
 - preserve browser back and forward navigation;
@@ -55,8 +55,11 @@ Run:
 python3 <skill-dir>/scripts/build_handbook.py --project-root <project-root>
 ```
 
-Use `--title` only when the user or `preferences.md` specifies a display title.
-Otherwise derive the title from the project directory name.
+Use `--title` for an explicit per-build title override; otherwise use
+`html.title` from config or derive the title from the project directory name.
+Install `scripts/requirements.txt` before running helpers.
+`html.show_source_evidence: false` hides generated evidence and trigger panels
+and their search metadata, not citations authored in Markdown.
 
 Regenerate after changing:
 
@@ -72,8 +75,8 @@ The builder hashes the relative path and content of every input above and embeds
 the result in a meta tag. `validate_handbook.py` recalculates the hash and fails
 when the page is missing or stale.
 
-Do not use this hash as semantic validation. It proves only that the HTML view
-was built from the current handbook inputs.
+Do not use this hash as semantic validation. It checks the recorded input hash, not output integrity or the current
+renderer version. Rebuild after upgrading the helper.
 
 Perform static accessibility checks after builder changes. When browser tooling
 is available, also verify desktop and narrow layouts, keyboard navigation,

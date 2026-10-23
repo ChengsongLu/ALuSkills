@@ -2,24 +2,16 @@
 
 Status: planned
 
-The handbook shell is ready. Its book map, agent navigation indexes, coverage
-inventory, and technical chapters have not yet been generated.
+The shell is ready; discovery and chapter writing have not begun.
 
-## Understand the system
+## Start reading
 
 No verified reading path is available yet.
 
-## Change the system
+## Find a task or concept
 
-No task-based change path is available yet.
+No task routes are available yet.
 
-## Book map
+## Gaps
 
-No parts or chapters have been planned yet.
-
-## Coverage health
-
-- Planned topics: not yet inventoried
-- Draft topics: none
-- Verified topics: none
-- Needs review: none
+The agreed scope has not yet been inventoried.
