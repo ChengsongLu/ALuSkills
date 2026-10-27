@@ -25,10 +25,47 @@ model, main flow, ownership and important boundaries, material failure or
 recovery consequences, and change implications as applicable. These are reader
 questions, not mandatory headings. Omit irrelevant sections.
 
-Use prose for causality and consequences, tables for exact repeated mappings,
-and diagrams only when they clarify relationships that prose makes hard to
-follow. Keep prose understandable without diagram rendering. Avoid exhaustive
-file, endpoint, symbol, exception, and test catalogs.
+Within a chapter, use descriptive headings for independently useful questions
+so readers can retrieve and update one mechanism without loading unrelated
+detail. Separate distinct flows, ownership rules, or failure conditions rather
+than accumulating them in a long generic section. Keep conditions beside the
+claims they qualify; short coherent chapters need no extra subdivisions.
+
+Explain the key logic with as little text as clarity allows. Prefer visual
+structure for flows and comparisons; use prose for the necessary reasons and
+boundaries. Choose the form by the reader's question:
+
+| Question | Preferred form |
+| --- | --- |
+| What is this for? | One or two opening sentences |
+| How does execution or state progress? | A small flowchart, sequence diagram, or text arrows; label branches, commit points, and end conditions |
+| What differs across scenarios or components? | A short comparison table with concrete conditions and outcomes |
+| Where are files, and who owns them? | An annotated text tree or ownership diagram |
+| What is a single rule or limitation? | One direct sentence |
+
+Give the main flow before secondary cases. Split dense diagrams by reader
+question rather than drawing one whole-system graph. Name entities and arrows;
+use meaningful labels and a brief diagram purpose or Mermaid `accTitle` and
+`accDescr` where helpful. Keep labels readable and tables scannable, without
+putting paragraphs into cells. Do not require a fixed number of diagrams,
+sections, or words.
+
+Do not repeat a diagram or table row by row in prose. Keep the explanation
+usable from Markdown text, including diagram source; HTML is a reading
+projection, not a second body. Preserve permissions, version and concurrency
+ownership, commit points, idempotency, cancellation, and recovery conditions
+where material. Never turn a conditional guarantee into an unconditional one
+to shorten it. Express these constraints in explicit diagram labels, table
+text, or nearby sentences; color, position, and arrow styling alone must not
+carry essential meaning. Avoid exhaustive file, endpoint, symbol, exception, and test
+catalogs; link to maintained detail only after checking it exists.
+
+Use standard Mermaid flowcharts, sequence, state, class, or entity relationship
+diagrams, or plain text for simple flows. The offline viewer uses Mermaid Tiny;
+mindmaps, architecture diagrams, KaTeX, and optional layout/icon plugins are
+not included. Do not use diagram configuration frontmatter, init directives,
+external images, or click actions. Check syntax and, when a browser is available,
+rendering, label legibility, and agreement with the surrounding explanation.
 
 Keep detail proportional to its value: include a constant, helper, or failure
 case only when it affects understanding or safe modification. Explain a

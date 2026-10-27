@@ -1,12 +1,15 @@
 """Regression checks for handbook parsing, boundaries, and generated output."""
 from pathlib import Path
+import base64
+import hashlib
+import re
 from html.parser import HTMLParser
 import subprocess
 import sys
 import tempfile
 import unittest
 
-from build_handbook import build_handbook, parse_manifest_data
+from build_handbook import build_handbook, parse_manifest_data, MERMAID_SHA256
 from handbook_data import load_yaml
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -127,6 +130,21 @@ unresolved: []""")
         self.assertNotIn("source.py::sample", html)
         self.assertNotIn('<script>alert("x")</script>', html)
         self.assertIn("<title>Override</title>", build_handbook(self.root, "Override").read_text())
+
+    def test_offline_diagrams_preserve_source_and_embed_pinned_bundle(self):
+        source = 'flowchart LR\n A["</script><img src=x onerror=alert(1)>"] --> B'
+        (self.book / "chapter.md").write_text(f"# Sample\n\n## Details\n\n```mermaid\n{source}\n```\n")
+        html = build_handbook(self.root).read_text()
+        bundles = re.findall(r'<script src="data:text/javascript;base64,([^"]+)"', html)
+        self.assertEqual(len(bundles), 1)
+        self.assertEqual(hashlib.sha256(base64.b64decode(bundles[0])).hexdigest(), MERMAID_SHA256)
+        self.assertNotIn('</script><img', html)
+        self.assertIn('&lt;/script&gt;&lt;img', html)
+        self.assertIn('<details class="diagram-source" open>', html)
+        self.assertIn('Content-Security-Policy', html)
+        self.run_helper("validate_handbook.py")
+        (self.book / "chapter.md").write_text("# Sample\n\nNo diagrams.\n")
+        self.assertNotIn('data:text/javascript;base64,', build_handbook(self.root).read_text())
 
     def test_paths_cannot_embed_external_files(self):
         outside = self.root.parent / "outside.md"

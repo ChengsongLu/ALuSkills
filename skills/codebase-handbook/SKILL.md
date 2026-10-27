@@ -21,8 +21,10 @@ the underlying task; initialize only on explicit request.
 
 For applicable work, read `.codebase-handbook/config.yaml` and `preferences.md`
 once, refreshing them only if changed. Apply current user instructions first,
-then repository rules, preferences, configuration, and these defaults. Begin
-with `index.md` and retrieve only relevant manifest entries and chapters.
+then repository rules, preferences, configuration, and these defaults. Choose
+the entry point from the task: use the index for orientation or match known
+paths, symbols, and concepts in the manifest. Retrieve only relevant sections;
+use the navigation workflow for missing matches and evidence checks.
 
 Read the matching section of [workflows.md](references/workflows.md):
 
@@ -66,8 +68,10 @@ project preferences, protected sections, and compatible metadata. Report
 changes requiring broader restructuring or migration instead of silently
 expanding the task. Read-only use reports relevant gaps without editing.
 
-Explain mechanisms and consequences, not inspection order or individual
-helpers. Keep each fact's main explanation in one place and link to it elsewhere.
+Explain key mechanisms concisely: prefer diagrams for flows, tables for
+comparisons, and trees for directories; use prose for reasons and material
+boundaries. Do not repeat visual content row by row or omit safety conditions
+to shorten it. Keep each fact's main explanation in one place and link elsewhere.
 Use the [writing guide](references/evidence-and-writing.md) for drafting and
 local compression. Keep a small set of direct sources and stable symbols;
 avoid durable line numbers.

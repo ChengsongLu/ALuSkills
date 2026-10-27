@@ -1,0 +1,2 @@
+# Preserve upstream Mermaid bytes, including whitespace inside bundled strings.
+skills/codebase-handbook/assets/vendor/mermaid.tiny.js whitespace=-blank-at-eol

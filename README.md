@@ -120,6 +120,15 @@ Explicit handbook work authorizes ordinary in-scope writing; material scope
 expansion and ambiguous destructive changes still require confirmation.
 Keep chapters and routing metadata concise; additional coverage maps and state
 classifications are optional. Existing schema v1/v2 books remain supported.
+Agents enter through task routes or known source locations, read relevant
+sections, and fall back to current repository evidence when routing is missing.
+Synchronization uses the requested working-tree, commit, or branch change range;
+a clean working tree does not rule out handbook impact from committed changes.
+Prefer concise, diagram-led flows, comparison tables, and annotated trees.
+The self-contained HTML embeds Mermaid Tiny for offline diagrams, with zoom,
+theme-aware rendering, and source fallback; no Node.js or network is needed
+to build or read it. Mindmaps, architecture diagrams, KaTeX, and optional
+plugins are not bundled. Agents continue to read Markdown and the manifest.
 Handbook helpers require Python 3.9+ and PyYAML:
 
 ```bash

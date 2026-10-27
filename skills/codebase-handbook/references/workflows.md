@@ -2,11 +2,30 @@
 
 ## Navigate
 
-Read the index and relevant manifest entries, then the chapters and source
-needed for the question. Follow conditional links only when they affect the
-answer. Verify current behavior-sensitive claims against source, regardless of
-chapter status. Report stale or conflicting evidence relevant to the answer;
-do not synchronize or rebuild during read-only navigation.
+Choose the shortest useful entry path:
+
+| Task context | Entry point |
+| --- | --- |
+| Known file, symbol, or changed code | Match manifest sources, symbols, and applicable update triggers |
+| Behavior or concept question | Use index task routes or manifest summaries and concepts |
+| Broad orientation | Follow the index's initial reading path within the requested scope |
+
+Search or extract matching manifest records; do not load the whole manifest
+or every chapter by default. Read the relevant chapter sections with enough
+surrounding context to retain their conditions. Follow `related` and other
+conditional links only when they affect the question, state, or contract.
+
+If routing is missing, ambiguous, or stale, search the current repository and
+use its evidence to refine the candidates. No handbook match does not prove
+that a capability or dependency is absent. Do not force a match to an
+unrelated chapter. Report material routing gaps without repairing them during
+read-only navigation.
+
+Verify current behavior-sensitive claims against source, regardless of chapter
+status. Stop expanding once the requested explanation, relevant boundaries,
+and supporting evidence are sufficient. Report unresolved uncertainty rather
+than treating missing evidence as certainty. Do not synchronize or rebuild
+during read-only navigation.
 
 ## Initialize
 
@@ -32,10 +51,29 @@ handbook. Before implementation, match affected responsibilities, source paths,
 contracts, and any update triggers to candidate chapters. Expand through related
 state or flows only when the change can affect them.
 
-After implementation, inspect the actual staged and unstaged diff and any
-relevant new files. Determine whether documented behavior, boundaries, evidence,
-or relationships changed. A source-path match is a reason to inspect, not a
-reason to rewrite.
+Establish the change range from the request and repository state before
+deciding that synchronization is unnecessary:
+
+| Requested scope | Evidence to inspect |
+| --- | --- |
+| Working-tree changes | Staged and unstaged diffs plus relevant untracked files |
+| A commit or commit range | The specified commits' changes, including additions, renames, and deletions |
+| Branch or pull-request changes | The agreed base and target revisions; use their merge base when assessing changes introduced by the branch |
+| Current handbook audit | Current source against the documented scope; no historical diff is required |
+
+Include working-tree changes alongside committed changes only when they belong
+to the task. A clean working tree does not imply that committed changes need
+no synchronization. Do not assume the last commit or default branch is the
+baseline; resolve it from the request and available repository evidence. If
+materially ambiguous, ask about the range while continuing independent current
+source checks. Without version-control history, use an available before/after
+snapshot or report the limits of a current-state comparison.
+
+After implementation, inspect the actual changes in that range. Determine
+whether documented behavior, boundaries, evidence, or relationships changed.
+A source-path match is a reason to inspect, not a reason to rewrite. Verify
+the resulting explanation against the target source state and identify the
+range or state used in the handoff.
 
 If nothing durable changed, report no synchronization need; do not rebuild or
 validate solely because related code changed. If invocation is implicit and no

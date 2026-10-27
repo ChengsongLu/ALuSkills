@@ -31,8 +31,24 @@ The page must:
   from displayed prose;
 - record a deterministic hash of all display and requirement inputs.
 
-Mermaid code blocks remain safely visible as diagram source unless a future
-self-contained renderer is bundled. Do not require a CDN or network access.
+Embed the bundled Mermaid Tiny renderer only when Mermaid blocks are present.
+Render diagrams offline with strict security, without external fonts, images,
+plugins, or a CDN. Block diagram configuration frontmatter and init directives
+so authored content cannot override viewer settings. Keep the original source
+in an expandable section; show it with a local error message when rendering
+fails or the syntax is unsupported. A failed diagram must not break navigation
+or other diagrams. Without JavaScript, diagram source remains visible.
+
+Provide keyboard-accessible fit, actual-size, and zoom controls and a focusable
+scroll area for wide diagrams. Re-render for theme changes; render chapters
+when opened so hidden content does not produce incorrect layout. Wide tables
+scroll within the reading column, with visible headers and top-aligned cells.
+Keep normal prose readable on narrow screens without page-level overflow.
+
+The bundled version, license, integrity hash, and update procedure live in
+`assets/vendor/NOTICE.md`. Tiny supports the common technical diagram types;
+mindmaps, architecture diagrams, KaTeX, and optional plugins are excluded.
+Unsupported diagrams retain their source and a visible fallback message.
 
 The landing chapter should present the authored `index.md` plus a generated
 book map. Do not use a single dense relationship graph as the primary
