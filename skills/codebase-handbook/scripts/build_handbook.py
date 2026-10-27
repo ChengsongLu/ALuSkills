@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import html
 import json
@@ -19,6 +20,21 @@ from handbook_data import load_yaml, records, typed_fields, confined_path, handb
 
 OUTPUT_NAME = "handbook.html"
 HASH_INPUTS = ("config.yaml", "preferences.md", "manifest.yaml", "index.md")
+ASSETS = Path(__file__).resolve().parents[1] / "assets"
+MERMAID_SHA256 = "ea0cdf04eb31907eb20d956a34fe300095365c876887b54ffa29f1f847f56d00"
+
+
+def diagram_scripts() -> str:
+    """Embed a pinned standalone renderer; no runtime downloads or imports."""
+    bundle = (ASSETS / "vendor/mermaid.tiny.js").read_bytes()
+    if hashlib.sha256(bundle).hexdigest() != MERMAID_SHA256:
+        raise ValueError("bundled Mermaid integrity mismatch")
+    encoded = base64.b64encode(bundle).decode("ascii")
+    controller = (ASSETS / "diagram-view.js").read_text(encoding="utf-8")
+    license_text = (ASSETS / "vendor/mermaid.LICENSE").read_text(encoding="utf-8")
+    return (f'<!-- Mermaid Tiny 12.2.0\n{html.escape(license_text)} -->\n'
+            f'<script src="data:text/javascript;base64,{encoded}"></script>\n'
+            f'<script>{controller}</script>')
 
 
 @dataclass
@@ -300,18 +316,30 @@ def render_markdown(
                 code_lines.append(lines[index])
                 index += 1
             code = html.escape("\n".join(code_lines))
-            caption = (
-                "<figcaption>Diagram source</figcaption>"
-                if language == "mermaid"
-                else ""
-            )
+            if language == "mermaid":
+                output.append(
+                    '<figure class="diagram">'
+                    '<figcaption>Diagram</figcaption>'
+                    '<div class="diagram-tools" role="group" aria-label="Diagram zoom" hidden>'
+                    '<button type="button" data-diagram-action="out" aria-label="Zoom out">−</button>'
+                    '<button type="button" data-diagram-action="in" aria-label="Zoom in">+</button>'
+                    '<button type="button" data-diagram-action="fit">Fit</button>'
+                    '<button type="button" data-diagram-action="actual">100%</button></div>'
+                    '<p class="diagram-status" role="status">Diagram source — JavaScript is needed for the visual view.</p>'
+                    '<div class="diagram-viewport" tabindex="0" role="region" '
+                    'aria-label="Diagram; use arrow keys to scroll" hidden></div>'
+                    '<details class="diagram-source" open><summary>Diagram source</summary>'
+                    f'<pre><code class="language-mermaid">{code}</code></pre></details></figure>'
+                )
+                index += 1
+                continue
             class_name = (
                 f' class="language-{html.escape(language, quote=True)}"'
                 if language
                 else ""
             )
             output.append(
-                f'<figure class="code-block">{caption}<pre><code{class_name}>'
+                f'<figure class="code-block"><pre><code{class_name}>'
                 f"{code}</code></pre></figure>"
             )
             index += 1
@@ -343,9 +371,9 @@ def render_markdown(
             flush_paragraph()
             close_list()
             headers = table_cells(line)
-            output.append('<div class="table-wrap"><table><thead><tr>')
+            output.append('<div class="table-wrap" tabindex="0" role="region" aria-label="Table; scroll horizontally if needed"><table><thead><tr>')
             output.extend(
-                f"<th>{render_inline(cell, current_path, path_to_id)}</th>"
+                f'<th scope="col">{render_inline(cell, current_path, path_to_id)}</th>'
                 for cell in headers
             )
             output.append("</tr></thead><tbody>")
@@ -641,11 +669,13 @@ def render_page(
     config_text = confined_path(handbook, "config.yaml").read_text(encoding="utf-8")
     configured_language = top_scalar(config_text, "language", "auto")
     page_language = configured_language if configured_language != "auto" else "und"
+    scripts = diagram_scripts() if any('class="diagram"' in item.body for item in rendered.values()) else ""
 
     return f"""<!doctype html>
 <html lang="{html.escape(page_language, quote=True)}">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' data:; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="codebase-handbook-source-sha256" content="{source_hash}">
 <title>{html.escape(title)}</title>
@@ -700,7 +730,7 @@ mark {{ background:#ffe08a; color:#1d2939; border-radius:2px; }}
 .concept-list span {{ border:1px solid var(--line); border-radius:99px; background:var(--panel-2); padding:4px 9px; font-size:13px; }}
 .reading-layout {{ display:grid; grid-template-columns:minmax(0,760px) 220px; gap:28px; align-items:start; }}
 .prose,.book-map,.related {{ background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:clamp(24px,4vw,44px); }}
-.prose {{ max-width:76ch; }}
+.prose {{ max-width:76ch; min-width:0; overflow-wrap:anywhere; }}
 .prose h2,.prose h3,.prose h4 {{ line-height:1.3; scroll-margin-top:24px; }}
 .prose h2 {{ margin-top:2.2em; }}
 .prose h2:first-child {{ margin-top:0; }}
@@ -712,9 +742,22 @@ mark {{ background:#ffe08a; color:#1d2939; border-radius:2px; }}
 .prose pre {{ overflow:auto; background:var(--code); border:1px solid var(--line); border-radius:10px; padding:16px; }}
 .prose pre code {{ padding:0; }}
 .prose blockquote {{ margin:1.5em 0; padding:10px 18px; border-left:4px solid var(--accent); background:var(--accent-soft); }}
-.table-wrap {{ overflow:auto; }}
+.table-wrap {{ overflow:auto; margin:1.5em 0; }}
 table {{ border-collapse:collapse; width:100%; }}
-th,td {{ padding:9px 12px; border:1px solid var(--line); text-align:left; }}
+th,td {{ padding:9px 12px; border:1px solid var(--line); text-align:left; vertical-align:top; min-width:8em; }}
+th {{ background:var(--panel-2); }}
+.diagram {{ margin:1.5em 0; padding:12px; border:1px solid var(--line); border-radius:10px; }}
+.diagram figcaption {{ font-weight:700; }}
+.diagram-tools {{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }}
+.diagram-tools[hidden],.diagram-viewport[hidden] {{ display:none; }}
+.diagram-tools button {{ min-width:44px; min-height:44px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); cursor:pointer; padding:6px 10px; }}
+.diagram-tools button:hover {{ background:var(--accent-soft); }}
+.diagram-viewport {{ overflow:auto; padding:4px; }}
+.diagram-viewport.zoomed {{ max-height:70vh; }}
+.diagram-viewport svg {{ display:block; height:auto; max-width:none !important; margin:0 auto; }}
+.diagram-status,.diagram-source summary {{ color:var(--muted); font-size:13px; }}
+.diagram-source summary {{ cursor:pointer; padding:8px 0; }}
+.diagram-source pre {{ margin:0; }}
 .unresolved-link {{ text-decoration:underline dotted; color:var(--muted); }}
 .on-page {{ position:sticky; top:24px; display:grid; gap:5px; padding:14px 0 14px 18px; border-left:1px solid var(--line); font-size:13px; }}
 .on-page strong {{ margin-bottom:4px; }}
@@ -760,6 +803,7 @@ th,td {{ padding:9px 12px; border:1px solid var(--line); text-align:left; }}
 @media (max-width:760px) {{ .layout {{ grid-template-columns:1fr; }} .sidebar {{ position:relative; height:auto; border-right:0; border-bottom:1px solid var(--line); }} .nav-groups {{ max-height:330px; overflow:auto; }} .main {{ padding:26px 15px 60px; }} .section-heading {{ display:block; }} .chapter-overview,.maintenance-grid {{ grid-template-columns:1fr; }} .maintenance>summary {{ align-items:flex-start; flex-direction:column; gap:2px; }} }}
 @media (prefers-reduced-motion:reduce) {{ html {{ scroll-behavior:auto; }} }}
 </style>
+<noscript><style>.chapter {{ display:block; margin-bottom:48px; }} .sidebar {{ display:none; }} .layout {{ grid-template-columns:1fr; }}</style></noscript>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -776,6 +820,7 @@ th,td {{ padding:9px 12px; border:1px solid var(--line); text-align:left; }}
   </aside>
   <main class="main" id="main-content" tabindex="-1">{"".join(articles)}</main>
 </div>
+{scripts}
 <script>
 const searchData={safe_json(search_data)};
 const chapters=[...document.querySelectorAll('.chapter')];
@@ -791,18 +836,22 @@ function showChapter(id,section='',push=false) {{
   const target=document.querySelector(`[data-chapter="${{CSS.escape(id)}}"]`)||document.querySelector('[data-chapter="index"]');
   id=target.dataset.chapter;
   chapters.forEach(item=>item.classList.toggle('active',item===target));
+  const diagramsReady=window.handbookDiagrams?.refresh();
   navItems.forEach(item=>{{const active=item.dataset.target===id; item.classList.toggle('active',active); if(active)item.setAttribute('aria-current','page');else item.removeAttribute('aria-current');}});
   const nextHash=`#${{encodeURIComponent(id)}}${{section?'/'+encodeURIComponent(section):''}}`;
   if(push&&location.hash!==nextHash) history.pushState(null,'',nextHash);
-  requestAnimationFrame(()=>{{
+  requestAnimationFrame(async()=>{{
+    await diagramsReady;
+    if(!target.classList.contains('active'))return;
     const heading=section?target.querySelector(`#${{CSS.escape(section)}}`):null;
     if(heading) heading.scrollIntoView({{block:'start'}});
-    else window.scrollTo({{top:0,behavior:'smooth'}});
+    else window.scrollTo({{top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'}});
   }});
 }}
 document.addEventListener('click',event=>{{
+  if(event.target.closest('.skip-link')){{event.preventDefault();document.getElementById('main-content').focus();return;}}
   const trigger=event.target.closest('[data-target]');
-  if(trigger){{event.preventDefault(); showChapter(trigger.dataset.target,'',true);}}
+  if(trigger){{event.preventDefault(); showChapter(trigger.dataset.target,'',true);closeResults();}}
   if(!event.target.closest('.search-wrap')) closeResults();
 }});
 window.addEventListener('popstate',()=>{{const [c,s]=routeParts();showChapter(c,s,false);}});
@@ -833,7 +882,7 @@ document.addEventListener('keydown',event=>{{
 const themeKey='codebase-handbook-theme';let stored=null;
 try{{stored=localStorage.getItem(themeKey);}}catch(_){{}}
 if(stored)document.documentElement.dataset.theme=stored;
-document.getElementById('theme-toggle').addEventListener('click',()=>{{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{{localStorage.setItem(themeKey,next);}}catch(_){{}}}});
+document.getElementById('theme-toggle').addEventListener('click',()=>{{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{{localStorage.setItem(themeKey,next);}}catch(_){{}}window.handbookDiagrams?.refresh();}});
 const [initialChapter,initialSection]=routeParts();showChapter(initialChapter,initialSection,false);
 </script>
 </body>

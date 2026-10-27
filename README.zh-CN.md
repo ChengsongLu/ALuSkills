@@ -91,7 +91,13 @@ ALuSkills 是一组面向真实代码库的软件开发 Agent Skills：
 聚焦查询只读取匹配的索引和 manifest 条目，复用未变化的偏好配置。明确的手册
 请求授权范围内的常规写作；实质扩展范围或目标不明的删除仍需确认。
 章节和导航元数据保持简洁，额外覆盖清单和状态维度按需维护，兼容已有 v1/v2
-手册。辅助脚本需要 Python 3.9+ 和 PyYAML：
+手册。Agent 从任务入口或已知源码位置定位，只读相关小节；导航未命中时回到
+当前仓库证据。同步按请求中的工作区、提交或分支范围检查，工作区干净不代表
+已提交改动无需同步。正文优先用图讲流程、用表讲差异、用树讲目录，文字补必要原因与边界。
+单文件 HTML 内嵌 Mermaid Tiny，支持离线图表、缩放、主题适配与源码回退；
+构建和阅读均无需 Node.js 或联网。不包含思维导图、architecture 图、KaTeX
+及可选插件。Agent 仍读取 Markdown 和 manifest。
+辅助脚本需要 Python 3.9+ 和 PyYAML：
 
 ```bash
 python3 -m pip install -r <installed-skill-dir>/scripts/requirements.txt
