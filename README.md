@@ -2,141 +2,29 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-ALuSkills is a collection of Agent Skills for reliable software development in
-real codebases:
-
-```text
-Requirement → Specification → TDD implementation → Review → Recovery → Handbook
-```
-
-The Skills work from repository evidence, focus on difficult behavior and
-failure paths, and avoid adding process to simple tasks. Each Skill is
-self-contained, independently installable, and does not rely on another Skill.
-
-When maintaining an existing artifact, check the affected content against the
-current installed Skill as well as current evidence. Overall maintenance checks
-the full agreed scope. Preserve user decisions and useful history; read-only
-work reports gaps, and changed defaults alone do not require migration.
+Agent Skills for software development: evaluating proposals, clarifying
+requirements, designing changes, testing, reviewing, and maintaining codebases.
+Each Skill works independently and uses evidence with effort proportionate to
+the task. Choose the ones you need; no fixed sequence is required.
 
 ## Skills
 
-| Skill | Use it for | Output |
-| --- | --- | --- |
-| [`clarify-development-request`](skills/clarify-development-request/) | Resolving material requirement decisions before implementation | Decisions in conversation; optional `brief.md` |
-| [`write-technical-spec`](skills/write-technical-spec/) | Assessing spec needs and creating, updating, or reviewing a repository-grounded design | `design.md`; optional execution and flow documents |
-| [`develop-with-tdd`](skills/develop-with-tdd/) | Protecting regressions, hard-to-verify logic, and contract changes with focused TDD | Source code and tests |
-| [`review-code-changes`](skills/review-code-changes/) | Reviewing a diff and safely remediating authorized findings | Optional `review.md`, `coverage.md`, and `remediation.md` |
-| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/) | Persisting requested task state and recovering interrupted work from checkpoints | `STATE.md`; optional stage history |
-| [`commit-changes`](skills/commit-changes/) | Committing authorized changes with a reviewed, informative message | Git commit |
-| [`write-weekly-report`](skills/write-weekly-report/) | Summarizing a week's commits into a concise progress report | Report in conversation |
-| [`codebase-handbook`](skills/codebase-handbook/) | Navigating codebases through existing handbooks and maintaining them | Markdown chapters, `manifest.yaml`, and `handbook.html` |
+Follow a Skill link for details. The table describes declared usage conditions;
+actual selection depends on the host agent. None is an always-on rule for every
+task. Requests can be made in natural language; no Skill name is required.
+Existing authorization remains valid within its scope.
 
-### clarify-development-request
-
-Use this Skill when a development request contains unresolved decisions that
-would change behavior, contracts, scope, or acceptance criteria, even when the
-user has not requested clarification. It inspects repository facts first and
-asks blocking decisions directly, batching independent questions when useful.
-It creates `brief.md` only when requested or agreed and resumes already authorized
-work once the decisions are resolved. It skips ordinary
-consultation, mechanical edits, and well-specified low-risk work.
-
-### write-technical-spec
-
-Use this Skill to assess spec needs when a development request or repository
-investigation reveals interacting changes or material design risk, even without
-a spec request. Implicit assessment is read-only; localized low-risk work
-continues without an entry question or artifacts. Implicitly proposed artifacts
-require one confirmation covering scope and document set. Explicit authoring
-requests authorize that scope without repeated entry or document-by-document
-approval; material unresolved decisions still require direction. Assessment,
-authoring, and read-only review load only their relevant guidance. Authoring
-defaults to one `design.md`; separate execution plans and flow documents are
-added only when useful or requested. In-scope simplifications proceed directly;
-changes to confirmed design decisions, contracts, or scope require confirmation.
-
-### develop-with-tdd
-
-Use this Skill when the user explicitly requests TDD, or for regression
-defects, logic whose correctness cannot be judged by reading it (state machines,
-concurrency, retry and recovery, complex rules), and external contract changes.
-Unless TDD is explicitly requested for them, routine CRUD, wiring, and
-mechanical changes are implemented directly with proportionate tests. It maps each test to confirmed behavior, tests through the
-boundary closest to the real caller, and requires an observed red run before
-claiming TDD. It creates no separate workflow artifact.
-
-### review-code-changes
-
-Use this Skill to review a working-tree diff, commit, branch comparison, or pull
-request. It checks correctness, reliability, security, compatibility, testing,
-and documentation related to the code logic. PRs and branches identify the diff;
-the Skill does not manage PR approvals, CI status, or merge readiness. Review
-depth follows actual risk, while reports stay in the conversation unless persistent
-artifacts are requested or agreed. Reviews remain read-only unless remediation
-is explicitly authorized; fixes are validated and re-reviewed over affected paths,
-reusing unaffected evidence.
-
-### maintain-task-checkpoints
-
-Use this Skill when the user explicitly asks for persistent task state or a
-cross-session or agent-to-agent handoff. It never creates checkpoints on its own
-initiative. It also resumes interrupted work by locating and verifying a
-matching checkpoint against current instructions, source, and Git; recovery is
-read-only and does not authorize new files. Checkpoints never store credentials
-or replace Git, and they do not expand the task into formal documentation work.
-Use one `STATE.md` by default; keep stage history only when needed. Reconcile
-unknown side effects before deciding whether an authorized retry is safe.
-
-### commit-changes
-
-Use this Skill when the user asks to commit. It determines the authorized scope
-from the actual working tree, writes a message whose title states the outcome
-and whose body covers the important changes by topic, records only validation
-that actually ran, and respects existing authorization and repository approval
-requirements before committing. It does not push unless asked and never force-pushes shared
-branches. Repository instructions override its message conventions.
-
-### write-weekly-report
-
-Use this Skill to turn the current repository's commit history into a weekly
-report. By default it covers commits since the previous Friday 18:30, merges
-related commits by topic, keeps only effective conclusions, and outputs the date
-range and revision baseline followed by a short numbered list. It defaults to
-current `HEAD`, handles empty windows, and does not equate commits with deployments.
-
-### codebase-handbook
-
-Use this Skill to initialize, consult, synchronize, validate, or render a
-repository's technical handbook. When a handbook exists, also use it for
-codebase questions about architecture, responsibilities, flows, contracts, and
-implementation locations without requiring the user to mention the handbook.
-Navigation is read-only and verifies relevant stale evidence against source;
-it does not authorize handbook writes or initialize a missing handbook.
-Changes affecting documented behavior or cited symbols trigger an impact
-assessment. Every handbook write stays under `.codebase-handbook/`; source code
-and ordinary repository files remain read-only evidence for this Skill. Focused
-queries read matching index and manifest entries and reuse unchanged preferences.
-Explicit handbook work authorizes ordinary in-scope writing; material scope
-expansion and ambiguous destructive changes still require confirmation.
-Keep chapters and routing metadata concise; additional coverage maps and state
-classifications are optional. Existing schema v1/v2 books remain supported.
-Agents enter through task routes or known source locations, read relevant
-sections, and fall back to current repository evidence when routing is missing.
-Synchronization uses the requested working-tree, commit, or branch change range;
-a clean working tree does not rule out handbook impact from committed changes.
-Prefer concise, diagram-led flows, comparison tables, and annotated trees.
-The self-contained HTML embeds Mermaid Tiny for offline diagrams, with zoom,
-theme-aware rendering, and source fallback; no Node.js or network is needed
-to build or read it. Mindmaps, architecture diagrams, KaTeX, and optional
-plugins are not bundled. Agents continue to read Markdown and the manifest.
-Handbook helpers require Python 3.9+ and PyYAML:
-
-```bash
-python3 -m pip install -r <installed-skill-dir>/scripts/requirements.txt
-```
-
-Run helpers with that same Python environment. Validation checks structure and
-HTML input freshness, not current prose accuracy or source symbol existence.
+| Skill | Use it for | Output | Activation and confirmation |
+| --- | --- | --- | --- |
+| [`reason-from-evidence`](skills/reason-from-evidence/SKILL.md) | Evaluating proposals without reflexive agreement or opposition | Judgment and supporting reasons | Context: proposal discussions or challenges to a conclusion; no entry confirmation |
+| [`codebase-handbook`](skills/codebase-handbook/SKILL.md) | Navigating codebases and maintaining technical handbooks | Markdown handbook and HTML reading view | Context: consult an existing handbook or assess change impact; initialization requires a request, other writes require authorization |
+| [`clarify-development-request`](skills/clarify-development-request/SKILL.md) | Resolving material requirement ambiguities | Decisions; optional `brief.md` | Context: material ambiguity prompts questions directly; a brief requires a request or agreement |
+| [`write-technical-spec`](skills/write-technical-spec/SKILL.md) | Assessing design risk; writing, updating, and reviewing specs | `design.md` and supporting documents as needed | Context: assess material design risks; confirm proposed documents unless already requested |
+| [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/SKILL.md) | Preserving task state that is costly to reconstruct and resuming work | `STATE.md` | Context: assess recovery needs and confirm justified proposals; explicit requests authorize creation, then maintain within scope; check existing records on resume |
+| [`develop-with-tdd`](skills/develop-with-tdd/SKILL.md) | Using focused TDD for regressions, complex logic, and contract changes | Code and tests | Context: regressions, complex logic, or contract changes; also on request; confirm substantial scope expansion |
+| [`review-code-changes`](skills/review-code-changes/SKILL.md) | Reviewing diffs and fixing authorized findings | Review findings; authorized fixes | Request: review a diff; fixes require explicit authorization, persistent reports require a request or agreement |
+| [`commit-changes`](skills/commit-changes/SKILL.md) | Committing authorized changes with informative messages | Git commit | Request: commit changes; follow repository approval rules and honor existing approval |
+| [`write-weekly-report`](skills/write-weekly-report/SKILL.md) | Summarizing a week's Git commits | Weekly report | Request: write a weekly report or summarize a week of commits |
 
 ## Install and update
 
@@ -168,12 +56,13 @@ Update the ALuSkills installed globally:
 
 ```bash
 npx skills update --global \
+  reason-from-evidence \
+  codebase-handbook \
   clarify-development-request \
   write-technical-spec \
+  maintain-task-checkpoints \
   develop-with-tdd \
   review-code-changes \
-  maintain-task-checkpoints \
-  codebase-handbook \
   commit-changes \
   write-weekly-report
 ```
@@ -186,22 +75,21 @@ npx skills list --global
 
 Restart the agent or open a new session after installation or update.
 
-## Repository structure
+## Additional requirements
 
-```text
-skills/
-├── clarify-development-request/
-├── codebase-handbook/
-├── commit-changes/
-├── develop-with-tdd/
-├── maintain-task-checkpoints/
-├── review-code-changes/
-├── write-technical-spec/
-└── write-weekly-report/
+The `codebase-handbook` Python helpers require Python 3.9+ and PyYAML. Replace
+`/path/to/codebase-handbook` with the installed Skill directory:
+
+```bash
+python3 -m pip install -r /path/to/codebase-handbook/scripts/requirements.txt
 ```
 
-Every Skill contains `SKILL.md` and `agents/openai.yaml`. A Skill includes
-`references/`, `scripts/`, or `assets/` only when its workflow needs them.
+Run the helpers with the same Python environment.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for structure and validation requirements,
+and [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
 
 ## License
 

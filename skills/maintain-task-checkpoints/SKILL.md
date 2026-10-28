@@ -1,6 +1,6 @@
 ---
 name: maintain-task-checkpoints
-description: Create and maintain task recovery checkpoints when the user explicitly asks for persistent task state or a cross-session handoff, or verify an existing checkpoint when resuming interrupted work. Do not create checkpoints on your own initiative.
+description: Assess checkpoint needs when interruption or handoff could lose task state that is costly to reconstruct. Create and maintain checkpoints on user request or agreement, and verify existing ones when resuming interrupted work. Task length or complexity alone does not justify a proposal.
 ---
 
 # Maintain Task Checkpoints
@@ -12,18 +12,42 @@ design documents.
 
 ## Select the entry path
 
-- **Create or maintain:** Only when the user explicitly asks for a checkpoint,
-  persistent task state, or a cross-session or agent-to-agent handoff. That
-  request authorizes creation and routine updates within the stated task scope.
-  Do not propose or create checkpoints merely because a task is long or
-  complex.
+- **Explicit request:** When the user asks for a checkpoint, persistent task
+  state, or a cross-session or agent-to-agent handoff, create or maintain it
+  without asking whether it is needed. The request authorizes creation and
+  routine updates within the stated task scope.
 - **Resume:** After interruption, handoff, or continuation with incomplete
   context, look for a matching existing checkpoint and follow **Restore
   safely** before repeating work. Discovery and verification are read-only, and
   resuming alone does not authorize creating new checkpoint files.
+- **Assess need:** Without a request or existing maintenance authorization,
+  assess recovery cost when interruption or handoff could lose important task
+  state. Use the criteria below before proposing a checkpoint; assessment alone
+  does not authorize file creation.
 
 If no matching checkpoint exists, continue from repository and task evidence,
-asking for missing task identity or decisions when needed.
+asking for missing task identity or decisions when needed. Apply the same
+assessment criteria before proposing a new checkpoint.
+
+## Assess recovery cost
+
+Consider whether important decisions, unresolved questions, execution progress,
+or uncertain external outcomes would be costly to reconstruct from Git, source,
+tests, logs, or existing documents after an interruption or handoff. Reuse
+available evidence; do not audit the whole task just to justify a checkpoint.
+Task length or complexity alone is insufficient, and ordinary changes whose
+state is readily recoverable from the diff and tests need no proposal.
+
+When a checkpoint would materially help, briefly explain what needs preserving
+and the consequence of losing it, then ask for confirmation before creating
+files. Continue unaffected authorized work while waiting. Do not narrate a
+negative assessment or turn checkpoint creation into a prerequisite for ordinary
+work. Use a matching existing checkpoint instead of proposing a duplicate.
+
+Agreement authorizes creation and routine maintenance for that task, without
+repeated confirmation at each update. If the user declines, continue the task
+without a checkpoint and do not ask again unless the recovery need materially
+changes; explain that change if a new proposal becomes necessary.
 
 ## Choose the output location
 

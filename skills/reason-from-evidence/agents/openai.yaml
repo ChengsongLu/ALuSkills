@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reason from Evidence"
+  short_description: "Make grounded judgments without reflexive agreement"
+  default_prompt: "Use $reason-from-evidence to assess this proposal against the goal, verify decision-changing facts, and give a proportionate recommendation without reflexive agreement or opposition."
