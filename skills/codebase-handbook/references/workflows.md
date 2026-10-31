@@ -35,15 +35,18 @@ Only an explicit request authorizes initialization.
    requested scope. Run the initializer and read preferences.
 2. Discover major responsibilities, boundaries, flows, state, and contracts
    from tracked evidence. Exclude generated and irrelevant material.
-3. Choose a small coherent chapter plan using the book model. Explain scope
-   and exclusions; ask only about material unresolved decisions.
-4. Write orientation and core mechanisms first, then supporting chapters.
-   Mark unfinished topics honestly and work in resumable batches.
-5. Map modules to parts and features to chapters or named sections. Populate
-   feature_files for each feature, including callers, configuration and tests
+3. Plan domain categories and their module designs using the book model.
+   Explain scope and exclusions; ask only about material unresolved decisions.
+4. Write orientation and a representative module design. Apply the writing
+   guide's semantic review and any user-provided depth reference before extending
+   that standard to the remaining modules. Keep unfinished topics in draft.
+5. Map domains to parts, modules to chapters, and features to named sections as
+   needed. Populate feature_files for each feature, including callers,
+   configuration and tests
    where applicable. Record known gaps and the pre-edit search reminder.
-6. Apply the writing guide, build HTML, validate, and review whether the agreed
-   scope is understandable and supported by evidence.
+6. Review each module's design coverage and evidence before assigning verified
+   status. Build HTML and validate its structure separately; report remaining
+   semantic gaps even when the helpers pass.
 
 ## Assess or synchronize a code change
 

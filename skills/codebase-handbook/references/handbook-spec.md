@@ -66,8 +66,8 @@ chapters:
 unresolved: []
 ```
 
-Use `parts` for module navigation and chapter `part` for membership. Feature
-names in `feature_files` match the chapter title or a section heading. Group
+Use `parts` for domain categories and chapter `part` to place module designs
+within them, following the book model. Feature names in `feature_files` match the chapter title or a section heading. Group
 exact project-relative file paths by responsibility and give each a concrete
 role. Shared paths may appear under multiple features. Search the manifest
 for a path to find all affected features. Older `sources` lists remain readable.
@@ -95,10 +95,13 @@ for exclusions. Keep these maps at responsibility level, not file level.
 ## Status and compatibility
 
 `status` and `handbook_status` use `planned`, `draft`, `verified`, or
-`needs-review`. Planned chapters may not yet have prose. Verified means the
-material claims were checked at the time; it does not prove present freshness
-or exhaustive coverage. Keep important gaps in `unresolved` and visible in the
-index. A verified handbook cannot contain unfinished chapters.
+`needs-review`. Planned chapters may not yet have prose. Verified requires
+checking material claims against current implementation and relevant tests,
+and reviewing the authored design for the declared scope using the writing
+guide. It records that review at a point in time; future freshness still requires
+checking. Helper success alone cannot assign this status. Keep important gaps
+in `unresolved` and visible in the index. A verified handbook cannot contain
+unfinished chapters or unresolved design-coverage gaps within its agreed scope.
 
 When present, `coverage` uses `outline`, `substantial`, or `complete`;
 `evidence_status` uses `partial`, `verified`, `stale`, or `conflicted`.

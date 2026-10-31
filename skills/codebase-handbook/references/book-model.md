@@ -14,13 +14,23 @@ Do not inventory every file or helper.
 
 ## Organize around reader questions
 
-Begin with orientation and architecture, then the mechanisms readers need to
-understand or change. Use parts only when grouping improves a substantial book.
-Chapter IDs stay stable across title and path changes.
+Begin with orientation and architecture. For a multi-domain system, use this
+reading hierarchy:
 
-Choose chapter and section names from the repository's actual responsibilities
-and reader questions. The categories below are possibilities, not a required
-architecture, technology stack, or fixed table of contents.
+- Parts represent major system domains or responsibility areas.
+- Chapters explain the module designs belonging to each domain.
+- Sections explain independently useful mechanisms within each module.
+
+For example, a conversation domain might contain session execution, context
+compression, interaction continuation, and memory modules. The context
+compression chapter would explain triggering, compression, view persistence,
+and recall. Derive the actual categories from repository responsibilities and
+user preferences; generic buckets such as “subsystems” should not hide distinct
+domains. Small, single-domain books may omit parts.
+
+Use recognizable domain and module names in navigation. Reader questions can
+guide section headings and chapter summaries. Chapter IDs stay stable across
+title and path changes; a local update does not authorize reorganizing the book.
 
 A chapter may explain a subsystem, flow, state machine, interface, operational
 concern, or change task. Split when independent reading and maintenance become
@@ -31,7 +41,10 @@ count nor length alone determines quality.
 
 Do not create empty categories, separate chapters for every discovered concept,
 or operational guides that duplicate maintained repository documentation.
-Link to authoritative detail and explain only the relevant architectural context.
+Link to maintained operational procedures and API reference detail where useful.
+Keep the module's design explanation self-contained in its chapter. An existing
+design document can establish the desired depth, after checking its claims
+against current code; a link to it does not discharge the chapter's design scope.
 
 ## Keep routing small
 

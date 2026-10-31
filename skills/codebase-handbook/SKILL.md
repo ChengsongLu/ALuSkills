@@ -9,9 +9,12 @@ Maintain a readable technical book explaining the repository's purpose,
 architecture, important runtime flows, state ownership, and change boundaries.
 Help developers understand the system and help Agents locate current evidence.
 Use one canonical body of Markdown chapters, a compact navigation index and
-manifest, and a generated HTML reading view. Organize the book by module and feature. For each feature, maintain one
-standalone design explanation and one grouped file index in the manifest.
-Use the feature index contract in references/handbook-spec.md.
+manifest, and a generated HTML reading view. For a multi-domain system, organize
+major domain categories into parts, module designs into chapters, and their
+mechanisms into sections. For each feature, maintain a standalone design
+explanation and a grouped file index in the manifest. Use the hierarchy and
+scope guidance in references/book-model.md and the index contract in
+references/handbook-spec.md.
 
 ## Start and choose a workflow
 
@@ -42,8 +45,10 @@ Read the matching section of [workflows.md](references/workflows.md):
 ## Boundaries
 
 - Write only inside `.codebase-handbook/`. Source, tests, ordinary documents,
-  and Agent instructions are read-only evidence. Never add maintenance hooks
-  or modify ignore rules. Do not decide the handbook's Git tracking policy.
+  and Agent instructions are read-only evidence. Keep handbook consumption and
+  validation self-contained; do not add handbook dependencies to project tests,
+  documentation, or Agent instructions. Never add maintenance hooks or modify
+  ignore rules. Do not decide the handbook's Git tracking policy.
 - Use tracked files as the default inventory; exclude dependencies, generated
   content, binaries, and caches. Read relevant ignored files only when already
   authorized, non-sensitive, and permitted by project policy.
@@ -94,10 +99,11 @@ The manifest routes readers to chapters and evidence. It is not an exhaustive
 knowledge database. Add metadata only when it helps retrieval or maintenance;
 use the [book model](references/book-model.md) to identify significant gaps.
 
-`verified` records a past evidence check, not a guarantee of freshness. Verify
-current source for behavior-sensitive answers and code changes, even when the
-chapter is verified. Separate current behavior, documented intent, inference,
-and uncertainty. Do not parse generated HTML as an Agent evidence source.
+Assign `verified` only after checking both material claims against current
+evidence and design coverage against the writing guide's semantic review.
+Record helper validation separately. Recheck current source for
+behavior-sensitive answers and code changes, even when the chapter is verified.
+Separate current behavior, documented intent, inference, and uncertainty. Do not parse generated HTML as an Agent evidence source.
 
 ## Helpers
 

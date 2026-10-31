@@ -72,6 +72,37 @@ case only when it affects understanding or safe modification. Explain a
 relationship's reason and important ownership or failure implications rather
 than listing import chains. Do not turn every relationship into a checklist.
 
+## Semantic review before completion
+
+Review each module chapter against its declared scope and current evidence.
+The authored explanation should let a reader answer the applicable questions:
+
+- What responsibility does the module own, and what invokes or consumes it?
+- What conditions choose the main path and materially different branches?
+- What state or data does it read, retain, replace, or publish, and who owns it?
+- Where does work commit or terminate, and what survives failure or cancellation?
+- What may be retried, resumed, or recalled, under which permissions and limits?
+
+Use these questions to identify missing explanations, not as mandatory headings.
+A chapter summary and a large source index alone do not explain a module's
+design. Follow the relevant implementation and test behavior far enough to
+support its branches and boundaries; filenames, symbol lists, and docstrings
+alone are insufficient evidence. File roles should explain how each confirmed
+participant contributes to the feature.
+
+When initializing or substantially restructuring a book, complete a
+representative module with meaningful state or branching first. Check its
+coverage against the questions above and any user-provided depth reference,
+then apply that standard across the remaining modules. This is a working
+calibration step, not an extra approval gate or a substitute for reviewing the
+other chapters. For example, context compression needs its trigger, retained
+content, commit conditions, failure behavior, and recall boundaries explained;
+the exact sections and details depend on the implementation.
+
+Keep unfinished modules in draft and expose material gaps in the index and
+manifest. Set verified only after evidence and semantic review are complete.
+Report structural checks and tests actually executed separately from this review.
+
 ## Draft and maintain
 
 Inspect enough evidence to support the important claims, then synthesize the
