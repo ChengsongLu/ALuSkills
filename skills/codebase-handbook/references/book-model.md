@@ -42,7 +42,9 @@ impact candidates; do not repeat them in triggers without a broader need.
 
 Keep evidence and routing distinct:
 
-- `sources` points to direct implementation, relevant contracts or configuration,
+- New feature entries use grouped `feature_files` in the manifest specification.
+  Index all confirmed direct participants. Avoid repeating paths in chapter footers.
+- Legacy `sources` points to direct implementation, relevant contracts or configuration,
   and representative tests supporting the chapter's main claims. It is not a
   list of every file touched or inspected. Keep additional sources when they
   support distinct material boundaries; do not impose an arbitrary count limit.

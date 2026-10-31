@@ -9,8 +9,9 @@ Maintain a readable technical book explaining the repository's purpose,
 architecture, important runtime flows, state ownership, and change boundaries.
 Help developers understand the system and help Agents locate current evidence.
 Use one canonical body of Markdown chapters, a compact navigation index and
-manifest, and a generated HTML reading view. Do not create implementation
-catalogs or accumulate change logs.
+manifest, and a generated HTML reading view. Organize the book by module and feature. For each feature, maintain one
+standalone design explanation and one grouped file index in the manifest.
+Use the feature index contract in references/handbook-spec.md.
 
 ## Start and choose a workflow
 
@@ -73,8 +74,21 @@ comparisons, and trees for directories; use prose for reasons and material
 boundaries. Do not repeat visual content row by row or omit safety conditions
 to shorten it. Keep each fact's main explanation in one place and link elsewhere.
 Use the [writing guide](references/evidence-and-writing.md) for drafting and
-local compression. Keep a small set of direct sources and stable symbols;
+local compression. Trace entry points, registration, callers, state, configuration, consumers and
+tests. Index all directly relevant files discovered, grouped by responsibility,
+with a short role for each. Search shared paths across features. On updates
+also discover additions, renames and removals. At the Agent entry point state
+that files may be missing and require a current caller, registration and test
+search before editing. Keep the file list out of authored prose;
 avoid durable line numbers.
+
+Write each feature from current implementation, configuration and test evidence.
+Explain its purpose, then the main flow, with branch conditions and commit or
+termination points where they occur. Use text diagrams for flows, trees for
+ownership, and tables for scenario differences when helpful. Explain relevant
+state, rationale, failure and recovery boundaries. The HTML chapter must answer
+the reader's design question on its own, even in a repository with no design
+documents. Never require a separate design manuscript during generation.
 
 The manifest routes readers to chapters and evidence. It is not an exhaustive
 knowledge database. Add metadata only when it helps retrieval or maintenance;

@@ -60,6 +60,7 @@ class DisplayChapter:
     concepts: list[str] = field(default_factory=list)
     read_when: list[str] = field(default_factory=list)
     sources: list[str] = field(default_factory=list)
+    feature_files: dict[str, dict[str, dict[str, str]]] = field(default_factory=dict)
     source_symbols: list[str] = field(default_factory=list)
     update_triggers: list[str] = field(default_factory=list)
     title: str = ""
@@ -99,9 +100,29 @@ def parse_manifest_data(text: str) -> tuple[list[Part], list[DisplayChapter]]:
     data = load_yaml(text)
     parts = [Part(**typed_fields(item, Part, {"id": "part_id"}))
              for item in records(data, "parts")]
-    chapters = [DisplayChapter(**typed_fields(item, DisplayChapter,
-                                             {"id": "chapter_id"}, excluded=("title", "markdown")))
-                for item in records(data, "chapters")]
+    chapters = []
+    for item in records(data, "chapters"):
+        chapter = DisplayChapter(**typed_fields(
+            item, DisplayChapter, {"id": "chapter_id"},
+            excluded=("title", "markdown", "feature_files")))
+        features = item.get("feature_files", {})
+        if not isinstance(features, dict):
+            raise ValueError("feature_files must map feature names to file groups")
+        for feature, groups in features.items():
+            if not feature.strip() or not isinstance(groups, dict) or not groups:
+                raise ValueError("each feature needs a name and file groups")
+            seen = set()
+            for group, files in groups.items():
+                if not group.strip() or not isinstance(files, dict) or not files:
+                    raise ValueError("each group needs a name and files")
+                for path, role in files.items():
+                    if not path.strip() or not isinstance(role, str) or not role.strip():
+                        raise ValueError("each indexed file needs a path and role")
+                    if path in seen:
+                        raise ValueError(f"duplicate file within {feature}: {path}")
+                    seen.add(path)
+        chapter.feature_files = features
+        chapters.append(chapter)
     return parts, chapters
 
 
@@ -500,6 +521,7 @@ def render_page(
         if grouped.get(part.part_id)
     )
 
+    feature_search = {}
     articles: list[str] = []
     for position, chapter in enumerate(chapters):
         result = rendered[chapter.chapter_id]
@@ -538,6 +560,22 @@ def render_page(
             else ""
         )
         maintenance_sections: list[str] = []
+        indexed_files = 0
+        index_terms = []
+        if show_source_evidence:
+            for feature, groups in chapter.feature_files.items():
+                section = [f"<section><h2>{html.escape(feature)}</h2>"]
+                index_terms.append(feature)
+                for group, files in groups.items():
+                    section.append(f"<h3>{html.escape(group)}</h3><ul>")
+                    index_terms.append(group)
+                    for path, role in files.items():
+                        section.append(f"<li><code>{html.escape(path)}</code> — {html.escape(role)}</li>")
+                        index_terms.extend((path, role))
+                        indexed_files += 1
+                    section.append("</ul>")
+                maintenance_sections.append("".join(section) + "</section>")
+        feature_search[chapter.chapter_id] = " ".join(index_terms)
         direct_evidence = chapter.sources + chapter.source_symbols
         if direct_evidence and show_source_evidence:
             maintenance_sections.append(
@@ -568,7 +606,7 @@ def render_page(
                 )
                 + "</dl></section>"
             )
-        maintenance_count = (len(direct_evidence) + len(chapter.update_triggers)) if show_source_evidence else 0
+        maintenance_count = (indexed_files + len(direct_evidence) + len(chapter.update_triggers)) if show_source_evidence else 0
         maintenance = (
             '<details class="maintenance"><summary><span>Sources and maintenance</span>'
             f"<small>{maintenance_count} indexed paths</small></summary>"
@@ -656,6 +694,7 @@ def render_page(
                     chapter.summary,
                     " ".join(chapter.concepts),
                     " ".join(chapter.read_when),
+                    feature_search[chapter.chapter_id],
                     " ".join(chapter.sources) if show_source_evidence else "",
                     " ".join(chapter.source_symbols) if show_source_evidence else "",
                     " ".join(chapter.update_triggers) if show_source_evidence else "",

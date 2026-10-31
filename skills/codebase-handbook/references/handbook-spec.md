@@ -57,11 +57,20 @@ chapters:
     path: modules/authentication.md
     summary: Explains session authentication and token refresh boundaries.
     status: verified
-    sources:
-      - src/auth/service.py
-      - tests/auth/test_sessions.py
+    feature_files:
+      Session authentication:
+        Implementation:
+          src/auth/service.py: Verifies session credentials.
+        Tests:
+          tests/auth/test_sessions.py: Exercises accepted and expired credentials.
 unresolved: []
 ```
+
+Use `parts` for module navigation and chapter `part` for membership. Feature
+names in `feature_files` match the chapter title or a section heading. Group
+exact project-relative file paths by responsibility and give each a concrete
+role. Shared paths may appear under multiple features. Search the manifest
+for a path to find all affected features. Older `sources` lists remain readable.
 
 Use stable IDs, handbook-relative chapter paths, and project-relative source
 paths. Direct sources should be sufficient to locate evidence. Symbol entries

@@ -6,7 +6,7 @@ Choose the shortest useful entry path:
 
 | Task context | Entry point |
 | --- | --- |
-| Known file, symbol, or changed code | Match manifest sources, symbols, and applicable update triggers |
+| Known file, symbol, or changed code | Match all feature file groups, legacy manifest sources, symbols, and applicable update triggers |
 | Behavior or concept question | Use index task routes or manifest summaries and concepts |
 | Broad orientation | Follow the index's initial reading path within the requested scope |
 
@@ -39,8 +39,9 @@ Only an explicit request authorizes initialization.
    and exclusions; ask only about material unresolved decisions.
 4. Write orientation and core mechanisms first, then supporting chapters.
    Mark unfinished topics honestly and work in resumable batches.
-5. Build compact task navigation and evidence mappings. Check for significant
-   omissions without cataloging the whole implementation.
+5. Map modules to parts and features to chapters or named sections. Populate
+   feature_files for each feature, including callers, configuration and tests
+   where applicable. Record known gaps and the pre-edit search reminder.
 6. Apply the writing guide, build HTML, validate, and review whether the agreed
    scope is understandable and supported by evidence.
 

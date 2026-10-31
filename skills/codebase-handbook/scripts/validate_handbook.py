@@ -155,7 +155,7 @@ def check_manifest(
                     f"chapter {chapter.chapter_id} references unknown part: "
                     f"{chapter.part or '(empty)'}"
                 )
-            if chapter.status != "planned" and not chapter.sources:
+            if chapter.status != "planned" and not (chapter.sources or chapter.feature_files):
                 warnings.append(
                     f"chapter {chapter.chapter_id} has no direct source evidence"
                 )
@@ -176,6 +176,11 @@ def check_manifest(
                     warnings.append(message)
                 else:
                     errors.append(message)
+        for feature, groups in chapter.feature_files.items():
+            for files in groups.values():
+                for path in files:
+                    if not confined_path(root, path).is_file():
+                        errors.append(f"{chapter.chapter_id}/{feature}: missing indexed file {path}")
         for source in chapter.sources:
             if not source_matches(root, source):
                 message = (

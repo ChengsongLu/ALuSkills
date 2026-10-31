@@ -15,8 +15,8 @@ source or ordinary project documents to make the handbook consistent.
 
 Use repository-relative paths and stable symbols, for example
 `src/jobs/worker.py — Worker.run()`. File-only references are sufficient when
-no stable symbol exists. Cite a small set of direct evidence, usually at the
-end; place a citation near a claim when needed to distinguish uncertainty.
+no stable symbol exists. Keep grouped paths and roles in the manifest. Cite evidence near a claim
+when needed to distinguish uncertainty.
 
 ## Write for understanding and change
 
@@ -86,8 +86,7 @@ For each affected section:
    uncertain and explicitly protected content.
 4. Retain details only if they improve the mental model, boundaries, failure
    understanding, or change guidance.
-5. Keep source evidence at the end. Do not append successive implementation
-   updates after it or preserve a chronology of patches.
+5. Keep the file index in the manifest and avoid a chronology of patches.
 
 Do not rewrite unaffected chapters or sacrifice a real invariant merely to
 reduce length. When duplication spans chapters beyond the authorized scope,

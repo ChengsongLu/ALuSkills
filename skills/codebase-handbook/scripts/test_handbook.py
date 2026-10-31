@@ -57,6 +57,20 @@ unresolved: []
         self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
         return result
 
+    def test_feature_index_roundtrip(self):
+        manifest = self.manifest.replace("    sources: [source.py]", """    feature_files:
+      Details:
+        Implementation:
+          source.py: Handles <sample> requests""")
+        (self.book / "manifest.yaml").write_text(manifest)
+        self.run_helper("build_handbook.py")
+        self.run_helper("validate_handbook.py")
+        page = (self.book / "handbook.html").read_text()
+        self.assertIn("<code>source.py</code> — Handles &lt;sample&gt; requests", page)
+        (self.root / "source.py").unlink()
+        self.assertIn("missing indexed file", self.run_helper(
+            "validate_handbook.py", expected=1).stderr)
+
     def test_empty_shell(self):
         (self.book / "manifest.yaml").write_text("schema_version: 2\nhandbook_status: planned\nchapters: []\n")
         (self.book / "index.md").write_text("# Index\n\nStatus: planned\n")
