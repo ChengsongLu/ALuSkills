@@ -1,7 +1,6 @@
 # Repository Instructions
 
-These instructions apply to the entire repository. User instructions take
-precedence when they explicitly request a different delivery workflow.
+These instructions apply to the entire repository. The repository owner may explicitly request a different delivery workflow.
 
 ## Preserve the working tree
 
@@ -14,39 +13,21 @@ precedence when they explicitly request a different delivery workflow.
 
 ## Choose the delivery path
 
-Changes to Skill behavior—any `SKILL.md`, `references/`, `scripts/`, `assets/`,
-or `agents/` file—go through a short-lived branch and a user-managed pull
-request. Documentation-only and tooling changes outside `skills/` (README,
-contributing or security docs, CI, validation scripts) may be committed
-directly to the default branch once the user approves the commit.
+Contributors other than the repository owner must work on a separate branch
+(in a fork if needed) and submit a pull request targeting main. If the
+requester’s role is unclear, use the pull-request workflow.
 
-For the pull-request path:
+For the repository owner, work directly on main by default. Use a separate
+branch or pull request only when requested or required by remote rules.
 
-1. Start from the latest default branch and create a focused branch named
-   `<type>/<short-description>`, where `type` is `feat`, `fix`, `docs`,
-   `refactor`, or `chore`.
-2. Make only the changes required for the task, review the complete diff, and
-   run the validation below.
-3. Before any commit, show what is ready, the validation results, and the
-   proposed message, and ask the user to choose **commit only** or **commit
-   and push the current branch**. An earlier request to make changes is not
-   approval to commit or push.
-4. Commit with messages that explain behavior or intent. After commit only, ask
-   whether to push. Pushing never authorizes creating, updating, approving, or
-   merging a pull request.
-5. Give the user a ready-to-paste pull-request title and body covering what
-   changed and why, affected Skill behavior, permissions, data, or side
-   effects, validation performed, and compatibility or residual risks.
-6. Address review findings the user reports, rerun affected validation, and
-   obtain approval again before each additional commit.
-7. After the user confirms the merge, fetch and verify that the default branch
-   contains the delivered changes (compare trees to account for squash
-   merges). Only then delete the remote and local temporary branches and
-   fast-forward the default branch.
-
-Never create a commit without explicit user approval. Do not merge a draft pull
-request or one with pending or failed required checks, and do not delete a
-branch before the user confirms its merge.
+1. Before starting new work, check the working tree and bring main up to date
+   by fast-forward when safe. Preserve any unrelated work in progress.
+2. Review the scoped diff, run the validation below, and show the changes,
+   validation results, and proposed commit message.
+3. After the owner confirms the reviewed changes are ready, commit only those
+   changes on main and push main to origin. One confirmation covers both steps.
+4. Verify the remote tip after pushing. If the push is rejected, preserve the
+   local commit and report the reason. Never force-push main.
 
 ## Close every handoff
 

@@ -38,6 +38,10 @@ For changes to `codebase-handbook`, also exercise its initialization, build, and
 
 ## Pull requests
 
+If you are contributing to this repository as someone other than its owner,
+create a branch (in your fork if needed) and open a pull request targeting
+`main`. The repository owner may push their own changes directly to `main`.
+
 Keep pull requests focused. Explain:
 
 - which skill behavior changes;
