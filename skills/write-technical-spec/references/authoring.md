@@ -129,7 +129,11 @@ Do not require approval after every document or implementation phase.
 
 When the requested set is complete, apply
 [readiness-review.md](readiness-review.md) to check cross-document consistency and
-implementation readiness, including one overall design simplification check.
+implementation readiness. Before declaring readiness, perform its complexity and
+proportionality check on the finished design, including mechanisms introduced by
+the author. A self-authored decision is not evidence that the user requested it.
+Keep this check within the existing final review; do not add a separate document,
+review round, or approval gate. Recheck only affected parts after corrections.
 Apply ordinary in-scope simplification directly. Ask before changing confirmed
 design decisions, contracts, or scope. Report the verdict and remaining decisions;
 link separate documents when they exist.

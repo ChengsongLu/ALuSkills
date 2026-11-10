@@ -37,6 +37,15 @@ run, and the single next action—who takes it and whether you are waiting on th
 user. Never describe delivery as complete while a required push, review, merge,
 or cleanup step remains; if nothing remains, say so.
 
+After completing an update to main or a merge into main, include a copyable
+command in the final handoff for updating the installed Skills from this
+repository. Use the current README's update command and explicit ALuSkills names,
+matching the user's installation scope; do not use an unscoped update that also
+updates unrelated repositories. State when the update is available from origin,
+and remind the user to restart the agent or open a new session afterward.
+Providing the command does not authorize running it or imply the installed
+copies have already been updated.
+
 ## Validate changes
 
 Run the smallest relevant checks while iterating. Before asking the user to

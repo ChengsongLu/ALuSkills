@@ -27,7 +27,59 @@ Review these applicable dimensions:
 3. **Repository feasibility:** Resolve named files, symbols, interfaces, dependencies, commands, and test locations against the current repository. Check that sequencing, migration, deployment, rollback, compatibility, permissions, and operational assumptions are executable. Do not allow implementation to decide unresolved product or architectural behavior implicitly.
 4. **State and failure boundaries:** Identify the source of truth, initial and terminal states, valid and invalid transitions, commit points, partial failures, retries, duplicate execution, idempotency, compensation, recovery, cancellation, and side-effect invariants wherever applicable. Require an explicit disposition for each meaningful failure branch.
 5. **Test verifiability:** Connect acceptance criteria and high-risk invariants to focused tests or explicit manual checks. Specify setup, assertions, and failure injection only where needed to establish observability or a critical boundary. Reuse existing test infrastructure; do not require a Cartesian test matrix or duplicate the same evidence for every transition.
-6. **Overall design simplicity:** Check whether the design can be simplified to improve stability and reduce complexity while preserving confirmed requirements and necessary safeguards. Look for unnecessary layers, duplicated state or sources of truth, avoidable coordination, and redundant failure or recovery paths. For each concrete opportunity, explain the current design, proposed simplification, affected documents and exact changes, expected stability benefit, and tradeoffs. Do not recommend simplification merely to reduce document length or remove necessary safety mechanisms. If no justified simplification exists, say so explicitly.
+6. **Complexity and proportionality:** Apply the check below to the proposed design as a whole. A coherent, internally consistent design can still solve more than the requested problem or impose unnecessary operational cost.
+
+## Check complexity and proportionality
+
+Use the applicable questions below within the final review after each authoring
+or update task, and during standalone review. Scale depth to material changes;
+do not create an exhaustive inventory of trivial fields or require a new report.
+
+- **Basis for added mechanisms:** For material new state, layers, abstractions,
+  configuration, coordination, checks, retries, recovery paths, and migration
+  steps, identify the requirement, external contract, existing failure, or
+  concrete reachable failure path they address. Distinguish confirmed scope,
+  repository constraints, and author-proposed behavior. Hypothetical future
+  reuse or a generic appeal to safety is not sufficient justification.
+- **Existing behavior and ownership:** Check the actual semantics and call paths
+  of existing storage, lifecycle, authorization, execution, and recovery before
+  duplicating them. Similar names do not establish equivalence. Prefer one owner
+  for each fact and transition; explain a real gap when adding another record
+  or state machine. Reuse is not mandatory when its coupling or adaptation costs
+  exceed a smaller independent solution.
+- **Proportionate safeguards:** Identify the trigger, consequence, and actual
+  boundary protected by a safeguard. Consider the likelihood and impact supported
+  by evidence, without inventing numerical risk estimates. Compare the benefit
+  with added branches, state, user interruptions, false rejections, and recovery
+  work. Accept bounded low-impact risk when appropriate; remove unnecessary
+  protection instead of replacing it with a more elaborate mechanism. Preserve
+  demonstrated authorization, data-integrity, and high-impact side-effect
+  boundaries.
+- **Scope and behavior expansion:** Look for new defaults, modes, approval steps,
+  configuration knobs, compatibility paths, dynamic reconfiguration, rollout
+  prerequisites, or changes to existing users and unattended work that were not
+  required by the request. Do not present an author's conservative preference as
+  a confirmed requirement. Resolve consequential choices explicitly, while
+  deciding ordinary implementation details without extra permission requests.
+- **Smallest complete alternative:** Compare a concrete simpler design when one
+  is apparent: fewer independent states, existing lifecycle transitions, a
+  narrower abstraction, fewer coordination points, or deletion of an unnecessary
+  branch. Count implementation, testing, operation, migration, and user costs,
+  not just lines of code. Preserve the requested behavior and all necessary call
+  paths; silently dropping an entry point or recovery guarantee is not a
+  simplification. Do not invent alternatives merely to fill a comparison table.
+
+For a material finding, name the mechanism and location, its evidence or missing
+basis, the consequence, and the specific simplification and tradeoff. When applying
+a correction, update affected flows, contracts, plans, and validation criteria
+together so removed complexity does not survive elsewhere.
+
+Stop when material findings are resolved or clearly reported. Do not force a
+reduction when the existing design is already the simplest complete solution,
+add tests merely to justify unnecessary branches, or repeat the whole review
+without a relevant change. Summarize the concrete simplifications made or why
+remaining complexity is necessary; avoid an unsupported “simplicity checked”
+claim. Optional refinements alone do not block readiness.
 
 During authorized authoring or updates, apply local simplifications that preserve
 confirmed design decisions, behavior, and scope. Ask only when a proposal changes

@@ -49,4 +49,6 @@ expansion, an unresolved design decision, or a user-required review checkpoint.
 - For assessment alone, stop after the assessment above; load no authoring guide.
 - For creation or updates, read [authoring.md](references/authoring.md).
 - For a standalone readiness review, read [readiness-review.md](references/readiness-review.md).
-  Keep it read-only. Authoring also uses this review once the requested set is complete.
+  Keep it read-only. Authoring also uses this review once the requested set is complete,
+  including its evidence-based complexity and proportionality check. Do not treat
+  successful formatting or file-reference checks as design review.

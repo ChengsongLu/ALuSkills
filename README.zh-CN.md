@@ -17,7 +17,7 @@ Agent 决定；目前没有覆盖所有任务的常驻规则。用户可用自�
 | [`reason-from-evidence`](skills/reason-from-evidence/SKILL.md) | 评价方案，避免盲目赞同与刻意反对 | 判断与依据 | 按场景：方案讨论或结论受到质疑时使用，无须进入确认 |
 | [`codebase-handbook`](skills/codebase-handbook/SKILL.md) | 导航代码库，维护技术手册 | 按模块与功能分组的文件索引、可独立阅读的 HTML 设计手册 | 按场景：查阅已有手册或评估变更影响；初始化须主动请求，其他写入须有授权 |
 | [`clarify-development-request`](skills/clarify-development-request/SKILL.md) | 解决会影响结果的需求歧义 | 明确的决策；可选 `brief.md` | 按场景：出现实质歧义直接提问；生成简报须用户要求或同意 |
-| [`write-technical-spec`](skills/write-technical-spec/SKILL.md) | 评估设计风险，编写、更新和审查技术规格 | `design.md`；按需补充配套文档 | 按场景：自动评估重要设计风险；主动建议生成文档须确认，明确请求则直接开展 |
+| [`write-technical-spec`](skills/write-technical-spec/SKILL.md) | 评估设计风险，编写、更新和审查技术规格；完成后复查复杂度与防御是否适度 | `design.md`；按需补充配套文档 | 按场景：自动评估重要设计风险；主动建议生成文档须确认，明确请求则直接开展 |
 | [`maintain-task-checkpoints`](skills/maintain-task-checkpoints/SKILL.md) | 保存难以重建的任务状态，恢复中断工作 | `STATE.md` | 自动评估恢复需要，必要时提议并经确认创建；明确请求直接创建，授权后持续维护，恢复时核查已有记录 |
 | [`develop-with-tdd`](skills/develop-with-tdd/SKILL.md) | 用聚焦 TDD 处理回归缺陷、复杂逻辑和契约变化 | 代码与测试 | 按场景或明确请求：回归缺陷、复杂逻辑、契约变更；大幅扩展工作范围须确认 |
 | [`review-code-changes`](skills/review-code-changes/SKILL.md) | 审查代码差异，修复已授权的问题 | 审查结论；授权后的修复 | 用户请求审查变更；修复须明确授权，报告落盘须要求或同意 |
