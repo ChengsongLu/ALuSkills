@@ -35,6 +35,11 @@ Use the applicable questions below within the final review after each authoring
 or update task, and during standalone review. Scale depth to material changes;
 do not create an exhaustive inventory of trivial fields or require a new report.
 
+Check that the specification includes the default implementation simplicity
+constraint from the authoring guide, equivalent wording, or the user's explicit
+alternative. Presence of that sentence does not replace reviewing the actual
+design against the questions below.
+
 - **Basis for added mechanisms:** For material new state, layers, abstractions,
   configuration, coordination, checks, retries, recovery paths, and migration
   steps, identify the requirement, external contract, existing failure, or

@@ -34,6 +34,17 @@ Treat a specification whose implementation is complete as a historical snapshot,
 Use repository document conventions. Omit inapplicable sections. Use diagrams
 only when they clarify the design.
 
+Unless the user gives a different explicit requirement, include a concise
+implementation constraint in every authored or updated specification, in the
+document's language: keep implementation logic simple and direct; avoid
+overengineering and excessive defensive logic; add mechanisms only for current
+requirements or evidenced risks, while retaining necessary authorization,
+data-integrity, and high-impact side-effect safeguards. Place it once in the
+main document's existing constraints or implementation section; supporting
+plans inherit it rather than repeating it. Equivalent existing wording is
+sufficient. This must appear in the delivered specification, not just in the
+review notes, and does not authorize bulk edits to historical specifications.
+
 For every independent new specification, start `NNN` at `000` and select the next unused sequence for the same date and feature. Never overwrite or silently merge an existing specification. Do not modify ignore rules or stage specification artifacts unless the user explicitly requests it.
 
 ## Write the flow document
