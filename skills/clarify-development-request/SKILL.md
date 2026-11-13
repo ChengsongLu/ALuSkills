@@ -1,47 +1,144 @@
 ---
 name: clarify-development-request
-description: Resolve material requirement decisions that repository evidence cannot answer. Use for ambiguous development behavior or explicit clarification requests; skip routine implementation choices and review-only work.
+description: Clarify development goals, scope, behavior, and acceptance through progressive discussion. Use when users want to think through an idea before coding, clarify requirements, confirm items step by step, ask one question at a time, or create or revise a development brief; also use when unresolved choices materially affect development outcomes. Skip routine implementation choices, execution requests with settled requirements and no requested discussion, and code-review-only work.
 ---
 
 # Clarify Development Request
 
-Resolve ambiguous development requirements from repository facts and
-decision-changing questions. Keep resolved decisions in the conversation or an
-authorized brief, and pause only the work that depends on unresolved material
-choices.
+Build shared, actionable requirements from repository evidence and progressive
+conversation. Help users form an initial idea as well as resolve ambiguity in an
+existing request. The outcome is agreed behavior, scope, and acceptance; a
+`brief.md` is optional.
 
-## Gate the workflow
+## Choose the entry and respect its boundary
 
-Treat the initial classification as a read-only preflight. Run it when the
-request or later investigation exposes a potentially material unresolved
-requirement, before implementing the affected behavior; the user need not ask
-for clarification by name.
+- **Requested discussion:** Enter when the user asks to explore a development
+  idea, clarify requirements, confirm items, or discuss behavior before coding.
+  Honor this request even if the existing code suggests a complete answer.
+  Present established understanding briefly for correction instead of inventing
+  questions or skipping the requested discussion. A request to create or revise
+  a brief also enters this workflow; use settled decisions without reopening
+  them and ask only about material gaps.
+- **Clarification during execution:** When authorized work exposes a choice
+  that would materially change behavior, contracts, scope, or acceptance,
+  investigate the relevant facts and ask about the remaining decision directly.
+  Pause only dependent work and continue unaffected authorized work. If facts
+  and the user's request already settle the choice, continue without adding a
+  clarification ceremony or artifact.
 
-1. Read only enough repository instructions, code, tests, documentation, and
-   analogous implementations to separate missing facts from missing product
-   decisions.
-2. Enter this workflow only when the user explicitly requested clarification,
-   item-by-item confirmation, or collaborative definition of behavior before
-   design or implementation; or when a remaining decision would change product
-   behavior, contracts, scope, or acceptance criteria.
-3. Private naming, file placement, refactoring mechanics, test organization,
-   and other reversible local choices are implementation decisions unless they
-   affect an observable contract.
-4. If the request and repository evidence already determine behavior, scope,
-   and acceptance, exit immediately: create no files, ask for no confirmation,
-   and continue the requested work.
+An explicit discussion or review checkpoint takes precedence over the automatic
+exit for clear execution requests. Respect "discuss first, implement after my
+confirmation" across turns; a reply to one question is not authorization to
+implement. Where the user already authorized clarification followed by
+implementation, do not add a new approval gate.
 
-Ask the unresolved decision directly; permission to ask is not a separate gate.
-Continue unaffected authorized work while awaiting the answer.
+Private naming, file placement, refactoring mechanics, test organization, and
+other reversible local choices do not justify clarification unless they affect
+an observable contract. Permission to ask a necessary question is not a separate
+step.
 
-## Decide whether to write a brief
+## Establish the current understanding
 
-Resolve a small set of decisions in the conversation without creating files.
-An explicit request for a brief authorizes `brief.md`. Otherwise propose one
-only when durable decisions would materially help, and confirm before writing
-it; declining does not block work once decisions are resolved.
+Read only the repository instructions, code, tests, documentation, or analogous
+implementations needed to distinguish known facts from product decisions. For
+an initial idea without an existing project, start with the intended outcome;
+do not require repository evidence that does not exist.
 
-When authorized, use a user- or repository-specified location, or by default:
+Treat current behavior as evidence, not automatic authority for future behavior.
+Surface relevant conflicts between code, documentation, and the user's intent.
+Do not ask users to look up facts available in the repository; ask them to decide
+product tradeoffs that those facts cannot settle.
+
+Keep track of goals and success criteria, scope and non-goals, confirmed
+constraints, established facts, assumptions, and unresolved decisions. Reuse
+prior answers. For an oversized request, propose independently deliverable
+concerns and establish which to clarify first without silently dropping scope.
+
+## Discuss one decision, then update the understanding
+
+In requested discussion, default to one main decision per turn. A few simple,
+independent questions may be grouped when easier to answer; honor an explicit
+one-question-at-a-time request. During execution, ask only what is needed to
+resolve the material uncertainty, without turning it into an extended interview.
+
+For each decision:
+
+1. Identify the question that most affects what can be decided next. Start with
+   goals, users, and success criteria when those are unclear, then establish
+   scope, behavior, and acceptance as needed.
+2. Explain what the answer changes. When useful, offer a recommendation and
+   its evidence or a concrete example, without treating it as the user's choice.
+   If the user delegates the choice, decide within that authority and explain it.
+3. Incorporate the answer into the shared understanding. Revisit dependent
+   conclusions when an answer changes an earlier assumption; preserve settled
+   decisions that are unaffected.
+4. Ask the next relevant question, or close when the agreed scope is resolved.
+   At meaningful transitions, briefly summarize what is settled and what remains;
+   do not repeat the full inventory after every answer.
+
+Use applicable dimensions to discover missing decisions, not as a questionnaire:
+interaction and domain semantics; data and side effects; failure and recovery;
+authorization and privacy; compatibility; and acceptance. Follow newly exposed
+issues when they change the outcome, and skip irrelevant or settled dimensions.
+
+Discuss risks at the level the user needs to decide: for example, whether a
+retry may duplicate an action, what survives a failure, or who may see data.
+Record required outcomes and forbidden outcomes where they affect behavior,
+scope, or acceptance. Do not require a transaction, concurrency, or security
+checklist merely because the feature stores data or has side effects. Leave
+internal mechanisms for subsequent design unless choosing one is necessary to
+resolve the requirement or establish feasibility.
+
+Compare approaches only when the choice affects the requirement under
+discussion. Explain the consequential tradeoffs without manufacturing alternatives
+or adding a separate detailed-design phase.
+
+## Close at the agreed scope
+
+Clarification is complete when decisions needed for the authorized next step
+are resolved within the agreed scope. Distinguish confirmed decisions, unverified
+assumptions, unresolved questions, and explicitly excluded or deferred work.
+Acceptance should make different interpretations observable, using concrete
+examples when helpful; avoid imposing a fixed template on a small decision.
+
+If the user cannot decide yet, report the open choice and exactly which work it
+blocks. A partial summary is useful but must not be labeled implementation-ready
+for the blocked behavior. An agreed scope reduction or deferral can allow other
+work to proceed; do not silently convert an unanswered question into a decision.
+
+Deliver a concise account of the agreed outcome and any remaining blockers,
+whether or not a file was created. Self-review it against evidence and the
+conversation for consistency, completeness within scope, and testable acceptance.
+Correct wording directly; return semantic gaps to the discussion.
+
+Do not require repeated confirmation of decisions already made. Honor any
+explicit final checkpoint; otherwise return to the originally authorized task.
+If the user asked only for discussion or a brief, deliver it without starting
+implementation. Do not invoke or prescribe another Skill. If requirements
+change later, reopen only affected decisions.
+
+## Record a brief when authorized
+
+Resolve a small set of decisions in conversation without creating files. An
+explicit request to create a brief authorizes the file; a request to revise one
+authorizes updates within that scope. Otherwise propose a brief only when a
+durable record would materially help, and obtain agreement before writing it.
+Declining a file does not block work once the decisions are resolved.
+
+A brief records the goal and success criteria, scope and non-goals, confirmed
+behavior and constraints, acceptance examples or criteria, unresolved decisions,
+and next step. Omit inapplicable sections. Include technical directions,
+tradeoffs, or risk boundaries only when already established and relevant to the
+requirements; do not perform extra design to fill headings.
+
+Keep confirmed decisions separate from assumptions and open questions. Judge
+clarity by whether the text permits conflicting interpretations of observable
+behavior, scope, or acceptance, not by banning particular words. Explicit
+deferral is valid when its scope and consequence are clear. Apply the same self-review used for conversational
+outcomes before delivering or updating the file.
+
+Use the user- or repository-specified location, including an existing brief being
+revised. For a new brief without a specified location, use:
 
 ```text
 .clarify-development-request/
@@ -50,85 +147,12 @@ When authorized, use a user- or repository-specified location, or by default:
 ```
 
 Derive `short-name` from confirmed scope. Start `NNN` at `000` and use the next
-unused sequence for the same date and name. Update that one file as decisions
+unused sequence for the same date and name. Maintain that one file as decisions
 change; do not create parallel notes. Do not modify ignore rules or stage the
-artifact unless the user explicitly asks.
+artifact unless explicitly asked.
 
-When updating an authorized brief, check affected content against this Skill's
-current clarity and acceptance requirements, not only the newly resolved
-decision. Correct in-scope gaps and repetition while preserving confirmed
-decisions and project conventions. Revisit the whole brief for an overall
-revision; do not reopen settled decisions or reformat historical briefs solely
-because the Skill changed.
-
-## Establish the boundary and inventory
-
-- Reuse established evidence; read more only to resolve a material uncertainty.
-- Split an oversized request into independently deliverable concerns and agree
-  on which to clarify first.
-- Treat repository facts as evidence, not as substitutes for product decisions.
-  Surface conflicts between current code and historical design.
-- Track, without repeatedly displaying: goals and success criteria, scope and
-  non-goals, confirmed constraints, established repository facts, decisions
-  still affecting behavior or contracts, and local details that can wait.
-- Never ask the user for information the repository can answer.
-
-## Resolve material decisions
-
-Ask dependent questions one at a time; batch a few independent questions when
-that is easier to answer. Honor an explicit one-question-at-a-time request.
-Explain what each answer changes, and offer a recommendation with evidence when
-useful without deciding product semantics on the user's behalf.
-
-Work through applicable unresolved dimensions in dependency order: goal and
-success criteria; scope and non-goals; names and domain semantics; interaction
-or interface contracts; data, state transitions, persistence, and side effects;
-failure, concurrency, idempotency, recovery, authorization, and sensitive data;
-compatibility with callers, data, deployment, and configuration; validation and
-delivery criteria. Skip dimensions already confirmed or irrelevant, follow newly
-exposed branches before moving on, and revisit dependent conclusions when the
-user revises an earlier answer.
-
-For stateful, persistent, concurrent, security-sensitive, or side-effecting
-work, state the invariants and forbidden outcomes: the source of truth, the
-commit point after which auxiliary failures must not reverse the outcome,
-terminal-state convergence, retry and duplicate-execution behavior,
-data-exposure boundaries, and side effects that must never repeat. Infer an
-invariant from code only when the evidence is conclusive; ask when it is a
-business tradeoff.
-
-## Select a direction
-
-Compare approaches only when choosing between them is necessary to resolve a
-remaining requirement decision. Once requirements are clear, return to the
-authorized task instead of adding a separate design-selection phase. Do not
-manufacture alternatives. Describe the direction at
-the level of module boundaries, data flow, visible behavior, error handling, and
-validation, not file-by-file steps.
-
-## Deliver
-
-When a brief is authorized, write a concise `brief.md` with: goal and success
-criteria; scope and non-goals; confirmed decisions; selected approach and
-tradeoffs; applicable invariants and forbidden outcomes; risk,
-security, and compatibility boundaries; acceptance and validation criteria;
-remaining decisions; and the next step. Omit inapplicable sections.
-Do not leave decision-changing language such as "could", "prefer", "later", or
-"A or B" in confirmed content.
-
-Before delivering it, self-review against repository evidence and every
-conversation decision for completeness, consistency, and testable acceptance.
-Fix wording and evidence gaps directly; ask the user only about issues that
-change semantics, scope, contracts, state, security, compatibility, or
-acceptance.
-
-Clarification is complete when material decisions are resolved and any brief
-records them accurately. Do not require repeated confirmation of decisions
-already made. Return to the originally authorized task; if the user asked only
-for clarification, deliver the result without starting implementation. Do not
-invoke or prescribe another Skill. If requirements change later, reopen only
-the affected decisions.
-
-Link `brief.md` in the final response when one was written. When the gate
-exits, continue the underlying task without mentioning a clarification
-artifact.
+When updating a brief, check affected content and dependent conclusions, fixing
+in-scope gaps and repetition while preserving confirmed decisions and project
+conventions. Revisit the whole brief for an overall revision; do not reformat
+historical briefs solely because these instructions changed. Link the file in
+the final response whenever one was written or updated.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Clarify Development Request"
-  short_description: "Resolve material requirement decisions"
-  default_prompt: "Use $clarify-development-request to resolve material ambiguities in this request, asking only necessary questions and creating a brief only when requested or agreed."
+  short_description: "Discuss development requirements step by step"
+  default_prompt: "Use $clarify-development-request to discuss this development request step by step, establish goals, scope, behavior, and acceptance, and respect any requested confirmation before implementation. Create a brief only when requested or agreed."
